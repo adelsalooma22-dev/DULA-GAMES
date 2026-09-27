@@ -7,41 +7,42 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
 <style>
 :root{
-  --bg1:#fff4e0; --bg2:#ffe3ef; --ink:#2c2440; --card:#ffffff;
-  --c1:#ff6b6b; --c2:#4ecdc4; --c3:#ffb703; --c4:#a78bfa; --c5:#51cf66; --c6:#4dabf7;
-  --muted:#8a7fa0; --shadow:rgba(44,36,64,0.15);
+  --bg1:#0a0d1a; --bg2:#151230; --bg3:#0d1b2e; --ink:#eef1fb; --card:#1a1f36; --card2:#20263f;
+  --c1:#ff3d7f; --c2:#00e5ff; --c3:#ffd23f; --c4:#b34dff; --c5:#39ff9e; --c6:#4d8bff;
+  --muted:#8b93b8; --shadow:rgba(0,0,0,0.55); --glow:rgba(179,77,255,0.45);
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){--bg1:#241f33; --bg2:#2e2440; --ink:#f4f0ff; --card:#332b47; --shadow:rgba(0,0,0,0.35);}
-}
-:root[data-theme="dark"]{--bg1:#241f33; --bg2:#2e2440; --ink:#f4f0ff; --card:#332b47; --shadow:rgba(0,0,0,0.35);}
-*{box-sizing:border-box;}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
 body{margin:0;min-height:100%;color:var(--ink);font-family:"Baloo 2","Segoe UI",Tahoma,sans-serif;
-  background:linear-gradient(160deg,var(--bg1),var(--bg2));}
-header{padding:34px 16px 8px;text-align:center;}
-header h1{margin:0 0 4px;font-size:clamp(28px,7vw,42px);font-weight:800;}
+  background:
+    radial-gradient(circle at 15% 0%, rgba(179,77,255,0.18), transparent 45%),
+    radial-gradient(circle at 90% 15%, rgba(0,229,255,0.14), transparent 40%),
+    linear-gradient(165deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+  background-attachment:fixed;}
+header{padding:36px 16px 10px;text-align:center;}
+header h1{margin:0 0 6px;font-size:clamp(28px,7vw,42px);font-weight:800;
+  text-shadow:0 0 14px var(--glow),0 0 30px rgba(0,229,255,0.25);}
 header p{margin:0;color:var(--muted);font-size:15px;}
-#home{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;max-width:760px;margin:26px auto;padding:0 16px 40px;}
-.tile{background:var(--card);border:none;border-radius:18px;padding:24px 8px 18px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink);font-family:inherit;
-  box-shadow:0 6px 0 var(--tc,var(--c1)),0 10px 18px var(--shadow);transition:transform .12s ease;}
-.tile:hover{transform:translateY(-3px);}
+#home{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;max-width:760px;margin:26px auto;padding:0 16px 40px;}
+.tile{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:26px 8px 20px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink);font-family:inherit;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.03) inset,0 6px 0 var(--tc,var(--c1)),0 8px 20px var(--shadow),0 0 18px -6px var(--tc,var(--c1));transition:transform .12s ease,box-shadow .12s ease;min-height:96px;}
+.tile:hover{transform:translateY(-3px);box-shadow:0 6px 0 var(--tc,var(--c1)),0 12px 26px var(--shadow),0 0 26px -4px var(--tc,var(--c1));}
 .tile:active{transform:translateY(2px);box-shadow:0 2px 0 var(--tc,var(--c1)),0 4px 10px var(--shadow);}
-.tile .emoji{display:block;font-size:34px;margin-bottom:8px;}
+.tile .emoji{display:block;font-size:36px;margin-bottom:9px;filter:drop-shadow(0 0 8px rgba(255,255,255,0.15));}
 .game{max-width:520px;margin:0 auto;padding:6px 16px 40px;text-align:center;display:none;}
 .game.active{display:block;}
-.back{background:var(--card);border:none;color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;
-  padding:8px 16px;border-radius:20px;margin-bottom:16px;font-weight:700;box-shadow:0 3px 8px var(--shadow);}
+.back{background:var(--card);border:1px solid rgba(255,255,255,0.08);color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;
+  padding:10px 18px;border-radius:20px;margin-bottom:16px;font-weight:700;box-shadow:0 3px 10px var(--shadow);}
 .status{margin:16px 0;font-size:17px;min-height:26px;font-weight:700;}
-button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;border:none;border-radius:24px;
-  font-size:15px;cursor:pointer;font-family:inherit;font-weight:700;box-shadow:0 4px 10px var(--shadow);}
+button.reset{margin-top:18px;padding:12px 24px;background:linear-gradient(135deg,var(--c4),var(--c6));color:#fff;border:none;border-radius:24px;
+  font-size:15px;cursor:pointer;font-family:inherit;font-weight:700;box-shadow:0 4px 16px var(--glow);min-height:46px;}
 
 /* X-O */
 #xoBoard{display:grid;grid-template-columns:repeat(3,minmax(64px,84px));grid-template-rows:repeat(3,minmax(64px,84px));gap:6px;
   background:var(--card);padding:6px;border-radius:14px;justify-content:center;margin:0 auto;box-shadow:0 6px 16px var(--shadow);}
-.cell{background:var(--bg1);border:none;border-radius:8px;font-size:32px;font-weight:800;cursor:pointer;color:var(--ink);}
-.cell.x{color:var(--c1);} .cell.o{color:var(--c2);}
+.cell{background:var(--card2);border:none;border-radius:8px;font-size:32px;font-weight:800;cursor:pointer;color:var(--ink);min-height:64px;}
+.cell.x{color:var(--c1);text-shadow:0 0 10px var(--c1);} .cell.o{color:var(--c2);text-shadow:0 0 10px var(--c2);}
 
 /* RPS */
 .rps-choices{display:flex;gap:12px;justify-content:center;margin-top:8px;}
@@ -65,8 +66,8 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
 
 /* Whack */
 #whackBoard{display:grid;grid-template-columns:repeat(3,minmax(64px,84px));grid-template-rows:repeat(3,minmax(64px,84px));gap:8px;justify-content:center;margin:0 auto;}
-.hole{background:var(--card);border-radius:50%;font-size:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px var(--shadow);}
-.hole.up{background:var(--c3);}
+.hole{background:var(--card2);border-radius:50%;font-size:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px var(--shadow);}
+.hole.up{background:var(--c3);box-shadow:0 0 24px -2px var(--c3);}
 
 /* Trivia */
 .quiz-q{font-size:19px;font-weight:700;margin:14px 0;}
@@ -88,8 +89,8 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
 
 /* Reaction */
 #reactBox{width:220px;height:220px;border-radius:20px;margin:16px auto;display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:700;font-size:18px;cursor:pointer;background:var(--c1);}
-#reactBox.go{background:var(--c5);}
+  color:#fff;font-weight:700;font-size:18px;cursor:pointer;background:var(--c1);box-shadow:0 0 30px -6px var(--c1);}
+#reactBox.go{background:var(--c5);box-shadow:0 0 34px -4px var(--c5);}
 
 /* About */
 .about-box{background:var(--card);border-radius:18px;padding:28px 20px;box-shadow:0 6px 16px var(--shadow);text-align:right;}
@@ -101,108 +102,45 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
 .best{font-size:13px;color:var(--muted);font-weight:700;margin-top:-6px;margin-bottom:6px;}
 
 @media (max-width:380px){
-  #home{grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px;}
-  .tile{padding:18px 6px 14px;font-size:14px;}
-  .tile .emoji{font-size:28px;}
+  #home{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .tile{padding:22px 6px 16px;font-size:15px;min-height:100px;}
+  .tile .emoji{font-size:32px;}
+  .game{padding:6px 12px 40px;}
+  .quiz-opts button, .math-opts button, .keyboard button{min-height:44px;}
+  button.reset, .back{min-height:46px;}
 }
 
-/* DULA Upgrade */
-.profile-bar{
-  max-width:760px;margin:18px auto 4px;padding:13px 16px;background:var(--card);
-  border-radius:18px;box-shadow:0 6px 16px var(--shadow);font-size:14px;
-}
-.profile-bar>div:first-child{display:flex;justify-content:space-between;gap:12px;align-items:center}
-.xp-track{height:9px;background:var(--bg1);border-radius:99px;overflow:hidden;margin:9px 0 7px}
-.xp-track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--c4),var(--c6));transition:width .35s ease}
-.profile-stats{display:flex;justify-content:center;gap:24px;color:var(--muted)}
-.adventure-tile{position:relative;overflow:hidden}
-.adventure-tile:after{content:"جديد";position:absolute;top:7px;left:8px;background:#ff7b00;color:#fff;border-radius:10px;padding:2px 7px;font-size:11px}
-#game-adventure{max-width:620px}
-.adventure-head{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:13px 16px;border-radius:18px;box-shadow:0 5px 14px var(--shadow)}
-.adventure-head h2{margin:0;font-size:22px}
-.adventure-head p{margin:2px 0 0;color:var(--muted)}
-.adv-hearts{font-size:20px;white-space:nowrap}
-.adv-progress{height:10px;background:var(--card);border-radius:99px;margin:12px 0;overflow:hidden;box-shadow:0 2px 8px var(--shadow)}
-.adv-progress i{display:block;height:100%;width:8.33%;background:linear-gradient(90deg,var(--c5),var(--c2));transition:width .35s}
-.adventure-card{background:var(--card);border-radius:20px;padding:22px 16px;box-shadow:0 7px 18px var(--shadow)}
-.adv-badge{display:inline-block;background:var(--c4);color:#fff;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:700}
-.adventure-card h3{margin:10px 0 5px;font-size:22px}
-.adventure-card>p{margin:0 0 18px;color:var(--muted)}
-.adv-options{display:grid;gap:10px}
-.adv-options button{border:0;background:var(--bg1);color:var(--ink);padding:13px;border-radius:14px;font:700 16px inherit;cursor:pointer;box-shadow:0 3px 8px var(--shadow)}
-.adv-options button.correct{background:var(--c5);color:#fff}
-.adv-options button.wrong{background:var(--c1);color:#fff}
-.adv-number{font-size:30px;font-weight:800;margin:12px 0}
-.adv-input{display:flex;gap:8px;justify-content:center}
-.adv-input input{width:130px;padding:11px;border:0;border-radius:12px;background:var(--bg1);color:var(--ink);font:700 17px inherit;text-align:center}
-.adv-action{padding:11px 18px;border:0;border-radius:12px;background:var(--c2);color:#fff;font:700 15px inherit;cursor:pointer}
-.adv-reaction{width:210px;height:150px;margin:auto;border-radius:18px;display:flex;align-items:center;justify-content:center;background:var(--c1);color:#fff;font-weight:800;cursor:pointer}
-.adv-reaction.go{background:var(--c5)}
-.adv-memory{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;max-width:330px;margin:auto}
-.adv-memory button{aspect-ratio:1;border:0;border-radius:10px;background:var(--c4);color:#fff;font-size:25px;cursor:pointer}
-.adv-memory button.open{background:var(--card);color:var(--ink)}
-.adv-memory button.done{background:transparent;border:2px solid var(--c5);color:var(--c5)}
+/* Word guess */
+.word-display{font-size:34px;font-weight:800;letter-spacing:8px;margin:18px 0;min-height:44px;}
+.hearts{font-size:20px;margin-bottom:10px;}
+.keyboard{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:420px;margin:0 auto;}
+.keyboard button{background:var(--card);border:none;border-radius:8px;padding:10px 0;font-size:16px;cursor:pointer;color:var(--ink);font-family:inherit;box-shadow:0 2px 6px var(--shadow);}
+.keyboard button:disabled{opacity:.35;}
 
+/* Click speed */
+#clickBtn{width:200px;height:200px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff6b9d,var(--c1));color:#fff;font-size:20px;font-weight:800;border:none;cursor:pointer;margin:18px auto;display:block;box-shadow:0 0 40px -6px var(--c1),0 8px 18px var(--shadow);}
+
+/* Color match */
+.color-word{font-size:38px;font-weight:800;margin:18px 0;}
+.color-opts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.color-opts button{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;box-shadow:0 3px 8px var(--shadow);}
+
+/* Sequence memory */
+#seqBoard{display:grid;grid-template-columns:repeat(3,minmax(64px,84px));grid-template-rows:repeat(3,minmax(64px,84px));gap:6px;justify-content:center;margin:14px auto;}
+.seq-cell{background:var(--card);border:none;border-radius:10px;font-size:26px;font-weight:800;cursor:pointer;color:var(--ink);box-shadow:0 3px 8px var(--shadow);}
+.seq-cell.done{background:var(--c5);color:#fff;}
+
+/* Hi-Lo */
+.hilo-num{font-size:54px;font-weight:800;margin:18px 0;}
+.hilo-opts{display:flex;gap:14px;justify-content:center;}
+.hilo-opts button{padding:14px 26px;font-size:18px;border-radius:16px;border:none;background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit;font-weight:700;box-shadow:0 3px 8px var(--shadow);}
 </style>
-
-<style id="dula-pro-upgrade-v2">
-/* DULA Pro Upgrade v2 */
-.dula-topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:12px auto;max-width:1100px}
-.dula-chip{background:var(--card,#fff);border:1px solid rgba(127,127,127,.18);border-radius:14px;padding:8px 12px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.06)}
-.dula-chip small{display:block;opacity:.65;font-weight:500;font-size:11px}
-.dula-hero{max-width:1100px;margin:12px auto 18px;padding:20px;border-radius:22px;background:linear-gradient(135deg,#6c5ce7,#00b894);color:#fff;box-shadow:0 12px 35px rgba(0,0,0,.14)}
-.dula-hero h2{margin:0 0 7px}.dula-hero p{margin:0;opacity:.92}
-.dula-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.dula-btn{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:800;background:#fff;color:#333}
-.dula-btn.alt{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35)}
-.dula-search{max-width:1100px;margin:0 auto 15px}
-.dula-search input{width:100%;box-sizing:border-box;padding:13px 15px;border-radius:14px;border:1px solid rgba(127,127,127,.22);font-size:16px;background:var(--card,#fff);color:inherit}
-.dula-game-card{transition:transform .18s,box-shadow .18s}.dula-game-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.11)}
-.dula-badge{display:inline-block;padding:3px 8px;border-radius:999px;background:rgba(108,92,231,.12);font-size:11px;font-weight:800;margin-top:5px}
-.dula-notice{max-width:1100px;margin:12px auto;padding:12px 14px;border-radius:14px;background:rgba(253,203,110,.16);border:1px solid rgba(253,203,110,.45);font-size:13px}
-.dula-footer{max-width:1100px;margin:35px auto 20px;padding:20px 5px;text-align:center;opacity:.75;font-size:13px}
-@media(max-width:650px){.dula-hero{margin:10px;padding:16px;border-radius:18px}.dula-chip{flex:1;min-width:110px}.dula-topbar{gap:7px}}
-</style>
-
 </head>
 <body>
-
-<!-- DULA Pro Upgrade v2 -->
-<div class="dula-topbar" id="dulaProBar">
-  <div class="dula-chip"><small>المستوى</small><span id="dulaLevel">1</span> ⭐</div>
-  <div class="dula-chip"><small>الخبرة</small><span id="dulaXP">0</span></div>
-  <div class="dula-chip"><small>العملات</small><span id="dulaCoins">0</span> 🪙</div>
-  <div class="dula-chip"><small>سلسلة اللعب</small><span id="dulaStreak">0</span> 🔥</div>
-</div>
-
-<section class="dula-hero">
-  <h2>🎮 مغامرة DULA</h2>
-  <p>العب مراحل متنوعة، اجمع الخبرة والعملات، وافتح مستويات جديدة.</p>
-  <div class="dula-actions">
-    <button class="dula-btn" onclick="openAdventure()">ابدأ المغامرة</button>
-    <button class="dula-btn alt" onclick="dulaDaily()">🎁 تحدي اليوم</button>
-    <button class="dula-btn alt" onclick="dulaResetProgress()">إعادة التقدم</button>
-  </div>
-</section>
-
-<div class="dula-search">
-  <input id="dulaGameSearch" type="search" placeholder="🔎 ابحث عن لعبة..." oninput="filterDulaGames(this.value)">
-</div>
-
-<div class="dula-notice">
-  💡 <b>نسخة الربح:</b> هذه النسخة مجهزة لإضافة إعلانات قانونية لاحقًا بعد نشر الموقع واستيفاء متطلبات شبكة الإعلانات، بدون التأثير على اللعب.
-</div>
-
 <header>
   <h1>🎮 العاب DULA</h1>
-  <p>اختار لعبة، أو ادخل مغامرة DULA وخلي كل مرحلة مختلفة عن اللي قبلها 🎮</p>
+  <p>اختار لعبة وابدأ اللعب</p>
 </header>
-
-<div class="profile-bar">
-  <div><strong>⭐ المستوى <span id="profileLevel">1</span></strong><span id="profileXp">0 / 100 XP</span></div>
-  <div class="xp-track"><i id="xpFill"></i></div>
-  <div class="profile-stats"><span>🪙 <b id="profileCoins">0</b></span><span>🔥 <b id="profileStreak">0</b></span></div>
-</div>
 
 <div id="home">
   <button class="tile" data-game="xo" style="--tc:var(--c1)"><span class="emoji">❌</span>إكس أوه</button>
@@ -215,12 +153,17 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
   <button class="tile" data-game="simon" style="--tc:var(--c2)"><span class="emoji">🎨</span>ذاكر الألوان</button>
   <button class="tile" data-game="math" style="--tc:var(--c3)"><span class="emoji">➕</span>سباق الحساب</button>
   <button class="tile" data-game="react" style="--tc:var(--c4)"><span class="emoji">⚡</span>سرعة البديهة</button>
-  <button class="tile adventure-tile" data-game="adventure" style="--tc:#ff7b00"><span class="emoji">🗺️</span>مغامرة DULA</button>
   <button class="tile" data-game="about" style="--tc:var(--c5)"><span class="emoji">ℹ️</span>عن الموقع</button>
   <button class="tile" data-game="ucl" style="--tc:var(--c6)"><span class="emoji">🏆</span>دوري الأبطال</button>
   <button class="tile" data-game="epl" style="--tc:var(--c1)"><span class="emoji">⚽</span>الدوري الإنجليزي</button>
   <button class="tile" data-game="player" style="--tc:var(--c2)"><span class="emoji">🌟</span>حياة لاعب</button>
   <button class="tile" data-game="wc" style="--tc:var(--c3)"><span class="emoji">🌍</span>كأس العالم</button>
+  <button class="tile" data-game="word" style="--tc:var(--c1)"><span class="emoji">🔤</span>خمن الكلمة</button>
+  <button class="tile" data-game="click" style="--tc:var(--c2)"><span class="emoji">🎯</span>دقة النقر</button>
+  <button class="tile" data-game="color" style="--tc:var(--c3)"><span class="emoji">🌈</span>الألوان السريعة</button>
+  <button class="tile" data-game="seq" style="--tc:var(--c4)"><span class="emoji">🔢</span>رتب الأرقام</button>
+  <button class="tile" data-game="hilo" style="--tc:var(--c5)"><span class="emoji">⚖️</span>الأكبر ولا الأصغر</button>
+  <button class="tile" data-game="mult" style="--tc:var(--c6)"><span class="emoji">✖️</span>جدول الضرب</button>
 </div>
 
 <section class="game" id="game-xo"><button class="back">← رجوع</button>
@@ -282,26 +225,6 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
   <div id="reactBox">استنى...</div>
   <button class="reset" id="reactReset">ابدأ</button></section>
 
-<section class="game" id="game-adventure"><button class="back">← رجوع</button>
-  <div class="adventure-head">
-    <div>
-      <h2>🗺️ مغامرة DULA</h2>
-      <p id="advStage">المرحلة 1 من 12</p>
-    </div>
-    <div class="adv-hearts" id="advLives">❤️❤️❤️</div>
-  </div>
-  <div class="adv-progress"><i id="advProgressFill"></i></div>
-  <div class="adventure-card">
-    <div class="adv-badge" id="advType">تحدي</div>
-    <h3 id="advTitle"></h3>
-    <p id="advQuestion"></p>
-    <div id="advArea"></div>
-  </div>
-  <p class="status" id="advStatus"></p>
-  <button class="reset" id="advNext" style="display:none">المرحلة التالية →</button>
-  <button class="reset" id="advRestart">ابدأ مغامرة جديدة</button>
-</section>
-
 <section class="game" id="game-about"><button class="back">← رجوع</button>
   <div class="about-box">
     <p class="about-emoji">🎮</p>
@@ -331,6 +254,49 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
   <p class="quiz-q" id="wcQ"></p><div class="quiz-opts" id="wcOpts"></div>
   <button class="reset" id="wcReset">ابدأ من جديد</button></section>
 
+<section class="game" id="game-word"><button class="back">← رجوع</button>
+  <p class="hearts" id="wordHearts"></p>
+  <p class="word-display" id="wordDisplay"></p>
+  <p class="status" id="wordStatus"></p>
+  <div class="keyboard" id="wordKeyboard"></div>
+  <button class="reset" id="wordReset">كلمة جديدة</button></section>
+
+<section class="game" id="game-click"><button class="back">← رجوع</button>
+  <p class="status" id="clickStatus">دوس زرار "ابدأ" وبعدين دوس بسرعة لمدة 5 ثواني</p>
+  <p class="best" id="clickBest"></p>
+  <button id="clickBtn">دوس هنا!</button>
+  <button class="reset" id="clickReset">ابدأ</button></section>
+
+<section class="game" id="game-color"><button class="back">← رجوع</button>
+  <p class="status" id="colorStatus">النقاط: 0 — الوقت: 30</p>
+  <p class="best" id="colorBest"></p>
+  <p class="status">دوس على اللون اللي متلون بيه النص (مش اللي مكتوب)</p>
+  <p class="color-word" id="colorWord"></p>
+  <div class="color-opts" id="colorOpts"></div>
+  <button class="reset" id="colorReset">ابدأ اللعب</button></section>
+
+<section class="game" id="game-seq"><button class="back">← رجوع</button>
+  <p class="status" id="seqStatus">دوس ابدأ واحفظ ترتيب الأرقام</p>
+  <p class="best" id="seqBest"></p>
+  <div id="seqBoard"></div>
+  <button class="reset" id="seqReset">ابدأ</button></section>
+
+<section class="game" id="game-hilo"><button class="back">← رجوع</button>
+  <p class="status" id="hiloStatus">الرقم ده أعلى ولا أقل من اللي بعده؟</p>
+  <p class="best" id="hiloBest"></p>
+  <p class="hilo-num" id="hiloNum"></p>
+  <div class="hilo-opts">
+    <button id="hiloUp">⬆️ أعلى</button>
+    <button id="hiloDown">⬇️ أقل</button>
+  </div></section>
+
+<section class="game" id="game-mult"><button class="back">← رجوع</button>
+  <p class="status" id="multStatus">النقاط: 0 — الوقت: 30</p>
+  <p class="best" id="multBest"></p>
+  <p class="math-eq" id="multEq"></p>
+  <div class="math-opts" id="multOpts"></div>
+  <button class="reset" id="multReset">ابدأ اللعب</button></section>
+
 <script>
 function bestGet(key){const v=localStorage.getItem(key);return v===null?null:Number(v);}
 function bestTry(key,val,lowerBetter){const cur=bestGet(key);const isNew=cur===null||(lowerBetter?val<cur:val>cur);if(isNew)localStorage.setItem(key,val);return isNew;}
@@ -348,7 +314,7 @@ function showGame(id){
 function showHome(){
   home.style.display='grid';
   document.querySelectorAll('.game').forEach(g=>g.classList.remove('active'));
-  stopSnake(); stopWhack(); stopMath(); stopReact();
+  stopSnake(); stopWhack(); stopMath(); stopReact(); stopClick(); stopColorGame(); stopMult();
 }
 
 /* X-O */
@@ -628,283 +594,122 @@ let reactTimeout=null;
   });
 })();
 
-/* DULA Upgrade: profile + randomized Adventure mode */
+/* Word guess (hangman) */
 (function(){
-  const profile = {
-    xp: Number(localStorage.getItem('dula_xp') || 0),
-    coins: Number(localStorage.getItem('dula_coins') || 0),
-    streak: Number(localStorage.getItem('dula_streak') || 0),
-    day: localStorage.getItem('dula_day') || ''
-  };
-  const today = new Date().toDateString();
-  if(profile.day !== today){ profile.day=today; profile.streak=profile.streak; saveProfile(); }
-
-  function saveProfile(){
-    localStorage.setItem('dula_xp', profile.xp);
-    localStorage.setItem('dula_coins', profile.coins);
-    localStorage.setItem('dula_streak', profile.streak);
-    localStorage.setItem('dula_day', profile.day);
-    renderProfile();
-  }
-  function level(){ return Math.floor(profile.xp/100)+1; }
-  function renderProfile(){
-    const lv=level(), base=(lv-1)*100, inside=profile.xp-base;
-    const a=document.getElementById('profileLevel'), b=document.getElementById('profileXp'),
-          c=document.getElementById('profileCoins'), d=document.getElementById('profileStreak'),
-          f=document.getElementById('xpFill');
-    if(a)a.textContent=lv;
-    if(b)b.textContent=inside+' / 100 XP';
-    if(c)c.textContent=profile.coins;
-    if(d)d.textContent=profile.streak;
-    if(f)f.style.width=inside+'%';
-  }
-  window.dulaReward=function(xp,coins){
-    profile.xp+=xp; profile.coins+=coins; saveProfile();
-  };
-  renderProfile();
+  const words=['برمجة','موقع','لعبة','قاهرة','نجاح','رياضة','ذاكرة','كمبيوتر','مدرسة','صداقة'];
+  const letters=['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
+  const heartsEl=document.getElementById('wordHearts'), dispEl=document.getElementById('wordDisplay'), statusEl=document.getElementById('wordStatus'), kbEl=document.getElementById('wordKeyboard');
+  let word, guessed, wrong; const maxWrong=6;
+  function buildKeyboard(){kbEl.innerHTML='';letters.forEach(ch=>{const b=document.createElement('button');b.textContent=ch;b.addEventListener('click',()=>guess(ch,b));kbEl.appendChild(b);});}
+  function render(){dispEl.textContent=[...word].map(ch=>guessed.has(ch)?ch:'_').join(' ');heartsEl.textContent='❤️'.repeat(maxWrong-wrong)+'🖤'.repeat(wrong);}
+  function guess(ch,btn){if(btn.disabled)return;btn.disabled=true;guessed.add(ch);if(!word.includes(ch))wrong++;render();
+    if([...word].every(c=>guessed.has(c))){statusEl.textContent='برافو! خمنت الكلمة 🎉';[...kbEl.children].forEach(b=>b.disabled=true);}
+    else if(wrong>=maxWrong){dispEl.textContent=word;statusEl.textContent='خسرت! حاول تاني';[...kbEl.children].forEach(b=>b.disabled=true);}}
+  function start(){word=words[Math.floor(Math.random()*words.length)];guessed=new Set();wrong=0;statusEl.textContent='خمن الكلمة حرف حرف';buildKeyboard();render();}
+  document.getElementById('wordReset').addEventListener('click',start);
+  start();
 })();
 
+/* Click speed test */
+let clickTimer=null;
 (function(){
-  const stagesEl=document.getElementById('advStage'), livesEl=document.getElementById('advLives'),
-        fillEl=document.getElementById('advProgressFill'), typeEl=document.getElementById('advType'),
-        titleEl=document.getElementById('advTitle'), qEl=document.getElementById('advQuestion'),
-        areaEl=document.getElementById('advArea'), statusEl=document.getElementById('advStatus'),
-        nextBtn=document.getElementById('advNext'), restartBtn=document.getElementById('advRestart');
-  if(!areaEl)return;
-
-  let stage=0,lives=3,locked=false,reactTimer=null,memState=null;
-  const used=[];
-
-  const general=[
-    {q:'ما هو الكوكب المعروف بالكوكب الأحمر؟',o:['المريخ','الزهرة','عطارد'],a:0},
-    {q:'كم عدد أيام الأسبوع؟',o:['5','7','9'],a:1},
-    {q:'ما أكبر كوكب في المجموعة الشمسية؟',o:['الأرض','المشتري','المريخ'],a:1},
-    {q:'ما عاصمة مصر؟',o:['القاهرة','الجيزة','أسوان'],a:0},
-    {q:'كم ضلعًا للمثلث؟',o:['2','3','4'],a:1},
-    {q:'أي حيوان يُعرف بسفينة الصحراء؟',o:['الجمل','الحصان','الفيل'],a:0},
-    {q:'ما الغاز الذي نتنفسه بشكل أساسي؟',o:['الأكسجين','الهيدروجين','الهيليوم'],a:0},
-    {q:'كم شهرًا في السنة؟',o:['10','11','12'],a:2}
-  ];
-
-  function shuffle(a){
-    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
-    return a;
-  }
-  function pick(arr){
-    const available=arr.filter((_,i)=>!used.includes(i));
-    if(!available.length){used.length=0; return arr[Math.floor(Math.random()*arr.length)];}
-    const idx=arr.indexOf(available[Math.floor(Math.random()*available.length)]);
-    used.push(idx); return arr[idx];
-  }
-  function setCommon(title,type,q){
-    typeEl.textContent=type; titleEl.textContent=title; qEl.textContent=q||'';
-    statusEl.textContent=''; areaEl.innerHTML=''; nextBtn.style.display='none';
-  }
-  function loseLife(msg){
-    if(locked)return;
-    lives--; renderLives();
-    statusEl.textContent=msg+' ❤️ متبقي: '+lives;
-    if(lives<=0){
-      locked=true; statusEl.textContent='انتهت المغامرة! وصلت للمرحلة '+stage+' من 12.';
-      nextBtn.style.display='none';
-      return;
-    }
-    setTimeout(()=>{stage++;renderStage();},700);
-  }
-  function winStage(msg,xp=20,coins=5){
-    if(locked)return;
-    locked=true;
-    if(window.dulaReward)dulaReward(xp,coins);
-    statusEl.textContent=msg+' 🎉 +'+xp+' XP و +'+coins+' 🪙';
-    nextBtn.style.display=stage<11?'inline-block':'none';
-    if(stage===11){
-      nextBtn.style.display='none';
-      statusEl.textContent='🏆 خلصت المغامرة كلها! +50 XP إضافية';
-      if(window.dulaReward)dulaReward(50,20);
-    }
-  }
-  function renderLives(){livesEl.textContent='❤️'.repeat(lives)+'🖤'.repeat(3-lives);}
-  function renderStage(){
-    locked=false; renderLives(); stagesEl.textContent='المرحلة '+(stage+1)+' من 12';
-    fillEl.style.width=((stage+1)/12*100)+'%';
-    const type=stage%6;
-    if(type===0) mathStage();
-    else if(type===1) quizStage();
-    else if(type===2) guessStage();
-    else if(type===3) memoryStage();
-    else if(type===4) reactionStage();
-    else rpsStage();
-  }
-
-  function mathStage(){
-    const n=2+Math.floor(stage/3), a=5+Math.floor(Math.random()*10*n), b=2+Math.floor(Math.random()*10*n);
-    const op=stage>=6?['+','-','×'][Math.floor(Math.random()*3)]:['+','-'][Math.floor(Math.random()*2)];
-    let ans=op==='+'?a+b:op==='-'?a-b:a*b;
-    setCommon('سباق الحساب','🧮 حساب', 'حل العملية قبل الانتقال للمرحلة التالية');
-    areaEl.innerHTML='<div class="adv-number">'+a+' '+op+' '+b+' = ؟</div><div class="adv-options"></div>';
-    const opts=areaEl.querySelector('.adv-options'), vals=new Set([ans]);
-    while(vals.size<3) vals.add(ans+Math.floor(Math.random()*15)-7);
-    shuffle([...vals]).forEach(v=>{
-      const btn=document.createElement('button');btn.textContent=v;
-      btn.onclick=()=>{if(locked)return;if(v===ans)winStage('إجابة صحيحة!',25,7);else{btn.classList.add('wrong');loseLife('الإجابة غلط.');}};
-      opts.appendChild(btn);
-    });
-  }
-
-  function quizStage(){
-    const item=pick(general);
-    setCommon('اختبر معلوماتك','❓ سؤال',item.q);
-    const opts=document.createElement('div');opts.className='adv-options';
-    shuffle(item.o.map((v,i)=>({v,i}))).forEach(x=>{
-      const b=document.createElement('button');b.textContent=x.v;
-      b.onclick=()=>{if(locked)return;if(x.i===item.a){b.classList.add('correct');winStage('إجابة ممتازة!',22,6)}else{b.classList.add('wrong');loseLife('اختيار غير صحيح.');}};
-      opts.appendChild(b);
-    });
-    areaEl.appendChild(opts);
-  }
-
-  function guessStage(){
-    const max=stage<6?30:60, target=1+Math.floor(Math.random()*max);
-    let tries=0;
-    setCommon('خمن الرقم','🔢 تخمين','رقم سري من 1 إلى '+max);
-    areaEl.innerHTML='<div class="adv-input"><input id="advGuess" type="number" min="1" max="'+max+'"><button class="adv-action">تخمين</button></div><p id="advHint" class="status"></p>';
-    const input=document.getElementById('advGuess'), hint=document.getElementById('advHint');
-    areaEl.querySelector('button').onclick=()=>{
-      if(locked)return; const v=Number(input.value); if(!v)return; tries++;
-      if(v===target)winStage('صح! الرقم كان '+target,28,8);
-      else if(tries>=4){loseLife('الرقم كان '+target);input.disabled=true}
-      else hint.textContent=v<target?'أكبر ⬆️':'أصغر ⬇️';
-    };
-    input.focus();
-  }
-
-  function memoryStage(){
-    const icons=['🍎','🚗','⭐','🐶','⚽','🚀'];
-    const pairCount=stage<6?3:4, vals=shuffle([...icons].slice(0,pairCount).flatMap(x=>[x,x]));
-    let open=[],done=0,lock=false;
-    setCommon('ذاكرة سريعة','🧠 ذاكرة','افتح كل الأزواج');
-    const grid=document.createElement('div');grid.className='adv-memory';areaEl.appendChild(grid);
-    vals.forEach((v,i)=>{
-      const b=document.createElement('button');b.dataset.i=i;b.onclick=()=>{
-        if(lock||b.classList.contains('done')||b.classList.contains('open'))return;
-        b.textContent=v;b.classList.add('open');open.push(b);
-        if(open.length===2){
-          lock=true;
-          if(open[0].textContent===open[1].textContent){
-            open.forEach(x=>{x.classList.add('done');x.classList.remove('open')});open=[];done++;
-            lock=false;if(done===pairCount)winStage('ذاكرة قوية!',26,7);
-          }else setTimeout(()=>{open.forEach(x=>{x.textContent='';x.classList.remove('open')});open=[];lock=false},500);
-        }
-      };grid.appendChild(b);
-    });
-  }
-
-  function reactionStage(){
-    setCommon('سرعة البديهة','⚡ رد فعل','اضغط فقط عندما يتغير اللون');
-    const box=document.createElement('div');box.className='adv-reaction';box.textContent='استنى...';areaEl.appendChild(box);
-    const delay=700+Math.random()*(stage>=6?1300:2300);
-    reactTimer=setTimeout(()=>{box.classList.add('go');box.textContent='اضغط الآن!';box.dataset.go='1';box.dataset.t=Date.now()},delay);
-    box.onclick=()=>{
-      if(box.dataset.go==='1'){const ms=Date.now()-Number(box.dataset.t);clearTimeout(reactTimer);winStage('وقت رد فعلك: '+ms+' مللي ثانية',30,9)}
-      else {clearTimeout(reactTimer);loseLife('ضغطت بدري!');}
-    };
-  }
-
-  function rpsStage(){
-    setCommon('مواجهة سريعة','✊ حجر ورقة مقص','اكسب الجولة أمام الكمبيوتر');
-    const choices=['✊','✋','✌️'], beats={'✊':'✌️','✋':'✊','✌️':'✋'};
-    const wrap=document.createElement('div');wrap.className='adv-options';
-    shuffle(choices.slice()).forEach(c=>{
-      const b=document.createElement('button');b.textContent=c;
-      b.onclick=()=>{if(locked)return;const cpu=choices[Math.floor(Math.random()*3)];
-        if(c===cpu){statusEl.textContent='تعادل — حاول مرة أخرى';return}
-        if(beats[c]===cpu)winStage(c+' ضد '+cpu+' — كسبت!',24,6);
-        else loseLife(c+' ضد '+cpu+' — خسرت الجولة.');
-      };wrap.appendChild(b);
-    });areaEl.appendChild(wrap);
-  }
-
-  nextBtn.onclick=()=>{if(stage<11){stage++;renderStage();}};
-  restartBtn.onclick=()=>{stage=0;lives=3;used.length=0;clearTimeout(reactTimer);renderStage();};
-  document.getElementById('game-adventure').addEventListener('click',e=>{if(e.target.classList.contains('back'))clearTimeout(reactTimer);});
-  renderStage();
+  const statusEl=document.getElementById('clickStatus'), bestEl=document.getElementById('clickBest'), btn=document.getElementById('clickBtn');
+  let clicks=0, running=false, timeLeft=5;
+  bestEl.textContent=bestLabel('best_cps');
+  btn.addEventListener('click',()=>{if(running)clicks++;});
+  window.stopClick=function(){running=false;if(clickTimer)clearInterval(clickTimer);};
+  document.getElementById('clickReset').addEventListener('click',()=>{
+    stopClick();clicks=0;timeLeft=5;running=true;statusEl.textContent='دوس بسرعة! الوقت: '+timeLeft;
+    clickTimer=setInterval(()=>{timeLeft--;
+      if(timeLeft<=0){running=false;clearInterval(clickTimer);bestTry('best_cps',clicks,false);bestEl.textContent=bestLabel('best_cps');statusEl.textContent='خلصت! ضغطت '+clicks+' مرة 🎉';}
+      else statusEl.textContent='دوس بسرعة! الوقت: '+timeLeft;
+    },1000);
+  });
 })();
 
-</script>
-
-<script id="dula-pro-upgrade-js">
+/* Stroop color test */
+let colorTimer=null;
 (function(){
-  const KEY="dulaProProfile";
-  const load=()=>JSON.parse(localStorage.getItem(KEY)||'{"xp":0,"coins":0,"streak":0,"lastDay":""}');
-  const save=p=>localStorage.setItem(KEY,JSON.stringify(p));
-  function level(xp){return Math.floor(xp/100)+1}
-  window.updateDulaProfile=function(){
-    const p=load(), lv=level(p.xp);
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("dulaLevel",lv);set("dulaXP",p.xp);set("dulaCoins",p.coins);set("dulaStreak",p.streak);
-  };
-  window.dulaReward=function(xp=20,coins=5){
-    const p=load();p.xp+=xp;p.coins+=coins;
-    const today=new Date().toISOString().slice(0,10);
-    if(p.lastDay!==today){p.streak+=1;p.lastDay=today}
-    save(p);updateDulaProfile();
-  };
-  window.dulaDaily=function(){
-    const p=load(), today=new Date().toISOString().slice(0,10);
-    if(p.lastDay===today){alert("أكملت تحدي اليوم بالفعل 🎉");return}
-    dulaReward(40,15);
-    alert("🎁 حصلت على 40 XP و15 عملة! ابدأ أي لعبة لإكمال تحدي اليوم.");
-  };
-  window.dulaResetProgress=function(){
-    if(confirm("هل تريد حذف مستوى DULA والعملات والتقدم المحفوظ؟")){
-      localStorage.removeItem(KEY);updateDulaProfile();alert("تمت إعادة التقدم.");
-    }
-  };
-  window.filterDulaGames=function(q){
-    q=(q||"").trim().toLowerCase();
-    document.querySelectorAll("button, .game-card, [class*='game-card']").forEach(el=>{
-      const txt=(el.innerText||el.textContent||"").toLowerCase();
-      if(el.closest("#dulaProBar")||el.closest(".dula-hero")||el.closest(".dula-search")) return;
-      if(q && txt && (el.tagName==="BUTTON" || el.className.toString().includes("game-card")))
-        el.style.display=txt.includes(q)?"":"none";
-      else if(!q && (el.tagName==="BUTTON" || el.className.toString().includes("game-card"))) el.style.display="";
+  const palette=[{name:'أحمر',hex:'#ff6b6b'},{name:'أزرق',hex:'#4dabf7'},{name:'أخضر',hex:'#51cf66'},{name:'أصفر',hex:'#ffd43b'},{name:'بنفسجي',hex:'#a78bfa'}];
+  const wordEl=document.getElementById('colorWord'), optsEl=document.getElementById('colorOpts'), statusEl=document.getElementById('colorStatus'), bestEl=document.getElementById('colorBest');
+  let score=0, timeLeft=30, running=false, correctHex;
+  bestEl.textContent=bestLabel('best_color');
+  function newRound(){
+    const wordObj=palette[Math.floor(Math.random()*palette.length)], inkObj=palette[Math.floor(Math.random()*palette.length)];
+    wordEl.textContent=wordObj.name;wordEl.style.color=inkObj.hex;correctHex=inkObj.hex;optsEl.innerHTML='';
+    [...palette].sort(()=>Math.random()-0.5).forEach(c=>{
+      const b=document.createElement('button');b.style.background=c.hex;
+      b.addEventListener('click',()=>{if(!running)return;if(c.hex===correctHex)score++;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;newRound();});
+      optsEl.appendChild(b);
     });
-  };
-  window.openAdventure=function(){
-    const candidates=[...document.querySelectorAll("button")];
-    const b=candidates.find(x=>(x.textContent||"").includes("مغامرة DULA"));
-    if(b){b.click();return}
-    const el=document.getElementById("adventure");
-    if(el) el.scrollIntoView({behavior:"smooth"});
-    else alert("وضع المغامرة موجود في النسخة المطورة. ابحث عن قسم المغامرة داخل الصفحة.");
-  };
-  document.addEventListener("DOMContentLoaded",updateDulaProfile);
+  }
+  window.stopColorGame=function(){running=false;if(colorTimer)clearInterval(colorTimer);};
+  document.getElementById('colorReset').addEventListener('click',()=>{
+    stopColorGame();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';newRound();
+    colorTimer=setInterval(()=>{timeLeft--;
+      if(timeLeft<=0){running=false;clearInterval(colorTimer);optsEl.innerHTML='';wordEl.textContent='';bestTry('best_color',score,false);bestEl.textContent=bestLabel('best_color');statusEl.textContent='خلصت! نقاطك: '+score+' 🎉';}
+      else statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
+    },1000);
+  });
+})();
+
+/* Number sequence memory */
+(function(){
+  const boardEl=document.getElementById('seqBoard'), statusEl=document.getElementById('seqStatus'), bestEl=document.getElementById('seqBest');
+  let cells=[], sequence=[], userStep=0, playing=false;
+  bestEl.textContent=bestLabel('best_seq');
+  function build(){boardEl.innerHTML='';cells=[];for(let i=0;i<9;i++){const b=document.createElement('button');b.className='seq-cell';b.textContent=i+1;b.addEventListener('click',()=>cellClick(i));boardEl.appendChild(b);cells.push(b);}}
+  function flash(i){return new Promise(res=>{cells[i].classList.add('done');setTimeout(()=>{cells[i].classList.remove('done');res();},380);});}
+  async function playSeq(){playing=false;statusEl.textContent='بص كويس...';for(const i of sequence){await flash(i);await new Promise(r=>setTimeout(r,150));}playing=true;userStep=0;statusEl.textContent='دورك! (الطول: '+sequence.length+')';}
+  function nextRound(){sequence.push(Math.floor(Math.random()*9));playSeq();}
+  function cellClick(i){if(!playing)return;cells[i].classList.add('done');setTimeout(()=>cells[i].classList.remove('done'),200);
+    if(i===sequence[userStep]){userStep++;if(userStep===sequence.length){playing=false;statusEl.textContent='صح! هنزود واحدة 🎉';setTimeout(nextRound,600);}}
+    else{playing=false;bestTry('best_seq',sequence.length-1,false);bestEl.textContent=bestLabel('best_seq');statusEl.textContent='خسرت! طول السلسلة كانت '+sequence.length+' — دوس ابدأ تاني';sequence=[];}}
+  document.getElementById('seqReset').addEventListener('click',()=>{build();sequence=[];nextRound();});
+  build();
+})();
+
+/* Higher or lower */
+(function(){
+  const numEl=document.getElementById('hiloNum'), statusEl=document.getElementById('hiloStatus'), bestEl=document.getElementById('hiloBest');
+  let current, streak=0;
+  bestEl.textContent=bestLabel('best_hilo');
+  function newNum(){current=Math.ceil(Math.random()*100);numEl.textContent=current;}
+  function guess(dir){
+    const next=Math.ceil(Math.random()*100);
+    const correct=dir==='up'?next>=current:next<=current;
+    if(correct){streak++;statusEl.textContent='صح! السلسلة: '+streak;current=next;numEl.textContent=current;}
+    else{bestTry('best_hilo',streak,false);bestEl.textContent=bestLabel('best_hilo');statusEl.textContent='خسرت! كانت السلسلة '+streak+' — نبدأ تاني';streak=0;newNum();}
+  }
+  document.getElementById('hiloUp').addEventListener('click',()=>guess('up'));
+  document.getElementById('hiloDown').addEventListener('click',()=>guess('down'));
+  newNum();
+})();
+
+/* Multiplication table race */
+let multTimer=null;
+(function(){
+  const eqEl=document.getElementById('multEq'), optsEl=document.getElementById('multOpts'), statusEl=document.getElementById('multStatus'), bestEl=document.getElementById('multBest');
+  let score=0, timeLeft=30, answer=0, running=false;
+  bestEl.textContent=bestLabel('best_mult');
+  function newEq(){
+    const a=Math.ceil(Math.random()*12), b=Math.ceil(Math.random()*12);
+    answer=a*b;eqEl.textContent=a+' × '+b+' = ؟';
+    const opts=new Set([answer]);while(opts.size<3)opts.add(answer+Math.floor(Math.random()*10)-5);
+    const arr=[...opts].sort(()=>Math.random()-0.5);optsEl.innerHTML='';
+    arr.forEach(v=>{const b2=document.createElement('button');b2.textContent=v;
+      b2.addEventListener('click',()=>{if(!running)return;if(v===answer){score++;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;}newEq();});
+      optsEl.appendChild(b2);
+    });
+  }
+  window.stopMult=function(){running=false;if(multTimer)clearInterval(multTimer);};
+  document.getElementById('multReset').addEventListener('click',()=>{
+    stopMult();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';newEq();
+    multTimer=setInterval(()=>{timeLeft--;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
+      if(timeLeft<=0){stopMult();optsEl.innerHTML='';bestTry('best_mult',score,false);bestEl.textContent=bestLabel('best_mult');eqEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
+  });
+  eqEl.textContent='دوس ابدأ اللعب';
 })();
 </script>
-
-<div class="dula-footer">© DULA Games — ألعاب مجانية للمتصفح • تصميم متجاوب للموبايل والكمبيوتر</div>
-
-<script id="dula-big-question-bank-v3">
-(function(){
-const banks={"football": [["من فاز بكأس العالم 2022؟", "الأرجنتين", ["فرنسا", "البرازيل", "الأرجنتين", "ألمانيا"]], ["من فاز بكأس العالم 2018؟", "فرنسا", ["فرنسا", "كرواتيا", "ألمانيا", "إسبانيا"]], ["من فاز بكأس العالم 2014؟", "ألمانيا", ["الأرجنتين", "ألمانيا", "البرازيل", "هولندا"]], ["من فاز بكأس العالم 2010؟", "إسبانيا", ["إسبانيا", "هولندا", "ألمانيا", "إيطاليا"]], ["من فاز بكأس العالم 2006؟", "إيطاليا", ["فرنسا", "إيطاليا", "البرازيل", "ألمانيا"]], ["من فاز بكأس العالم 2002؟", "البرازيل", ["ألمانيا", "الأرجنتين", "البرازيل", "فرنسا"]], ["أين أقيمت كأس العالم 2022؟", "قطر", ["الإمارات", "قطر", "روسيا", "اليابان"]], ["كم لاعبًا يبدأ بهم فريق كرة القدم المباراة؟", "11", ["9", "10", "11", "12"]], ["كم مدة المباراة الأصلية؟", "90 دقيقة", ["60 دقيقة", "80 دقيقة", "90 دقيقة", "120 دقيقة"]], ["ما البطولة الأوروبية الأشهر للأندية؟", "دوري أبطال أوروبا", ["الدوري الأوروبي", "دوري أبطال أوروبا", "كأس السوبر الأوروبي", "دوري الأمم"]], ["ما النادي المعروف بلقب الملكي؟", "ريال مدريد", ["برشلونة", "ريال مدريد", "ميلان", "بايرن ميونخ"]], ["ما ملعب ريال مدريد؟", "سانتياغو برنابيو", ["كامب نو", "سان سيرو", "سانتياغو برنابيو", "أنفيلد"]], ["ما ملعب ليفربول؟", "أنفيلد", ["أولد ترافورد", "أنفيلد", "ستامفورد بريدج", "الإمارات"]], ["ما ملعب مانشستر يونايتد؟", "أولد ترافورد", ["أنفيلد", "أولد ترافورد", "الاتحاد", "الإمارات"]], ["ما ملعب بايرن ميونخ؟", "أليانز أرينا", ["سيغنال إيدونا بارك", "أليانز أرينا", "سان سيرو", "ويمبلي"]], ["من فاز بأول نسخة من كأس العالم؟", "الأوروغواي", ["البرازيل", "الأرجنتين", "الأوروغواي", "إيطاليا"]], ["ما المنتخب المعروف بلقب السامبا؟", "البرازيل", ["الأرجنتين", "البرازيل", "كولومبيا", "تشيلي"]], ["ما المنتخب المعروف بالتانغو؟", "الأرجنتين", ["الأرجنتين", "البرازيل", "أوروغواي", "إسبانيا"]], ["من اللاعب الملقب بالدون؟", "كريستيانو رونالدو", ["ليونيل ميسي", "كريستيانو رونالدو", "نيمار", "محمد صلاح"]], ["من اللاعب الأرجنتيني الفائز بكأس العالم 2022؟", "ليونيل ميسي", ["ليونيل ميسي", "أنخيل دي ماريا", "غونزالو هيغواين", "سيرخيو أغويرو"]], ["من اللاعب المصري الملقب بالملك المصري؟", "محمد صلاح", ["محمد صلاح", "أحمد حسن", "محمد أبو تريكة", "عمر مرموش"]], ["في أي نادٍ يلعب محمد صلاح؟", "ليفربول", ["أرسنال", "ليفربول", "تشيلسي", "مانشستر سيتي"]], ["ما البطاقة التي تعني الطرد؟", "الحمراء", ["الصفراء", "الحمراء", "الزرقاء", "الخضراء"]], ["ما البطاقة التي تعني إنذار اللاعب؟", "الصفراء", ["الحمراء", "الصفراء", "الخضراء", "البيضاء"]], ["ما اسم البطولة الأهم للأندية في أفريقيا؟", "دوري أبطال أفريقيا", ["كأس أمم أفريقيا", "دوري أبطال أفريقيا", "كأس الكونفدرالية", "دوري أبطال آسيا"]], ["ما المنتخب الذي فاز بكأس أمم أفريقيا 2021؟", "السنغال", ["مصر", "السنغال", "الجزائر", "الكاميرون"]], ["ما اختصار الاتحاد الدولي لكرة القدم؟", "FIFA", ["UEFA", "FIFA", "CAF", "AFC"]], ["ما اختصار الاتحاد الأوروبي لكرة القدم؟", "UEFA", ["FIFA", "UEFA", "CAF", "AFC"]], ["ما اختصار الاتحاد الأفريقي لكرة القدم؟", "CAF", ["CAF", "FIFA", "UEFA", "AFC"]], ["كم شوطًا في مباراة كرة القدم؟", "شوطان", ["شوط واحد", "شوطان", "ثلاثة أشواط", "أربعة أشواط"]], ["كم دقيقة مدة الشوط الواحد؟", "45 دقيقة", ["30 دقيقة", "40 دقيقة", "45 دقيقة", "50 دقيقة"]], ["ما النادي الإيطالي الذي يلعب في سان سيرو؟", "ميلان", ["روما", "ميلان", "نابولي", "لاتسيو"]], ["ما النادي الإيطالي الآخر الشهير الذي يشارك سان سيرو؟", "إنتر ميلان", ["يوفنتوس", "إنتر ميلان", "فيورنتينا", "بولونيا"]], ["ما لقب نادي مانشستر سيتي؟", "السيتيزنز", ["الشياطين الحمر", "السيتيزنز", "الريدز", "السبيرز"]], ["ما لقب مانشستر يونايتد؟", "الشياطين الحمر", ["السيتيزنز", "الشياطين الحمر", "المدفعجية", "البلوز"]], ["ما النادي الإسباني المعروف بالبلوغرانا؟", "برشلونة", ["ريال مدريد", "برشلونة", "إشبيلية", "فالنسيا"]], ["ما النادي الإسباني المعروف بالروخيبلانكوس؟", "أتلتيكو مدريد", ["أتلتيكو مدريد", "برشلونة", "فالنسيا", "إشبيلية"]], ["ما البطولة التي تجمع بطل دوري الأبطال وبطل الدوري الأوروبي؟", "كأس السوبر الأوروبي", ["كأس العالم للأندية", "كأس السوبر الأوروبي", "الدوري الأوروبي", "كأس الملك"]], ["ما اسم البطولة الإنجليزية الأولى للأندية؟", "الدوري الإنجليزي الممتاز", ["الدوري الإسباني", "الدوري الإنجليزي الممتاز", "الدوري الإيطالي", "الدوري الفرنسي"]], ["ما اسم الكأس المحلية الإنجليزية؟", "كأس الاتحاد الإنجليزي", ["كأس الرابطة", "كأس الاتحاد الإنجليزي", "كأس الملك", "كأس إيطاليا"]], ["ما النادي المعروف بلقب السيدة العجوز؟", "يوفنتوس", ["ميلان", "يوفنتوس", "روما", "نابولي"]], ["ما الدولة التي ينتمي إليها بايرن ميونخ؟", "ألمانيا", ["إسبانيا", "ألمانيا", "هولندا", "بلجيكا"]], ["ما الدولة التي ينتمي إليها ليفربول؟", "إنجلترا", ["إنجلترا", "إسبانيا", "إيطاليا", "ألمانيا"]], ["ما الدولة التي ينتمي إليها برشلونة؟", "إسبانيا", ["البرتغال", "إسبانيا", "فرنسا", "إيطاليا"]], ["ما الدولة التي ينتمي إليها باريس سان جيرمان؟", "فرنسا", ["فرنسا", "بلجيكا", "سويسرا", "إيطاليا"]], ["ما اختصار باريس سان جيرمان؟", "PSG", ["PSG", "PSV", "PFC", "PES"]], ["ما النادي الألماني الملقب بالأسود والأصفر؟", "بوروسيا دورتموند", ["بايرن ميونخ", "بوروسيا دورتموند", "لايبزيغ", "باير ليفركوزن"]], ["ما اسم ملعب ويمبلي؟", "ويمبلي", ["ملعب لندن", "ويمبلي", "الاتحاد", "أنفيلد"]], ["ما اسم تقنية حكم الفيديو؟", "VAR", ["FIFA", "VAR", "VRS", "VAP"]], ["ماذا تعني VAR؟", "حكم الفيديو المساعد", ["نظام تسجيل الأهداف", "حكم الفيديو المساعد", "حكم الملعب الرابع", "تقنية التسلل"]], ["ماذا تسمى بداية المباراة؟", "ركلة البداية", ["ركلة حرة", "ركلة البداية", "ركلة ركنية", "رمية تماس"]], ["ما اسم الوقت الذي يضاف لتعويض التوقفات؟", "الوقت بدل الضائع", ["الوقت الإضافي", "الوقت بدل الضائع", "وقت الاستراحة", "الوقت الذهبي"]], ["كم نقطة يحصل عليها الفريق عند الفوز؟", "3 نقاط", ["1", "2", "3", "4"]], ["كم نقطة يحصل عليها الفريق عند التعادل؟", "نقطة واحدة", ["0", "1", "2", "3"]], ["ما المقصود بالهاتريك؟", "تسجيل ثلاثة أهداف", ["هدفان", "ثلاثة أهداف", "أربعة أهداف", "صناعة ثلاثة أهداف"]], ["ما المقصود بالكلين شيت؟", "عدم استقبال أهداف", ["تسجيل هدفين", "عدم استقبال أهداف", "تسجيل ثلاثة أهداف", "الفوز بركلات الترجيح"]], ["ما المقصود بالأسيست؟", "تمريرة حاسمة", ["تصدي الحارس", "تمريرة حاسمة", "تدخل دفاعي", "ركلة ركنية"]], ["ما المنطقة الكبيرة أمام المرمى؟", "منطقة الجزاء", ["منطقة الوسط", "منطقة الجزاء", "منطقة الركنية", "منطقة البدلاء"]], ["من يستخدم القفازات عادةً داخل الملعب؟", "حارس المرمى", ["المهاجم", "حارس المرمى", "الحكم", "الظهير"]], ["ما مركز اللاعب الموجود في طرف الملعب الهجومي؟", "جناح", ["جناح", "حارس", "قلب دفاع", "محور"]], ["أي منتخب فاز بكأس العالم 2018؟", "فرنسا", ["فرنسا", "كرواتيا", "إسبانيا", "البرازيل"]], ["أي منتخب فاز بكأس العالم 2014؟", "ألمانيا", ["ألمانيا", "الأرجنتين", "هولندا", "إيطاليا"]], ["أي منتخب فاز بكأس العالم 2010؟", "إسبانيا", ["إسبانيا", "هولندا", "ألمانيا", "البرازيل"]], ["أي منتخب فاز بكأس العالم 2006؟", "إيطاليا", ["إيطاليا", "فرنسا", "ألمانيا", "البرازيل"]], ["أي منتخب فاز بكأس العالم 2002؟", "البرازيل", ["البرازيل", "ألمانيا", "فرنسا", "إيطاليا"]], ["أي منتخب فاز بكأس العالم 1998؟", "فرنسا", ["فرنسا", "البرازيل", "إيطاليا", "ألمانيا"]], ["أي نادٍ يلعب في أنفيلد؟", "ليفربول", ["ليفربول", "أرسنال", "تشيلسي", "توتنهام"]], ["أي نادٍ يلعب في أولد ترافورد؟", "مانشستر يونايتد", ["مانشستر يونايتد", "مانشستر سيتي", "ليفربول", "تشيلسي"]], ["أي نادٍ يلعب في سانتياغو برنابيو؟", "ريال مدريد", ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "إشبيلية"]], ["أي نادٍ يلعب في أليانز أرينا؟", "بايرن ميونخ", ["بايرن ميونخ", "دورتموند", "لايبزيغ", "ليفركوزن"]], ["ما اسم ركلة التسجيل من علامة الجزاء؟", "ركلة جزاء", ["ركلة جزاء", "ركلة ركنية", "رمية تماس", "ركلة بداية"]], ["ما اسم الكرة التي تخرج من خط المرمى بعد لمس مدافع؟", "ركلة ركنية", ["ركلة ركنية", "رمية تماس", "ركلة جزاء", "ركلة بداية"]], ["هل يمكن تسجيل هدف مباشرة من ركلة ركنية؟", "نعم", ["نعم", "لا", "فقط في النهائيات", "فقط في الوقت الإضافي"]], ["هل يمكن تسجيل هدف مباشرة من رمية تماس؟", "لا", ["نعم", "لا", "حسب الحكم", "في النهائيات فقط"]], ["كم لاعبًا في الفريق داخل الملعب عند بداية المباراة؟", "11", ["9", "10", "11", "12"]], ["كم شوطًا في المباراة؟", "شوطان", ["شوطان", "ثلاثة", "أربعة", "خمسة"]], ["ما لقب ليفربول؟", "الريدز", ["الريدز", "البلوز", "المدفعجية", "السبيرز"]], ["ما لقب أرسنال؟", "المدفعجية", ["المدفعجية", "الريدز", "البلوز", "السيتيزنز"]], ["ما لقب تشيلسي؟", "البلوز", ["البلوز", "الريدز", "المدفعجية", "الشياطين الحمر"]], ["ما لقب مانشستر يونايتد؟", "الشياطين الحمر", ["الشياطين الحمر", "السيتيزنز", "الريدز", "البلوز"]]], "general": [["ما عاصمة مصر؟", "القاهرة", ["القاهرة", "الإسكندرية", "الجيزة", "الأقصر"]], ["ما أكبر كوكب في المجموعة الشمسية؟", "المشتري", ["الأرض", "المريخ", "المشتري", "زحل"]], ["ما الكوكب المعروف بالكوكب الأحمر؟", "المريخ", ["الزهرة", "المريخ", "عطارد", "نبتون"]], ["كم عدد أيام الأسبوع؟", "7", ["5", "6", "7", "8"]], ["كم عدد أشهر السنة؟", "12", ["10", "11", "12", "13"]], ["ما الحيوان المعروف بسفينة الصحراء؟", "الجمل", ["الحصان", "الجمل", "الفيل", "الأسد"]], ["ما أكبر محيط على الأرض؟", "المحيط الهادئ", ["الأطلسي", "الهندي", "الهادئ", "المتجمد الشمالي"]], ["ما اللغة الرسمية في البرازيل؟", "البرتغالية", ["الإسبانية", "البرتغالية", "الفرنسية", "الإنجليزية"]], ["ما أسرع حيوان بري؟", "الفهد", ["الأسد", "الفهد", "الحصان", "النمر"]], ["كم ضلعًا للمثلث؟", "3", ["2", "3", "4", "5"]], ["كم ضلعًا للمربع؟", "4", ["3", "4", "5", "6"]], ["ما ناتج 7 × 8؟", "56", ["48", "54", "56", "64"]], ["ما ناتج 100 ÷ 10؟", "10", ["5", "10", "20", "100"]], ["ما ناتج 15 + 27؟", "42", ["32", "40", "42", "52"]], ["ما ناتج 90 - 35؟", "55", ["45", "50", "55", "65"]], ["ما الغاز الذي يحتاجه الإنسان للتنفس؟", "الأكسجين", ["النيتروجين", "الأكسجين", "الهيدروجين", "الهيليوم"]], ["ما العضو الذي يضخ الدم؟", "القلب", ["الرئة", "القلب", "الكبد", "المعدة"]], ["ما العضو المسؤول أساسًا عن التفكير؟", "الدماغ", ["القلب", "الدماغ", "المعدة", "الكلى"]], ["ما أقرب نجم إلى الأرض؟", "الشمس", ["القمر", "الشمس", "سيريوس", "نجم الشمال"]], ["كم عدد ألوان قوس قزح الشائعة؟", "7", ["5", "6", "7", "8"]], ["ما أكبر قارة؟", "آسيا", ["أفريقيا", "آسيا", "أوروبا", "أمريكا الجنوبية"]], ["ما أصغر قارة من حيث المساحة؟", "أستراليا", ["أوروبا", "أستراليا", "أفريقيا", "آسيا"]], ["ما عاصمة فرنسا؟", "باريس", ["روما", "مدريد", "باريس", "برلين"]], ["ما عاصمة إيطاليا؟", "روما", ["روما", "ميلانو", "نابولي", "تورينو"]], ["ما عاصمة ألمانيا؟", "برلين", ["برلين", "ميونخ", "هامبورغ", "فرانكفورت"]], ["ما عاصمة اليابان؟", "طوكيو", ["أوساكا", "طوكيو", "كيوتو", "هيروشيما"]], ["ما البحر الذي يفصل بين أفريقيا وأوروبا؟", "البحر المتوسط", ["البحر الأحمر", "البحر المتوسط", "بحر العرب", "بحر قزوين"]], ["ما المعدن الذي رمزه Fe؟", "الحديد", ["الذهب", "الحديد", "النحاس", "الفضة"]], ["ما رمز الذهب الكيميائي؟", "Au", ["Ag", "Au", "Fe", "Cu"]], ["ما رمز الأكسجين؟", "O", ["O", "H", "N", "C"]], ["ما رمز الهيدروجين؟", "H", ["H", "O", "He", "Hg"]], ["كم ثانية في الدقيقة؟", "60", ["30", "45", "60", "100"]], ["كم دقيقة في الساعة؟", "60", ["30", "45", "60", "90"]], ["كم ساعة في اليوم؟", "24", ["12", "20", "24", "48"]], ["ما الجهاز المستخدم لقياس الحرارة؟", "الترمومتر", ["البارومتر", "الترمومتر", "الميزان", "البوصلة"]], ["ما الجهاز المستخدم لمعرفة الاتجاهات؟", "البوصلة", ["المسطرة", "البوصلة", "الساعة", "الترمومتر"]], ["ما أكبر حيوان على الأرض؟", "الحوت الأزرق", ["الفيل", "الحوت الأزرق", "الزرافة", "وحيد القرن"]], ["ما أطول حيوان بري؟", "الزرافة", ["الفيل", "الزرافة", "الجمل", "الحصان"]], ["ما الكوكب الأقرب إلى الشمس؟", "عطارد", ["الأرض", "عطارد", "الزهرة", "المريخ"]], ["ما الكوكب المعروف بحلقاته؟", "زحل", ["المريخ", "زحل", "الأرض", "عطارد"]], ["ما اسم القمر الطبيعي للأرض؟", "القمر", ["فوبوس", "القمر", "تيتان", "أوروبا"]], ["ما مصدر الضوء الطبيعي الرئيسي للأرض؟", "الشمس", ["القمر", "الشمس", "المصباح", "النار"]], ["ما العملية التي تصنع بها النباتات غذاءها؟", "البناء الضوئي", ["التنفس", "البناء الضوئي", "التبخر", "الهضم"]], ["ما لون الكلوروفيل غالبًا؟", "الأخضر", ["الأحمر", "الأزرق", "الأخضر", "الأصفر"]], ["ما أكبر عضو في جسم الإنسان؟", "الجلد", ["القلب", "الجلد", "الكبد", "الرئة"]], ["كم عدد أسنان الإنسان البالغ عادةً؟", "32", ["28", "30", "32", "36"]], ["كم عدد الحواس الأساسية الشائعة؟", "5", ["3", "4", "5", "6"]], ["ما الحاسة المرتبطة بالأنف؟", "الشم", ["السمع", "الشم", "البصر", "اللمس"]], ["ما الحاسة المرتبطة بالأذن؟", "السمع", ["الشم", "السمع", "التذوق", "البصر"]], ["ما الحاسة المرتبطة بالعين؟", "البصر", ["البصر", "السمع", "الشم", "التذوق"]], ["ما الحاسة المرتبطة باللسان؟", "التذوق", ["اللمس", "التذوق", "الشم", "السمع"]], ["ما الحاسة المرتبطة بالجلد؟", "اللمس", ["البصر", "اللمس", "السمع", "الشم"]], ["ما عاصمة السعودية؟", "الرياض", ["جدة", "الرياض", "مكة", "الدمام"]], ["ما عاصمة الإمارات؟", "أبوظبي", ["دبي", "أبوظبي", "الشارقة", "العين"]], ["ما عاصمة المغرب؟", "الرباط", ["الدار البيضاء", "الرباط", "فاس", "مراكش"]], ["ما عاصمة الجزائر؟", "الجزائر", ["وهران", "الجزائر", "عنابة", "قسنطينة"]], ["ما عاصمة الأردن؟", "عمّان", ["إربد", "العقبة", "عمّان", "الزرقاء"]], ["ما أكبر دولة من حيث المساحة؟", "روسيا", ["كندا", "روسيا", "الصين", "الولايات المتحدة"]], ["ما الحيوان الذي يلقب بملك الغابة؟", "الأسد", ["النمر", "الأسد", "الفهد", "الذئب"]], ["ما الشيء الذي يجذب الحديد؟", "المغناطيس", ["الخشب", "المغناطيس", "الزجاج", "الماء"]], ["ما اسم تحول الماء إلى بخار؟", "التبخر", ["التجمد", "التبخر", "التكاثف", "الانصهار"]], ["ما اسم تحول البخار إلى ماء؟", "التكاثف", ["التبخر", "التكاثف", "التجمد", "الاحتراق"]], ["ما ناتج 9 × 9؟", "81", ["72", "81", "90", "99"]], ["ما ناتج 144 ÷ 12؟", "12", ["10", "11", "12", "14"]], ["ما ناتج 25 × 4؟", "100", ["75", "90", "100", "125"]], ["ما نصف 100؟", "50", ["25", "40", "50", "60"]], ["ما ربع 100؟", "25", ["20", "25", "30", "40"]], ["ما الشكل الذي له 3 أضلاع؟", "المثلث", ["المربع", "المثلث", "الدائرة", "المستطيل"]], ["ما الشكل الذي ليس له أضلاع مستقيمة؟", "الدائرة", ["المربع", "المثلث", "الدائرة", "المستطيل"]], ["ما الكوكب الذي نعيش عليه؟", "الأرض", ["المريخ", "الأرض", "الزهرة", "المشتري"]], ["ما القارة التي تقع فيها مصر؟", "أفريقيا", ["آسيا", "أوروبا", "أفريقيا", "أستراليا"]], ["ما النهر الذي يمر في مصر؟", "النيل", ["الفرات", "النيل", "دجلة", "الأمازون"]], ["ما ناتج 100 ÷ 10؟", "10", ["5", "10", "20", "100"]], ["ما ناتج 15 + 27؟", "42", ["32", "40", "42", "52"]], ["ما ناتج 90 - 35؟", "55", ["45", "50", "55", "65"]], ["ما الغاز الذي يحتاجه الإنسان للتنفس؟", "الأكسجين", ["النيتروجين", "الأكسجين", "الهيدروجين", "الهيليوم"]], ["ما العضو الذي يضخ الدم؟", "القلب", ["الرئة", "القلب", "الكبد", "المعدة"]], ["ما العضو المسؤول أساسًا عن التفكير؟", "الدماغ", ["القلب", "الدماغ", "المعدة", "الكلى"]], ["ما أقرب نجم إلى الأرض؟", "الشمس", ["القمر", "الشمس", "سيريوس", "نجم الشمال"]], ["كم عدد ألوان قوس قزح الشائعة؟", "7", ["5", "6", "7", "8"]]]};
-function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-window.DULAQuestionBanks={football:banks.football,general:banks.general,
- getFootball:()=>shuffle(banks.football).map(q=>({question:q[0],answer:q[1],options:shuffle(q[2])})),
- getGeneral:()=>shuffle(banks.general).map(q=>({question:q[0],answer:q[1],options:shuffle(q[2])})),
- total:()=>banks.football.length+banks.general.length};
-document.addEventListener("DOMContentLoaded",()=>{
- document.querySelectorAll("button,.game-card").forEach(el=>{
-  let t=(el.textContent||"").trim();
-  if(/دوري الأبطال|الدوري الإنجليزي|كأس العالم|حياة لاعب|كرة القدم/.test(t)&&!el.querySelector(".dula-qcount")){
-   let s=document.createElement("span");s.className="dula-badge dula-qcount";s.textContent="80+ سؤال";el.appendChild(s);
-  }
-  if(/سؤال وجواب/.test(t)&&!el.querySelector(".dula-qcount")){
-   let s=document.createElement("span");s.className="dula-badge dula-qcount";s.textContent="80+ سؤال";el.appendChild(s);
-  }
- });
-});
-})();
-</script>
-
 </body>
 </html>
