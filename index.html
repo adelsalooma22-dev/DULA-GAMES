@@ -90,6 +90,21 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
 #reactBox{width:220px;height:220px;border-radius:20px;margin:16px auto;display:flex;align-items:center;justify-content:center;
   color:#fff;font-weight:700;font-size:18px;cursor:pointer;background:var(--c1);}
 #reactBox.go{background:var(--c5);}
+
+/* About */
+.about-box{background:var(--card);border-radius:18px;padding:28px 20px;box-shadow:0 6px 16px var(--shadow);text-align:right;}
+.about-emoji{font-size:40px;margin:0 0 6px;text-align:center;}
+.about-box h2{margin:0 0 12px;text-align:center;}
+.about-box p{margin:0 0 10px;line-height:1.7;color:var(--muted);}
+
+/* Leaderboard line */
+.best{font-size:13px;color:var(--muted);font-weight:700;margin-top:-6px;margin-bottom:6px;}
+
+@media (max-width:380px){
+  #home{grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px;}
+  .tile{padding:18px 6px 14px;font-size:14px;}
+  .tile .emoji{font-size:28px;}
+}
 </style>
 </head>
 <body>
@@ -109,6 +124,7 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
   <button class="tile" data-game="simon" style="--tc:var(--c2)"><span class="emoji">🎨</span>ذاكر الألوان</button>
   <button class="tile" data-game="math" style="--tc:var(--c3)"><span class="emoji">➕</span>سباق الحساب</button>
   <button class="tile" data-game="react" style="--tc:var(--c4)"><span class="emoji">⚡</span>سرعة البديهة</button>
+  <button class="tile" data-game="about" style="--tc:var(--c5)"><span class="emoji">ℹ️</span>عن الموقع</button>
 </div>
 
 <section class="game" id="game-xo"><button class="back">← رجوع</button>
@@ -131,22 +147,26 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
 
 <section class="game" id="game-snake"><button class="back">← رجوع</button>
   <p class="status" id="snakeStatus">النقاط: 0</p>
+  <p class="best" id="snakeBest"></p>
   <canvas id="snakeCanvas" width="240" height="240"></canvas>
   <div class="snake-controls"><span></span><button id="snUp">↑</button><span></span>
   <button id="snLeft">←</button><button id="snDown">↓</button><button id="snRight">→</button></div></section>
 
 <section class="game" id="game-whack"><button class="back">← رجوع</button>
   <p class="status" id="whackStatus">النقاط: 0 — الوقت: 30</p>
+  <p class="best" id="whackBest"></p>
   <div id="whackBoard"></div><button class="reset" id="whackReset">ابدأ اللعب</button></section>
 
 <section class="game" id="game-quiz"><button class="back">← رجوع</button>
   <p class="status" id="quizScore">النقطة 1 من 8</p>
+  <p class="best" id="quizBest"></p>
   <p class="quiz-q" id="quizQ"></p>
   <div class="quiz-opts" id="quizOpts"></div>
   <button class="reset" id="quizReset">ابدأ من جديد</button></section>
 
 <section class="game" id="game-simon"><button class="back">← رجوع</button>
   <p class="status" id="simonStatus">دوس ابدأ وذاكر الترتيب</p>
+  <p class="best" id="simonBest"></p>
   <div id="simonBoard">
     <button class="simon-btn" id="simon0"></button><button class="simon-btn" id="simon1"></button>
     <button class="simon-btn" id="simon2"></button><button class="simon-btn" id="simon3"></button>
@@ -155,16 +175,31 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
 
 <section class="game" id="game-math"><button class="back">← رجوع</button>
   <p class="status" id="mathStatus">النقاط: 0 — الوقت: 30</p>
+  <p class="best" id="mathBest"></p>
   <p class="math-eq" id="mathEq"></p>
   <div class="math-opts" id="mathOpts"></div>
   <button class="reset" id="mathReset">ابدأ اللعب</button></section>
 
 <section class="game" id="game-react"><button class="back">← رجوع</button>
   <p class="status" id="reactStatus">دوس ابدأ واستنى اللون يتغير</p>
+  <p class="best" id="reactBest"></p>
   <div id="reactBox">استنى...</div>
   <button class="reset" id="reactReset">ابدأ</button></section>
 
+<section class="game" id="game-about"><button class="back">← رجوع</button>
+  <div class="about-box">
+    <p class="about-emoji">🎮</p>
+    <h2>العاب DULA</h2>
+    <p>موقع فيه مجموعة ألعاب بسيطة وسريعة تقدر تلعبها في أي وقت من غير تحميل أي برنامج.</p>
+    <p>الموقع اتعمل كمشروع شخصي، وبيتزود بألعاب جديدة بشكل مستمر.</p>
+    <p>كل لعبة بتحفظ أفضل نتيجة وصلت ليها على نفس الجهاز.</p>
+  </div></section>
+
 <script>
+function bestGet(key){const v=localStorage.getItem(key);return v===null?null:Number(v);}
+function bestTry(key,val,lowerBetter){const cur=bestGet(key);const isNew=cur===null||(lowerBetter?val<cur:val>cur);if(isNew)localStorage.setItem(key,val);return isNew;}
+function bestLabel(key,lowerBetter,suffix){const v=bestGet(key);return v===null?'أفضل نتيجة: —':'أفضل نتيجة: '+v+(suffix||'');}
+
 const home=document.getElementById('home');
 document.querySelectorAll('.tile').forEach(t=>t.addEventListener('click',()=>showGame(t.dataset.game)));
 document.querySelectorAll('.back').forEach(b=>b.addEventListener('click',showHome));
@@ -240,10 +275,10 @@ let snakeTimer=null;
 (function(){
   const canvas=document.getElementById('snakeCanvas'), ctx=canvas.getContext('2d');
   const size=12, cols=20, rows=20; let snake,dir,food,score,gameOver;
-  function reset(){snake=[{x:10,y:10}];dir={x:1,y:0};score=0;gameOver=false;placeFood();document.getElementById('snakeStatus').textContent='النقاط: 0';}
+  function reset(){snake=[{x:10,y:10}];dir={x:1,y:0};score=0;gameOver=false;placeFood();document.getElementById('snakeStatus').textContent='النقاط: 0';document.getElementById('snakeBest').textContent=bestLabel('best_snake');}
   function placeFood(){food={x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)};}
   function tick(){if(gameOver)return;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
-    if(head.x<0||head.y<0||head.x>=cols||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){gameOver=true;document.getElementById('snakeStatus').textContent='خسرت! النقاط: '+score;draw();return;}
+    if(head.x<0||head.y<0||head.x>=cols||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){gameOver=true;bestTry('best_snake',score,false);document.getElementById('snakeStatus').textContent='خسرت! النقاط: '+score;document.getElementById('snakeBest').textContent=bestLabel('best_snake');draw();return;}
     snake.unshift(head);if(head.x===food.x&&head.y===food.y){score++;placeFood();document.getElementById('snakeStatus').textContent='النقاط: '+score;}else snake.pop();draw();}
   function draw(){const css=getComputedStyle(document.documentElement);
     ctx.fillStyle=css.getPropertyValue('--bg1');ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -274,9 +309,10 @@ let whackTimer=null, whackUpTimer=null;
     stopWhack();build();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';
     whackUpTimer=setInterval(popRandom,700);
     whackTimer=setInterval(()=>{timeLeft--;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
-      if(timeLeft<=0){stopWhack();holes.forEach(h=>{h.classList.remove('up');h.textContent='';});statusEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
+      if(timeLeft<=0){stopWhack();holes.forEach(h=>{h.classList.remove('up');h.textContent='';});bestTry('best_whack',score,false);document.getElementById('whackBest').textContent=bestLabel('best_whack');statusEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
   });
   build();
+  document.getElementById('whackBest').textContent=bestLabel('best_whack');
 })();
 
 /* Trivia quiz */
@@ -294,7 +330,7 @@ let whackTimer=null, whackUpTimer=null;
   let idx=0, score=0;
   const qEl=document.getElementById('quizQ'), optsEl=document.getElementById('quizOpts'), scoreEl=document.getElementById('quizScore');
   function render(){
-    if(idx>=questions.length){qEl.textContent='خلصت! نقاطك: '+score+' من '+questions.length+' 🎉';optsEl.innerHTML='';scoreEl.textContent='';return;}
+    if(idx>=questions.length){bestTry('best_quiz',score,false);document.getElementById('quizBest').textContent=bestLabel('best_quiz');qEl.textContent='خلصت! نقاطك: '+score+' من '+questions.length+' 🎉';optsEl.innerHTML='';scoreEl.textContent='';return;}
     const q=questions[idx];scoreEl.textContent='سؤال '+(idx+1)+' من '+questions.length;qEl.textContent=q.q;optsEl.innerHTML='';
     q.opts.forEach((opt,i)=>{const b=document.createElement('button');b.textContent=opt;
       b.addEventListener('click',()=>{
@@ -305,7 +341,8 @@ let whackTimer=null, whackUpTimer=null;
       optsEl.appendChild(b);
     });
   }
-  document.getElementById('quizReset').addEventListener('click',()=>{idx=0;score=0;render();});
+  document.getElementById('quizReset').addEventListener('click',()=>{idx=0;score=0;document.getElementById('quizBest').textContent=bestLabel('best_quiz');render();});
+  document.getElementById('quizBest').textContent=bestLabel('best_quiz');
   render();
 })();
 
@@ -322,9 +359,10 @@ let whackTimer=null, whackUpTimer=null;
     if(!playing)return;
     flash(i);
     if(i===sequence[userStep]){userStep++;if(userStep===sequence.length){playing=false;statusEl.textContent='صح! هنزود واحدة 🎉';setTimeout(nextRound,700);}}
-    else{playing=false;statusEl.textContent='خسرت! طول السلسلة كانت '+sequence.length+' — دوس ابدأ تاني';sequence=[];}
+    else{playing=false;bestTry('best_simon',sequence.length-1,false);document.getElementById('simonBest').textContent=bestLabel('best_simon');statusEl.textContent='خسرت! طول السلسلة كانت '+sequence.length+' — دوس ابدأ تاني';sequence=[];}
   }));
   document.getElementById('simonReset').addEventListener('click',()=>{sequence=[];nextRound();});
+  document.getElementById('simonBest').textContent=bestLabel('best_simon');
 })();
 
 /* Math race */
@@ -347,9 +385,10 @@ let mathTimer=null;
   document.getElementById('mathReset').addEventListener('click',()=>{
     stopMath();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';newEq();
     mathTimer=setInterval(()=>{timeLeft--;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
-      if(timeLeft<=0){stopMath();optsEl.innerHTML='';eqEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
+      if(timeLeft<=0){stopMath();optsEl.innerHTML='';bestTry('best_math',score,false);document.getElementById('mathBest').textContent=bestLabel('best_math');eqEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
   });
   eqEl.textContent='دوس ابدأ اللعب';
+  document.getElementById('mathBest').textContent=bestLabel('best_math');
 })();
 
 /* Reaction */
@@ -357,13 +396,14 @@ let reactTimeout=null;
 (function(){
   const box=document.getElementById('reactBox'), statusEl=document.getElementById('reactStatus');
   let waitingGo=false, startTime=0;
+  document.getElementById('reactBest').textContent=bestLabel('best_react',true,' مللي ثانية');
   window.stopReact=function(){if(reactTimeout)clearTimeout(reactTimeout);box.classList.remove('go');box.textContent='استنى...';waitingGo=false;};
   document.getElementById('reactReset').addEventListener('click',()=>{
     stopReact();statusEl.textContent='استنى اللون يتغير...';box.textContent='استنى...';
     reactTimeout=setTimeout(()=>{box.classList.add('go');box.textContent='دوس دلوقتي!';waitingGo=true;startTime=Date.now();},800+Math.random()*2000);
   });
   box.addEventListener('click',()=>{
-    if(waitingGo){const ms=Date.now()-startTime;statusEl.textContent='وقتك: '+ms+' مللي ثانية ⚡';waitingGo=false;box.classList.remove('go');box.textContent='دوس ابدأ تاني';}
+    if(waitingGo){const ms=Date.now()-startTime;bestTry('best_react',ms,true);document.getElementById('reactBest').textContent=bestLabel('best_react',true,' مللي ثانية');statusEl.textContent='وقتك: '+ms+' مللي ثانية ⚡';waitingGo=false;box.classList.remove('go');box.textContent='دوس ابدأ تاني';}
     else if(box.textContent==='استنى...'){statusEl.textContent='بدري! استنى اللون يتغير';}
   });
 })();
