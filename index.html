@@ -125,6 +125,10 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
   <button class="tile" data-game="math" style="--tc:var(--c3)"><span class="emoji">➕</span>سباق الحساب</button>
   <button class="tile" data-game="react" style="--tc:var(--c4)"><span class="emoji">⚡</span>سرعة البديهة</button>
   <button class="tile" data-game="about" style="--tc:var(--c5)"><span class="emoji">ℹ️</span>عن الموقع</button>
+  <button class="tile" data-game="ucl" style="--tc:var(--c6)"><span class="emoji">🏆</span>دوري الأبطال</button>
+  <button class="tile" data-game="epl" style="--tc:var(--c1)"><span class="emoji">⚽</span>الدوري الإنجليزي</button>
+  <button class="tile" data-game="player" style="--tc:var(--c2)"><span class="emoji">🌟</span>حياة لاعب</button>
+  <button class="tile" data-game="wc" style="--tc:var(--c3)"><span class="emoji">🌍</span>كأس العالم</button>
 </div>
 
 <section class="game" id="game-xo"><button class="back">← رجوع</button>
@@ -194,6 +198,26 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
     <p>الموقع اتعمل كمشروع شخصي، وبيتزود بألعاب جديدة بشكل مستمر.</p>
     <p>كل لعبة بتحفظ أفضل نتيجة وصلت ليها على نفس الجهاز.</p>
   </div></section>
+
+<section class="game" id="game-ucl"><button class="back">← رجوع</button>
+  <p class="status" id="uclScore"></p><p class="best" id="uclBest"></p>
+  <p class="quiz-q" id="uclQ"></p><div class="quiz-opts" id="uclOpts"></div>
+  <button class="reset" id="uclReset">ابدأ من جديد</button></section>
+
+<section class="game" id="game-epl"><button class="back">← رجوع</button>
+  <p class="status" id="eplScore"></p><p class="best" id="eplBest"></p>
+  <p class="quiz-q" id="eplQ"></p><div class="quiz-opts" id="eplOpts"></div>
+  <button class="reset" id="eplReset">ابدأ من جديد</button></section>
+
+<section class="game" id="game-player"><button class="back">← رجوع</button>
+  <p class="status" id="playerScore"></p><p class="best" id="playerBest"></p>
+  <p class="quiz-q" id="playerQ"></p><div class="quiz-opts" id="playerOpts"></div>
+  <button class="reset" id="playerReset">ابدأ من جديد</button></section>
+
+<section class="game" id="game-wc"><button class="back">← رجوع</button>
+  <p class="status" id="wcScore"></p><p class="best" id="wcBest"></p>
+  <p class="quiz-q" id="wcQ"></p><div class="quiz-opts" id="wcOpts"></div>
+  <button class="reset" id="wcReset">ابدأ من جديد</button></section>
 
 <script>
 function bestGet(key){const v=localStorage.getItem(key);return v===null?null:Number(v);}
@@ -316,8 +340,7 @@ let whackTimer=null, whackUpTimer=null;
 })();
 
 /* Trivia quiz */
-(function(){
-  const questions=[
+const quizQuestions=[
     {q:'كام عاصمة مصر؟',opts:['القاهرة','الإسكندرية','أسوان'],a:0},
     {q:'كام لون في علم مصر؟',opts:['اتنين','تلاتة','أربعة'],a:1},
     {q:'أكبر كوكب في المجموعة الشمسية؟',opts:['الأرض','المشتري','زحل'],a:1},
@@ -325,12 +348,92 @@ let whackTimer=null, whackUpTimer=null;
     {q:'أسرع حيوان بري؟',opts:['الفهد','الأسد','الحصان'],a:0},
     {q:'كام يوم في السنة الكبيسة؟',opts:['364','365','366'],a:2},
     {q:'العملة الرسمية في مصر؟',opts:['الدولار','الجنيه','الريال'],a:1},
-    {q:'أطول نهر في العالم؟',opts:['الأمازون','النيل','الفرات'],a:1}
-  ];
+    {q:'أطول نهر في العالم؟',opts:['الأمازون','النيل','الفرات'],a:1},
+    {q:'عاصمة السعودية؟',opts:['جدة','الرياض','مكة'],a:1},
+    {q:'أكبر محيط في العالم؟',opts:['الأطلسي','الهادي','الهندي'],a:1},
+    {q:'كام يوم في الأسبوع؟',opts:['6','7','8'],a:1},
+    {q:'أصغر دولة في العالم مساحة؟',opts:['موناكو','الفاتيكان','سنغافورة'],a:1},
+    {q:'اللغة الرسمية في البرازيل؟',opts:['الإسبانية','البرتغالية','الإنجليزية'],a:1},
+    {q:'كام رجل للعنكبوت؟',opts:['6','8','10'],a:1},
+    {q:'أعلى جبل في العالم؟',opts:['إفرست','كليمنجارو','الألب'],a:0},
+    {q:'أول رائد فضاء وصل للقمر؟',opts:['يوري جاجارين','نيل أرمسترونج','باز ألدرين'],a:1},
+    {q:'كام لون في قوس قزح؟',opts:['5','6','7'],a:2},
+    {q:'عاصمة اليابان؟',opts:['طوكيو','أوساكا','كيوتو'],a:0},
+    {q:'أكبر صحراء حارة في العالم؟',opts:['صحراء ناميب','الصحراء الكبرى','صحراء أستراليا'],a:1}
+];
+
+const uclQuestions=[
+  {q:'الفريق الأكتر تتويجًا بدوري أبطال أوروبا؟',opts:['ميلان','ريال مدريد','بايرن ميونخ'],a:1},
+  {q:'ملعب "أنفيلد" ملعب أي فريق؟',opts:['إيفرتون','ليفربول','مانشستر يونايتد'],a:1},
+  {q:'ريال مدريد بيتلقب بـ إيه؟',opts:['الملكي','الأحمر','النمور'],a:0},
+  {q:'أول نسخة من دوري أبطال أوروبا كانت في أي عقد؟',opts:['الأربعينات','الخمسينات','الستينات'],a:1},
+  {q:'مانشستر يونايتد بيتلقب بـ إيه؟',opts:['الشياطين الحمر','الملوك','الصقور'],a:0},
+  {q:'ملعب "سانتياجو برنابيو" ملعب أي فريق؟',opts:['برشلونة','أتلتيكو مدريد','ريال مدريد'],a:2},
+  {q:'الفريق الألماني الأكتر تتويجًا بالبطولة؟',opts:['بوروسيا دورتموند','بايرن ميونخ','باير ليفركوزن'],a:1},
+  {q:'ألوان قميص نادي برشلونة الأساسية؟',opts:['أزرق وأحمر','أبيض وأزرق','أصفر وأخضر'],a:0},
+  {q:'نادي ميلان الإيطالي بيتلقب بـ إيه؟',opts:['البيانكونيري','الروسونيري','النيراتزوري'],a:1},
+  {q:'ملعب "كامب نو" ملعب أي فريق؟',opts:['ريال مدريد','برشلونة','إشبيلية'],a:1},
+  {q:'نادي تشيلسي الإنجليزي بيتلقب بـ إيه؟',opts:['البلوز','الريدز','الجانرز'],a:0},
+  {q:'مين صاحب أكبر عدد أهداف في تاريخ دوري الأبطال؟',opts:['ليونيل ميسي','روبرت ليفاندوفسكي','كريستيانو رونالدو'],a:2},
+  {q:'نادي يوفنتوس الإيطالي من أي مدينة؟',opts:['ميلانو','روما','تورينو'],a:2},
+  {q:'لون قميص ريال مدريد الأساسي؟',opts:['أبيض','أزرق','أحمر'],a:0},
+  {q:'نادي بنفيكا البرتغالي من أي مدينة؟',opts:['بورتو','لشبونة','براجا'],a:1}
+];
+
+const eplQuestions=[
+  {q:'الفريق الأكتر تتويجًا بالدوري الإنجليزي الممتاز؟',opts:['مانشستر سيتي','مانشستر يونايتد','ليفربول'],a:1},
+  {q:'ملعب "أولد ترافورد" ملعب أي فريق؟',opts:['مانشستر سيتي','مانشستر يونايتد','ليدز يونايتد'],a:1},
+  {q:'ملعب "الإمارات" ملعب أي فريق؟',opts:['تشيلسي','توتنهام','أرسنال'],a:2},
+  {q:'نادي أرسنال بيتلقب بـ إيه؟',opts:['المدفعجية','الشياطين','السباع'],a:0},
+  {q:'نادي ليفربول من أي مدينة إنجليزية؟',opts:['مانشستر','ليفربول','برمنجهام'],a:1},
+  {q:'نادي مانشستر سيتي بيتلقب بـ إيه؟',opts:['السيتزنز','الريدز','الفوكسز'],a:0},
+  {q:'ملعب "ستامفورد بريدج" ملعب أي فريق؟',opts:['تشيلسي','فولهام','وست هام'],a:0},
+  {q:'نادي توتنهام هوتسبير بيتلقب بـ إيه؟',opts:['السبيرز','الهامرز','الفوكسز'],a:0},
+  {q:'لون قميص إيفرتون الأساسي؟',opts:['أخضر','أزرق','أحمر'],a:1},
+  {q:'نادي ليفربول بيتلقب بـ إيه؟',opts:['الريدز','البلوز','الجانرز'],a:0},
+  {q:'نادي نيوكاسل يونايتد من أي مدينة؟',opts:['ليدز','نيوكاسل','شيفيلد'],a:1},
+  {q:'نادي ليستر سيتي بيتلقب بـ إيه؟',opts:['الفوكسز','الوولفز','السبيرز'],a:0},
+  {q:'الدوري الإنجليزي الممتاز بشكله الحالي بدأ سنة كام؟',opts:['1988','1992','1998'],a:1},
+  {q:'نادي وست هام يونايتد بيتلقب بـ إيه؟',opts:['ذا هامرز','ذا جانرز','ذا بلوز'],a:0},
+  {q:'ألوان قميص أستون فيلا الأساسية؟',opts:['أبيض وأزرق','كستنائي وأزرق فاتح','أخضر وأصفر'],a:1}
+];
+
+const playerQuestions=[
+  {q:'محمد صلاح بيلعب في أي مركز؟',opts:['حارس مرمى','جناح/مهاجم','مدافع'],a:1},
+  {q:'محمد صلاح من مواليد أي محافظة مصرية؟',opts:['الغربية','الإسكندرية','الجيزة'],a:0},
+  {q:'محمد صلاح بيلعب حاليًا لأي نادي إنجليزي؟',opts:['تشيلسي','ليفربول','مانشستر سيتي'],a:1},
+  {q:'محمد صلاح لعب قبل ليفربول في الدوري الإيطالي لنادي؟',opts:['يوفنتوس','روما','إنتر ميلان'],a:1},
+  {q:'أشهر لقب بيتنادى بيه محمد صلاح؟',opts:['الفرعون المصري','الأسد','النمر'],a:0},
+  {q:'محمد صلاح فاز بجائزة هداف الدوري الإنجليزي (الحذاء الذهبي)؟',opts:['ولا مرة','مرة واحدة بس','أكتر من مرة'],a:2},
+  {q:'محمد صلاح بدأ مشواره الاحترافي في نادي مصري اسمه؟',opts:['الأهلي','الزمالك','المقاولون العرب'],a:2},
+  {q:'رقم قميص محمد صلاح في ليفربول؟',opts:['7','9','11'],a:2},
+  {q:'محمد صلاح لعب مع منتخب مصر في نهائيات كأس العالم سنة؟',opts:['2014','2018','2022'],a:1},
+  {q:'محمد صلاح لعب فترة قصيرة في إنجلترا قبل روما مع نادي؟',opts:['تشيلسي','آرسنال','ليفربول'],a:0}
+];
+
+const wcQuestions=[
+  {q:'الفريق الأكتر تتويجًا بكأس العالم؟',opts:['ألمانيا','البرازيل','الأرجنتين'],a:1},
+  {q:'كأس العالم بيتقام كل قد إيه؟',opts:['كل سنتين','كل 3 سنين','كل 4 سنين'],a:2},
+  {q:'أول دولة استضافت كأس العالم؟',opts:['البرازيل','الأوروغواي','إيطاليا'],a:1},
+  {q:'مصر شاركت في كأس العالم آخر مرة سنة؟',opts:['2010','2014','2018'],a:2},
+  {q:'الأرجنتين فازت بكأس العالم كام مرة؟',opts:['مرتين','3 مرات','4 مرات'],a:1},
+  {q:'مين صاحب أكبر عدد أهداف في تاريخ كأس العالم؟',opts:['بيليه','ميروسلاف كلوزه','رونالدو نازاريو'],a:1},
+  {q:'كأس العالم 2022 اتقامت في أي دولة؟',opts:['قطر','الإمارات','السعودية'],a:0},
+  {q:'ألمانيا فازت بكأس العالم كام مرة؟',opts:['3 مرات','4 مرات','5 مرات'],a:1},
+  {q:'مين بيصنع الكرة الرسمية لكأس العالم عادة؟',opts:['نايكي','أديداس','بوما'],a:1},
+  {q:'فرنسا فازت بكأس العالم آخر مرة سنة؟',opts:['2014','2018','2022'],a:1},
+  {q:'كأس العالم 2026 هيشارك فيه كام منتخب؟',opts:['32','40','48'],a:2},
+  {q:'كأس العالم 2026 هيتقام في قد ايه دولة؟',opts:['دولة واحدة','دولتين','3 دول'],a:2},
+  {q:'الجائزة اللي بتتديله لأفضل لاعب في البطولة؟',opts:['الكرة الذهبية','الحذاء الذهبي','القفاز الذهبي'],a:0},
+  {q:'إيطاليا فازت بكأس العالم كام مرة؟',opts:['3 مرات','4 مرات','5 مرات'],a:1},
+  {q:'أول هداف في تاريخ كأس العالم كان لاعب من دولة؟',opts:['فرنسا','الأرجنتين','الأوروغواي'],a:0}
+];
+
+function makeQuiz(p, questions, bestKey){
   let idx=0, score=0;
-  const qEl=document.getElementById('quizQ'), optsEl=document.getElementById('quizOpts'), scoreEl=document.getElementById('quizScore');
+  const qEl=document.getElementById(p+'Q'), optsEl=document.getElementById(p+'Opts'), scoreEl=document.getElementById(p+'Score'), bestEl=document.getElementById(p+'Best');
   function render(){
-    if(idx>=questions.length){bestTry('best_quiz',score,false);document.getElementById('quizBest').textContent=bestLabel('best_quiz');qEl.textContent='خلصت! نقاطك: '+score+' من '+questions.length+' 🎉';optsEl.innerHTML='';scoreEl.textContent='';return;}
+    if(idx>=questions.length){bestTry(bestKey,score,false);bestEl.textContent=bestLabel(bestKey);qEl.textContent='خلصت! نقاطك: '+score+' من '+questions.length+' 🎉';optsEl.innerHTML='';scoreEl.textContent='';return;}
     const q=questions[idx];scoreEl.textContent='سؤال '+(idx+1)+' من '+questions.length;qEl.textContent=q.q;optsEl.innerHTML='';
     q.opts.forEach((opt,i)=>{const b=document.createElement('button');b.textContent=opt;
       b.addEventListener('click',()=>{
@@ -341,10 +444,15 @@ let whackTimer=null, whackUpTimer=null;
       optsEl.appendChild(b);
     });
   }
-  document.getElementById('quizReset').addEventListener('click',()=>{idx=0;score=0;document.getElementById('quizBest').textContent=bestLabel('best_quiz');render();});
-  document.getElementById('quizBest').textContent=bestLabel('best_quiz');
+  document.getElementById(p+'Reset').addEventListener('click',()=>{idx=0;score=0;bestEl.textContent=bestLabel(bestKey);render();});
+  bestEl.textContent=bestLabel(bestKey);
   render();
-})();
+}
+makeQuiz('quiz', quizQuestions, 'best_quiz');
+makeQuiz('ucl', uclQuestions, 'best_ucl');
+makeQuiz('epl', eplQuestions, 'best_epl');
+makeQuiz('player', playerQuestions, 'best_player');
+makeQuiz('wc', wcQuestions, 'best_wc');
 
 /* Simon */
 (function(){
