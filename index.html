@@ -105,13 +105,57 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
   .tile{padding:18px 6px 14px;font-size:14px;}
   .tile .emoji{font-size:28px;}
 }
+
+/* DULA Upgrade */
+.profile-bar{
+  max-width:760px;margin:18px auto 4px;padding:13px 16px;background:var(--card);
+  border-radius:18px;box-shadow:0 6px 16px var(--shadow);font-size:14px;
+}
+.profile-bar>div:first-child{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.xp-track{height:9px;background:var(--bg1);border-radius:99px;overflow:hidden;margin:9px 0 7px}
+.xp-track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--c4),var(--c6));transition:width .35s ease}
+.profile-stats{display:flex;justify-content:center;gap:24px;color:var(--muted)}
+.adventure-tile{position:relative;overflow:hidden}
+.adventure-tile:after{content:"جديد";position:absolute;top:7px;left:8px;background:#ff7b00;color:#fff;border-radius:10px;padding:2px 7px;font-size:11px}
+#game-adventure{max-width:620px}
+.adventure-head{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:13px 16px;border-radius:18px;box-shadow:0 5px 14px var(--shadow)}
+.adventure-head h2{margin:0;font-size:22px}
+.adventure-head p{margin:2px 0 0;color:var(--muted)}
+.adv-hearts{font-size:20px;white-space:nowrap}
+.adv-progress{height:10px;background:var(--card);border-radius:99px;margin:12px 0;overflow:hidden;box-shadow:0 2px 8px var(--shadow)}
+.adv-progress i{display:block;height:100%;width:8.33%;background:linear-gradient(90deg,var(--c5),var(--c2));transition:width .35s}
+.adventure-card{background:var(--card);border-radius:20px;padding:22px 16px;box-shadow:0 7px 18px var(--shadow)}
+.adv-badge{display:inline-block;background:var(--c4);color:#fff;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:700}
+.adventure-card h3{margin:10px 0 5px;font-size:22px}
+.adventure-card>p{margin:0 0 18px;color:var(--muted)}
+.adv-options{display:grid;gap:10px}
+.adv-options button{border:0;background:var(--bg1);color:var(--ink);padding:13px;border-radius:14px;font:700 16px inherit;cursor:pointer;box-shadow:0 3px 8px var(--shadow)}
+.adv-options button.correct{background:var(--c5);color:#fff}
+.adv-options button.wrong{background:var(--c1);color:#fff}
+.adv-number{font-size:30px;font-weight:800;margin:12px 0}
+.adv-input{display:flex;gap:8px;justify-content:center}
+.adv-input input{width:130px;padding:11px;border:0;border-radius:12px;background:var(--bg1);color:var(--ink);font:700 17px inherit;text-align:center}
+.adv-action{padding:11px 18px;border:0;border-radius:12px;background:var(--c2);color:#fff;font:700 15px inherit;cursor:pointer}
+.adv-reaction{width:210px;height:150px;margin:auto;border-radius:18px;display:flex;align-items:center;justify-content:center;background:var(--c1);color:#fff;font-weight:800;cursor:pointer}
+.adv-reaction.go{background:var(--c5)}
+.adv-memory{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;max-width:330px;margin:auto}
+.adv-memory button{aspect-ratio:1;border:0;border-radius:10px;background:var(--c4);color:#fff;font-size:25px;cursor:pointer}
+.adv-memory button.open{background:var(--card);color:var(--ink)}
+.adv-memory button.done{background:transparent;border:2px solid var(--c5);color:var(--c5)}
+
 </style>
 </head>
 <body>
 <header>
   <h1>🎮 العاب DULA</h1>
-  <p>اختار لعبة وابدأ اللعب</p>
+  <p>اختار لعبة، أو ادخل مغامرة DULA وخلي كل مرحلة مختلفة عن اللي قبلها 🎮</p>
 </header>
+
+<div class="profile-bar">
+  <div><strong>⭐ المستوى <span id="profileLevel">1</span></strong><span id="profileXp">0 / 100 XP</span></div>
+  <div class="xp-track"><i id="xpFill"></i></div>
+  <div class="profile-stats"><span>🪙 <b id="profileCoins">0</b></span><span>🔥 <b id="profileStreak">0</b></span></div>
+</div>
 
 <div id="home">
   <button class="tile" data-game="xo" style="--tc:var(--c1)"><span class="emoji">❌</span>إكس أوه</button>
@@ -124,6 +168,7 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
   <button class="tile" data-game="simon" style="--tc:var(--c2)"><span class="emoji">🎨</span>ذاكر الألوان</button>
   <button class="tile" data-game="math" style="--tc:var(--c3)"><span class="emoji">➕</span>سباق الحساب</button>
   <button class="tile" data-game="react" style="--tc:var(--c4)"><span class="emoji">⚡</span>سرعة البديهة</button>
+  <button class="tile adventure-tile" data-game="adventure" style="--tc:#ff7b00"><span class="emoji">🗺️</span>مغامرة DULA</button>
   <button class="tile" data-game="about" style="--tc:var(--c5)"><span class="emoji">ℹ️</span>عن الموقع</button>
   <button class="tile" data-game="ucl" style="--tc:var(--c6)"><span class="emoji">🏆</span>دوري الأبطال</button>
   <button class="tile" data-game="epl" style="--tc:var(--c1)"><span class="emoji">⚽</span>الدوري الإنجليزي</button>
@@ -189,6 +234,26 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
   <p class="best" id="reactBest"></p>
   <div id="reactBox">استنى...</div>
   <button class="reset" id="reactReset">ابدأ</button></section>
+
+<section class="game" id="game-adventure"><button class="back">← رجوع</button>
+  <div class="adventure-head">
+    <div>
+      <h2>🗺️ مغامرة DULA</h2>
+      <p id="advStage">المرحلة 1 من 12</p>
+    </div>
+    <div class="adv-hearts" id="advLives">❤️❤️❤️</div>
+  </div>
+  <div class="adv-progress"><i id="advProgressFill"></i></div>
+  <div class="adventure-card">
+    <div class="adv-badge" id="advType">تحدي</div>
+    <h3 id="advTitle"></h3>
+    <p id="advQuestion"></p>
+    <div id="advArea"></div>
+  </div>
+  <p class="status" id="advStatus"></p>
+  <button class="reset" id="advNext" style="display:none">المرحلة التالية →</button>
+  <button class="reset" id="advRestart">ابدأ مغامرة جديدة</button>
+</section>
 
 <section class="game" id="game-about"><button class="back">← رجوع</button>
   <div class="about-box">
@@ -515,6 +580,209 @@ let reactTimeout=null;
     else if(box.textContent==='استنى...'){statusEl.textContent='بدري! استنى اللون يتغير';}
   });
 })();
+
+/* DULA Upgrade: profile + randomized Adventure mode */
+(function(){
+  const profile = {
+    xp: Number(localStorage.getItem('dula_xp') || 0),
+    coins: Number(localStorage.getItem('dula_coins') || 0),
+    streak: Number(localStorage.getItem('dula_streak') || 0),
+    day: localStorage.getItem('dula_day') || ''
+  };
+  const today = new Date().toDateString();
+  if(profile.day !== today){ profile.day=today; profile.streak=profile.streak; saveProfile(); }
+
+  function saveProfile(){
+    localStorage.setItem('dula_xp', profile.xp);
+    localStorage.setItem('dula_coins', profile.coins);
+    localStorage.setItem('dula_streak', profile.streak);
+    localStorage.setItem('dula_day', profile.day);
+    renderProfile();
+  }
+  function level(){ return Math.floor(profile.xp/100)+1; }
+  function renderProfile(){
+    const lv=level(), base=(lv-1)*100, inside=profile.xp-base;
+    const a=document.getElementById('profileLevel'), b=document.getElementById('profileXp'),
+          c=document.getElementById('profileCoins'), d=document.getElementById('profileStreak'),
+          f=document.getElementById('xpFill');
+    if(a)a.textContent=lv;
+    if(b)b.textContent=inside+' / 100 XP';
+    if(c)c.textContent=profile.coins;
+    if(d)d.textContent=profile.streak;
+    if(f)f.style.width=inside+'%';
+  }
+  window.dulaReward=function(xp,coins){
+    profile.xp+=xp; profile.coins+=coins; saveProfile();
+  };
+  renderProfile();
+})();
+
+(function(){
+  const stagesEl=document.getElementById('advStage'), livesEl=document.getElementById('advLives'),
+        fillEl=document.getElementById('advProgressFill'), typeEl=document.getElementById('advType'),
+        titleEl=document.getElementById('advTitle'), qEl=document.getElementById('advQuestion'),
+        areaEl=document.getElementById('advArea'), statusEl=document.getElementById('advStatus'),
+        nextBtn=document.getElementById('advNext'), restartBtn=document.getElementById('advRestart');
+  if(!areaEl)return;
+
+  let stage=0,lives=3,locked=false,reactTimer=null,memState=null;
+  const used=[];
+
+  const general=[
+    {q:'ما هو الكوكب المعروف بالكوكب الأحمر؟',o:['المريخ','الزهرة','عطارد'],a:0},
+    {q:'كم عدد أيام الأسبوع؟',o:['5','7','9'],a:1},
+    {q:'ما أكبر كوكب في المجموعة الشمسية؟',o:['الأرض','المشتري','المريخ'],a:1},
+    {q:'ما عاصمة مصر؟',o:['القاهرة','الجيزة','أسوان'],a:0},
+    {q:'كم ضلعًا للمثلث؟',o:['2','3','4'],a:1},
+    {q:'أي حيوان يُعرف بسفينة الصحراء؟',o:['الجمل','الحصان','الفيل'],a:0},
+    {q:'ما الغاز الذي نتنفسه بشكل أساسي؟',o:['الأكسجين','الهيدروجين','الهيليوم'],a:0},
+    {q:'كم شهرًا في السنة؟',o:['10','11','12'],a:2}
+  ];
+
+  function shuffle(a){
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+    return a;
+  }
+  function pick(arr){
+    const available=arr.filter((_,i)=>!used.includes(i));
+    if(!available.length){used.length=0; return arr[Math.floor(Math.random()*arr.length)];}
+    const idx=arr.indexOf(available[Math.floor(Math.random()*available.length)]);
+    used.push(idx); return arr[idx];
+  }
+  function setCommon(title,type,q){
+    typeEl.textContent=type; titleEl.textContent=title; qEl.textContent=q||'';
+    statusEl.textContent=''; areaEl.innerHTML=''; nextBtn.style.display='none';
+  }
+  function loseLife(msg){
+    if(locked)return;
+    lives--; renderLives();
+    statusEl.textContent=msg+' ❤️ متبقي: '+lives;
+    if(lives<=0){
+      locked=true; statusEl.textContent='انتهت المغامرة! وصلت للمرحلة '+stage+' من 12.';
+      nextBtn.style.display='none';
+      return;
+    }
+    setTimeout(()=>{stage++;renderStage();},700);
+  }
+  function winStage(msg,xp=20,coins=5){
+    if(locked)return;
+    locked=true;
+    if(window.dulaReward)dulaReward(xp,coins);
+    statusEl.textContent=msg+' 🎉 +'+xp+' XP و +'+coins+' 🪙';
+    nextBtn.style.display=stage<11?'inline-block':'none';
+    if(stage===11){
+      nextBtn.style.display='none';
+      statusEl.textContent='🏆 خلصت المغامرة كلها! +50 XP إضافية';
+      if(window.dulaReward)dulaReward(50,20);
+    }
+  }
+  function renderLives(){livesEl.textContent='❤️'.repeat(lives)+'🖤'.repeat(3-lives);}
+  function renderStage(){
+    locked=false; renderLives(); stagesEl.textContent='المرحلة '+(stage+1)+' من 12';
+    fillEl.style.width=((stage+1)/12*100)+'%';
+    const type=stage%6;
+    if(type===0) mathStage();
+    else if(type===1) quizStage();
+    else if(type===2) guessStage();
+    else if(type===3) memoryStage();
+    else if(type===4) reactionStage();
+    else rpsStage();
+  }
+
+  function mathStage(){
+    const n=2+Math.floor(stage/3), a=5+Math.floor(Math.random()*10*n), b=2+Math.floor(Math.random()*10*n);
+    const op=stage>=6?['+','-','×'][Math.floor(Math.random()*3)]:['+','-'][Math.floor(Math.random()*2)];
+    let ans=op==='+'?a+b:op==='-'?a-b:a*b;
+    setCommon('سباق الحساب','🧮 حساب', 'حل العملية قبل الانتقال للمرحلة التالية');
+    areaEl.innerHTML='<div class="adv-number">'+a+' '+op+' '+b+' = ؟</div><div class="adv-options"></div>';
+    const opts=areaEl.querySelector('.adv-options'), vals=new Set([ans]);
+    while(vals.size<3) vals.add(ans+Math.floor(Math.random()*15)-7);
+    shuffle([...vals]).forEach(v=>{
+      const btn=document.createElement('button');btn.textContent=v;
+      btn.onclick=()=>{if(locked)return;if(v===ans)winStage('إجابة صحيحة!',25,7);else{btn.classList.add('wrong');loseLife('الإجابة غلط.');}};
+      opts.appendChild(btn);
+    });
+  }
+
+  function quizStage(){
+    const item=pick(general);
+    setCommon('اختبر معلوماتك','❓ سؤال',item.q);
+    const opts=document.createElement('div');opts.className='adv-options';
+    shuffle(item.o.map((v,i)=>({v,i}))).forEach(x=>{
+      const b=document.createElement('button');b.textContent=x.v;
+      b.onclick=()=>{if(locked)return;if(x.i===item.a){b.classList.add('correct');winStage('إجابة ممتازة!',22,6)}else{b.classList.add('wrong');loseLife('اختيار غير صحيح.');}};
+      opts.appendChild(b);
+    });
+    areaEl.appendChild(opts);
+  }
+
+  function guessStage(){
+    const max=stage<6?30:60, target=1+Math.floor(Math.random()*max);
+    let tries=0;
+    setCommon('خمن الرقم','🔢 تخمين','رقم سري من 1 إلى '+max);
+    areaEl.innerHTML='<div class="adv-input"><input id="advGuess" type="number" min="1" max="'+max+'"><button class="adv-action">تخمين</button></div><p id="advHint" class="status"></p>';
+    const input=document.getElementById('advGuess'), hint=document.getElementById('advHint');
+    areaEl.querySelector('button').onclick=()=>{
+      if(locked)return; const v=Number(input.value); if(!v)return; tries++;
+      if(v===target)winStage('صح! الرقم كان '+target,28,8);
+      else if(tries>=4){loseLife('الرقم كان '+target);input.disabled=true}
+      else hint.textContent=v<target?'أكبر ⬆️':'أصغر ⬇️';
+    };
+    input.focus();
+  }
+
+  function memoryStage(){
+    const icons=['🍎','🚗','⭐','🐶','⚽','🚀'];
+    const pairCount=stage<6?3:4, vals=shuffle([...icons].slice(0,pairCount).flatMap(x=>[x,x]));
+    let open=[],done=0,lock=false;
+    setCommon('ذاكرة سريعة','🧠 ذاكرة','افتح كل الأزواج');
+    const grid=document.createElement('div');grid.className='adv-memory';areaEl.appendChild(grid);
+    vals.forEach((v,i)=>{
+      const b=document.createElement('button');b.dataset.i=i;b.onclick=()=>{
+        if(lock||b.classList.contains('done')||b.classList.contains('open'))return;
+        b.textContent=v;b.classList.add('open');open.push(b);
+        if(open.length===2){
+          lock=true;
+          if(open[0].textContent===open[1].textContent){
+            open.forEach(x=>{x.classList.add('done');x.classList.remove('open')});open=[];done++;
+            lock=false;if(done===pairCount)winStage('ذاكرة قوية!',26,7);
+          }else setTimeout(()=>{open.forEach(x=>{x.textContent='';x.classList.remove('open')});open=[];lock=false},500);
+        }
+      };grid.appendChild(b);
+    });
+  }
+
+  function reactionStage(){
+    setCommon('سرعة البديهة','⚡ رد فعل','اضغط فقط عندما يتغير اللون');
+    const box=document.createElement('div');box.className='adv-reaction';box.textContent='استنى...';areaEl.appendChild(box);
+    const delay=700+Math.random()*(stage>=6?1300:2300);
+    reactTimer=setTimeout(()=>{box.classList.add('go');box.textContent='اضغط الآن!';box.dataset.go='1';box.dataset.t=Date.now()},delay);
+    box.onclick=()=>{
+      if(box.dataset.go==='1'){const ms=Date.now()-Number(box.dataset.t);clearTimeout(reactTimer);winStage('وقت رد فعلك: '+ms+' مللي ثانية',30,9)}
+      else {clearTimeout(reactTimer);loseLife('ضغطت بدري!');}
+    };
+  }
+
+  function rpsStage(){
+    setCommon('مواجهة سريعة','✊ حجر ورقة مقص','اكسب الجولة أمام الكمبيوتر');
+    const choices=['✊','✋','✌️'], beats={'✊':'✌️','✋':'✊','✌️':'✋'};
+    const wrap=document.createElement('div');wrap.className='adv-options';
+    shuffle(choices.slice()).forEach(c=>{
+      const b=document.createElement('button');b.textContent=c;
+      b.onclick=()=>{if(locked)return;const cpu=choices[Math.floor(Math.random()*3)];
+        if(c===cpu){statusEl.textContent='تعادل — حاول مرة أخرى';return}
+        if(beats[c]===cpu)winStage(c+' ضد '+cpu+' — كسبت!',24,6);
+        else loseLife(c+' ضد '+cpu+' — خسرت الجولة.');
+      };wrap.appendChild(b);
+    });areaEl.appendChild(wrap);
+  }
+
+  nextBtn.onclick=()=>{if(stage<11){stage++;renderStage();}};
+  restartBtn.onclick=()=>{stage=0;lives=3;used.length=0;clearTimeout(reactTimer);renderStage();};
+  document.getElementById('game-adventure').addEventListener('click',e=>{if(e.target.classList.contains('back'))clearTimeout(reactTimer);});
+  renderStage();
+})();
+
 </script>
 </body>
 </html>
