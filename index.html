@@ -4,124 +4,168 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ملعب الألعاب</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
 <style>
 :root{
-  --paper:#f6f1e6; --ink:#22201c; --line:#3a362f;
-  --acc1:#b5482f; --acc2:#2f5f4f; --acc3:#7a5c3e; --muted:#8a8172;
+  --bg1:#fff4e0; --bg2:#ffe3ef; --ink:#2c2440; --card:#ffffff;
+  --c1:#ff6b6b; --c2:#4ecdc4; --c3:#ffb703; --c4:#a78bfa; --c5:#51cf66; --c6:#4dabf7;
+  --muted:#8a7fa0; --shadow:rgba(44,36,64,0.15);
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){--paper:#1c1a16; --ink:#f2ede0; --line:#e7e0cf; --acc1:#e0704f; --acc2:#5fa78d; --acc3:#c9a876;}
+  :root:not([data-theme="light"]){--bg1:#241f33; --bg2:#2e2440; --ink:#f4f0ff; --card:#332b47; --shadow:rgba(0,0,0,0.35);}
 }
-:root[data-theme="dark"]{--paper:#1c1a16; --ink:#f2ede0; --line:#e7e0cf; --acc1:#e0704f; --acc2:#5fa78d; --acc3:#c9a876;}
+:root[data-theme="dark"]{--bg1:#241f33; --bg2:#2e2440; --ink:#f4f0ff; --card:#332b47; --shadow:rgba(0,0,0,0.35);}
 *{box-sizing:border-box;}
 html,body{height:100%;}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",sans-serif;min-height:100%;}
-header{padding:28px 16px 10px;text-align:center;}
-header h1{margin:0 0 4px;font-size:clamp(26px,6vw,36px);}
-header p{margin:0;color:var(--muted);font-size:14px;}
-#home{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;max-width:640px;margin:24px auto;padding:0 16px 40px;}
-.tile{background:transparent;border:2px solid var(--line);border-radius:10px;padding:22px 10px;font-size:17px;font-weight:700;cursor:pointer;color:var(--ink);font-family:inherit;transition:transform .12s ease;}
-.tile:hover{transform:translateY(-2px);}
-.tile .emoji{display:block;font-size:30px;margin-bottom:8px;}
-.game{max-width:480px;margin:0 auto;padding:10px 16px 40px;text-align:center;display:none;}
+body{margin:0;min-height:100%;color:var(--ink);font-family:"Baloo 2","Segoe UI",Tahoma,sans-serif;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));}
+header{padding:34px 16px 8px;text-align:center;}
+header h1{margin:0 0 4px;font-size:clamp(28px,7vw,42px);font-weight:800;}
+header p{margin:0;color:var(--muted);font-size:15px;}
+#home{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;max-width:760px;margin:26px auto;padding:0 16px 40px;}
+.tile{background:var(--card);border:none;border-radius:18px;padding:24px 8px 18px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink);font-family:inherit;
+  box-shadow:0 6px 0 var(--tc,var(--c1)),0 10px 18px var(--shadow);transition:transform .12s ease;}
+.tile:hover{transform:translateY(-3px);}
+.tile:active{transform:translateY(2px);box-shadow:0 2px 0 var(--tc,var(--c1)),0 4px 10px var(--shadow);}
+.tile .emoji{display:block;font-size:34px;margin-bottom:8px;}
+.game{max-width:520px;margin:0 auto;padding:6px 16px 40px;text-align:center;display:none;}
 .game.active{display:block;}
-.back{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:14px;}
-.status{margin:18px 0;font-size:17px;min-height:26px;}
-button.reset{margin-top:18px;padding:9px 20px;background:var(--ink);color:var(--paper);border:none;border-radius:6px;font-size:14px;cursor:pointer;font-family:inherit;}
+.back{background:var(--card);border:none;color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;
+  padding:8px 16px;border-radius:20px;margin-bottom:16px;font-weight:700;box-shadow:0 3px 8px var(--shadow);}
+.status{margin:16px 0;font-size:17px;min-height:26px;font-weight:700;}
+button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;border:none;border-radius:24px;
+  font-size:15px;cursor:pointer;font-family:inherit;font-weight:700;box-shadow:0 4px 10px var(--shadow);}
 
 /* X-O */
-#xoBoard{display:grid;grid-template-columns:repeat(3,minmax(64px,84px));grid-template-rows:repeat(3,minmax(64px,84px));gap:5px;background:var(--line);padding:5px;border-radius:8px;justify-content:center;margin:0 auto;}
-.cell{background:var(--paper);border:none;border-radius:4px;font-size:32px;font-weight:700;cursor:pointer;color:var(--ink);}
-.cell.x{color:var(--acc1);} .cell.o{color:var(--acc2);}
+#xoBoard{display:grid;grid-template-columns:repeat(3,minmax(64px,84px));grid-template-rows:repeat(3,minmax(64px,84px));gap:6px;
+  background:var(--card);padding:6px;border-radius:14px;justify-content:center;margin:0 auto;box-shadow:0 6px 16px var(--shadow);}
+.cell{background:var(--bg1);border:none;border-radius:8px;font-size:32px;font-weight:800;cursor:pointer;color:var(--ink);}
+.cell.x{color:var(--c1);} .cell.o{color:var(--c2);}
 
 /* RPS */
 .rps-choices{display:flex;gap:12px;justify-content:center;margin-top:8px;}
-.rps-choices button{font-size:34px;background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:14px 18px;cursor:pointer;}
+.rps-choices button{font-size:34px;background:var(--card);border:none;border-radius:16px;padding:14px 18px;cursor:pointer;box-shadow:0 4px 10px var(--shadow);}
 .rps-result{display:flex;justify-content:center;gap:40px;margin-top:18px;font-size:40px;}
 
 /* Guess */
-#guessInput{font-size:18px;padding:8px 12px;border-radius:6px;border:2px solid var(--line);width:100px;text-align:center;background:var(--paper);color:var(--ink);font-family:inherit;}
-#guessGo{font-size:16px;padding:9px 16px;border-radius:6px;border:none;background:var(--acc3);color:var(--paper);cursor:pointer;margin-inline-start:8px;font-family:inherit;}
+#guessInput{font-size:18px;padding:9px 12px;border-radius:12px;border:none;width:100px;text-align:center;background:var(--card);color:var(--ink);font-family:inherit;box-shadow:0 3px 8px var(--shadow);}
+#guessGo{font-size:16px;padding:10px 18px;border-radius:20px;border:none;background:var(--c3);color:#3a2e00;cursor:pointer;margin-inline-start:8px;font-family:inherit;font-weight:700;}
 
 /* Memory */
-#memBoard{display:grid;grid-template-columns:repeat(4,minmax(56px,68px));gap:6px;justify-content:center;margin:0 auto;}
-.mcard{aspect-ratio:1;background:var(--acc3);border-radius:6px;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--paper);}
-.mcard.flipped{background:var(--paper);border:2px solid var(--line);color:var(--ink);}
-.mcard.matched{background:transparent;border:2px solid var(--acc2);color:var(--acc2);opacity:.6;}
+#memBoard{display:grid;grid-template-columns:repeat(4,minmax(56px,68px));gap:7px;justify-content:center;margin:0 auto;}
+.mcard{aspect-ratio:1;background:var(--c4);border-radius:10px;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;box-shadow:0 3px 8px var(--shadow);}
+.mcard.flipped{background:var(--card);color:var(--ink);}
+.mcard.matched{background:transparent;border:2px solid var(--c5);color:var(--c5);opacity:.6;box-shadow:none;}
 
 /* Snake */
-#snakeCanvas{background:var(--line);border-radius:8px;touch-action:none;}
-.snake-controls{display:grid;grid-template-columns:repeat(3,44px);gap:6px;justify-content:center;margin-top:14px;}
-.snake-controls button{font-size:20px;padding:8px;border-radius:6px;border:2px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;}
+#snakeCanvas{background:var(--card);border-radius:14px;touch-action:none;box-shadow:0 6px 16px var(--shadow);}
+.snake-controls{display:grid;grid-template-columns:repeat(3,46px);gap:6px;justify-content:center;margin-top:14px;}
+.snake-controls button{font-size:20px;padding:8px;border-radius:10px;border:none;background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 3px 8px var(--shadow);}
+
+/* Whack */
+#whackBoard{display:grid;grid-template-columns:repeat(3,minmax(64px,84px));grid-template-rows:repeat(3,minmax(64px,84px));gap:8px;justify-content:center;margin:0 auto;}
+.hole{background:var(--card);border-radius:50%;font-size:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px var(--shadow);}
+.hole.up{background:var(--c3);}
+
+/* Trivia */
+.quiz-q{font-size:19px;font-weight:700;margin:14px 0;}
+.quiz-opts{display:grid;gap:10px;}
+.quiz-opts button{background:var(--card);border:none;border-radius:14px;padding:14px;font-size:15px;cursor:pointer;color:var(--ink);font-family:inherit;box-shadow:0 3px 8px var(--shadow);}
+.quiz-opts button.correct{background:var(--c5);color:#fff;}
+.quiz-opts button.wrong{background:var(--c1);color:#fff;}
+
+/* Simon */
+#simonBoard{display:grid;grid-template-columns:repeat(2,90px);grid-template-rows:repeat(2,90px);gap:8px;justify-content:center;margin:10px auto;}
+.simon-btn{border:none;border-radius:14px;cursor:pointer;opacity:.55;}
+.simon-btn.lit{opacity:1;}
+#simon0{background:var(--c1);} #simon1{background:var(--c2);} #simon2{background:var(--c3);} #simon3{background:var(--c4);}
+
+/* Math */
+.math-eq{font-size:30px;font-weight:800;margin:16px 0;}
+.math-opts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.math-opts button{background:var(--card);border:none;border-radius:14px;padding:12px 18px;font-size:18px;cursor:pointer;color:var(--ink);font-family:inherit;box-shadow:0 3px 8px var(--shadow);}
+
+/* Reaction */
+#reactBox{width:220px;height:220px;border-radius:20px;margin:16px auto;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:700;font-size:18px;cursor:pointer;background:var(--c1);}
+#reactBox.go{background:var(--c5);}
 </style>
 </head>
 <body>
 <header>
-  <h1>ملعب الألعاب</h1>
-  <p>اختار لعبة وابدأ</p>
+  <h1>🎮 ملعب الألعاب</h1>
+  <p>اختار لعبة وابدأ اللعب</p>
 </header>
 
 <div id="home">
-  <button class="tile" data-game="xo"><span class="emoji">❌</span>إكس أوه</button>
-  <button class="tile" data-game="rps"><span class="emoji">✊</span>حجر ورقة مقص</button>
-  <button class="tile" data-game="guess"><span class="emoji">🔢</span>خمن الرقم</button>
-  <button class="tile" data-game="memory"><span class="emoji">🧠</span>الذاكرة</button>
-  <button class="tile" data-game="snake"><span class="emoji">🐍</span>أفعى</button>
+  <button class="tile" data-game="xo" style="--tc:var(--c1)"><span class="emoji">❌</span>إكس أوه</button>
+  <button class="tile" data-game="rps" style="--tc:var(--c2)"><span class="emoji">✊</span>حجر ورقة مقص</button>
+  <button class="tile" data-game="guess" style="--tc:var(--c3)"><span class="emoji">🔢</span>خمن الرقم</button>
+  <button class="tile" data-game="memory" style="--tc:var(--c4)"><span class="emoji">🧠</span>الذاكرة</button>
+  <button class="tile" data-game="snake" style="--tc:var(--c5)"><span class="emoji">🐍</span>أفعى</button>
+  <button class="tile" data-game="whack" style="--tc:var(--c6)"><span class="emoji">🔨</span>اضرب الخلد</button>
+  <button class="tile" data-game="quiz" style="--tc:var(--c1)"><span class="emoji">❓</span>سؤال وجواب</button>
+  <button class="tile" data-game="simon" style="--tc:var(--c2)"><span class="emoji">🎨</span>ذاكر الألوان</button>
+  <button class="tile" data-game="math" style="--tc:var(--c3)"><span class="emoji">➕</span>سباق الحساب</button>
+  <button class="tile" data-game="react" style="--tc:var(--c4)"><span class="emoji">⚡</span>سرعة البديهة</button>
 </div>
 
-<!-- X-O -->
-<section class="game" id="game-xo">
-  <button class="back">← رجوع</button>
-  <div id="xoBoard"></div>
-  <p class="status" id="xoStatus"></p>
-  <button class="reset" id="xoReset">جولة جديدة</button>
-</section>
+<section class="game" id="game-xo"><button class="back">← رجوع</button>
+  <div id="xoBoard"></div><p class="status" id="xoStatus"></p>
+  <button class="reset" id="xoReset">جولة جديدة</button></section>
 
-<!-- RPS -->
-<section class="game" id="game-rps">
-  <button class="back">← رجوع</button>
+<section class="game" id="game-rps"><button class="back">← رجوع</button>
   <p class="status">اختار حجر ولا ورقة ولا مقص</p>
-  <div class="rps-choices">
-    <button data-c="✊">✊</button>
-    <button data-c="✋">✋</button>
-    <button data-c="✌️">✌️</button>
-  </div>
-  <div class="rps-result" id="rpsResult"></div>
-  <p class="status" id="rpsStatus"></p>
-</section>
+  <div class="rps-choices"><button data-c="✊">✊</button><button data-c="✋">✋</button><button data-c="✌️">✌️</button></div>
+  <div class="rps-result" id="rpsResult"></div><p class="status" id="rpsStatus"></p></section>
 
-<!-- Guess -->
-<section class="game" id="game-guess">
-  <button class="back">← رجوع</button>
-  <p class="status">فكرت في رقم من 1 لـ 50، حاول تخمنه</p>
+<section class="game" id="game-guess"><button class="back">← رجوع</button>
+  <p class="status">فكرت في رقم من 1 لـ 50</p>
   <div><input type="number" id="guessInput" min="1" max="50"><button id="guessGo">جرّب</button></div>
-  <p class="status" id="guessStatus"></p>
-  <button class="reset" id="guessReset">لعبة جديدة</button>
-</section>
+  <p class="status" id="guessStatus"></p><button class="reset" id="guessReset">لعبة جديدة</button></section>
 
-<!-- Memory -->
-<section class="game" id="game-memory">
-  <button class="back">← رجوع</button>
+<section class="game" id="game-memory"><button class="back">← رجوع</button>
   <p class="status" id="memStatus">لاقي كل الأزواج</p>
-  <div id="memBoard"></div>
-  <button class="reset" id="memReset">لعبة جديدة</button>
-</section>
+  <div id="memBoard"></div><button class="reset" id="memReset">لعبة جديدة</button></section>
 
-<!-- Snake -->
-<section class="game" id="game-snake">
-  <button class="back">← رجوع</button>
+<section class="game" id="game-snake"><button class="back">← رجوع</button>
   <p class="status" id="snakeStatus">النقاط: 0</p>
   <canvas id="snakeCanvas" width="240" height="240"></canvas>
-  <div class="snake-controls">
-    <span></span><button id="snUp">↑</button><span></span>
-    <button id="snLeft">←</button><button id="snDown">↓</button><button id="snRight">→</button>
+  <div class="snake-controls"><span></span><button id="snUp">↑</button><span></span>
+  <button id="snLeft">←</button><button id="snDown">↓</button><button id="snRight">→</button></div></section>
+
+<section class="game" id="game-whack"><button class="back">← رجوع</button>
+  <p class="status" id="whackStatus">النقاط: 0 — الوقت: 30</p>
+  <div id="whackBoard"></div><button class="reset" id="whackReset">ابدأ اللعب</button></section>
+
+<section class="game" id="game-quiz"><button class="back">← رجوع</button>
+  <p class="status" id="quizScore">النقطة 1 من 8</p>
+  <p class="quiz-q" id="quizQ"></p>
+  <div class="quiz-opts" id="quizOpts"></div>
+  <button class="reset" id="quizReset">ابدأ من جديد</button></section>
+
+<section class="game" id="game-simon"><button class="back">← رجوع</button>
+  <p class="status" id="simonStatus">دوس ابدأ وذاكر الترتيب</p>
+  <div id="simonBoard">
+    <button class="simon-btn" id="simon0"></button><button class="simon-btn" id="simon1"></button>
+    <button class="simon-btn" id="simon2"></button><button class="simon-btn" id="simon3"></button>
   </div>
-</section>
+  <button class="reset" id="simonReset">ابدأ</button></section>
+
+<section class="game" id="game-math"><button class="back">← رجوع</button>
+  <p class="status" id="mathStatus">النقاط: 0 — الوقت: 30</p>
+  <p class="math-eq" id="mathEq"></p>
+  <div class="math-opts" id="mathOpts"></div>
+  <button class="reset" id="mathReset">ابدأ اللعب</button></section>
+
+<section class="game" id="game-react"><button class="back">← رجوع</button>
+  <p class="status" id="reactStatus">دوس ابدأ واستنى اللون يتغير</p>
+  <div id="reactBox">استنى...</div>
+  <button class="reset" id="reactReset">ابدأ</button></section>
 
 <script>
-// ---------- Navigation ----------
-const home = document.getElementById('home');
+const home=document.getElementById('home');
 document.querySelectorAll('.tile').forEach(t=>t.addEventListener('click',()=>showGame(t.dataset.game)));
 document.querySelectorAll('.back').forEach(b=>b.addEventListener('click',showHome));
 function showGame(id){
@@ -133,182 +177,195 @@ function showGame(id){
 function showHome(){
   home.style.display='grid';
   document.querySelectorAll('.game').forEach(g=>g.classList.remove('active'));
-  stopSnake();
+  stopSnake(); stopWhack(); stopMath(); stopReact();
 }
 
-// ---------- X-O ----------
+/* X-O */
 (function(){
   const boardEl=document.getElementById('xoBoard'), statusEl=document.getElementById('xoStatus');
   let cells=Array(9).fill(null), turn='X', active=true;
   const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  function build(){
-    boardEl.innerHTML='';
-    cells.forEach((v,i)=>{
-      const b=document.createElement('button');
-      b.className='cell';
-      b.addEventListener('click',()=>play(i));
-      boardEl.appendChild(b);
-    });
-    render();
-  }
-  function render(){
-    [...boardEl.children].forEach((b,i)=>{
-      b.textContent=cells[i]||'';
-      b.className='cell'+(cells[i]==='X'?' x':cells[i]==='O'?' o':'');
-      b.disabled=!!cells[i]||!active;
-    });
-    if(active) statusEl.textContent='دور اللاعب '+turn;
-  }
-  function winner(){
-    for(const [a,b,c] of wins) if(cells[a]&&cells[a]===cells[b]&&cells[a]===cells[c]) return cells[a];
-    if(cells.every(c=>c)) return 'D';
-    return null;
-  }
-  function play(i){
-    if(cells[i]||!active) return;
-    cells[i]=turn;
-    const w=winner();
-    if(w){active=false; statusEl.textContent = w==='D' ? 'تعادل!' : 'فاز اللاعب '+w+' 🎉'; render(); return;}
-    turn=turn==='X'?'O':'X'; render();
-  }
+  function build(){boardEl.innerHTML='';cells.forEach((v,i)=>{const b=document.createElement('button');b.className='cell';b.addEventListener('click',()=>play(i));boardEl.appendChild(b);});render();}
+  function render(){[...boardEl.children].forEach((b,i)=>{b.textContent=cells[i]||'';b.className='cell'+(cells[i]==='X'?' x':cells[i]==='O'?' o':'');b.disabled=!!cells[i]||!active;});if(active)statusEl.textContent='دور اللاعب '+turn;}
+  function winner(){for(const [a,b,c] of wins)if(cells[a]&&cells[a]===cells[b]&&cells[a]===cells[c])return cells[a];if(cells.every(c=>c))return 'D';return null;}
+  function play(i){if(cells[i]||!active)return;cells[i]=turn;const w=winner();if(w){active=false;statusEl.textContent=w==='D'?'تعادل!':'فاز اللاعب '+w+' 🎉';render();return;}turn=turn==='X'?'O':'X';render();}
   document.getElementById('xoReset').addEventListener('click',()=>{cells=Array(9).fill(null);turn='X';active=true;build();});
   build();
 })();
 
-// ---------- RPS ----------
+/* RPS */
 (function(){
-  const opts=['✊','✋','✌️'];
-  const beats={'✊':'✌️','✋':'✊','✌️':'✋'};
+  const opts=['✊','✋','✌️'], beats={'✊':'✌️','✋':'✊','✌️':'✋'};
   const resEl=document.getElementById('rpsResult'), statEl=document.getElementById('rpsStatus');
   document.querySelectorAll('.rps-choices button').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const me=btn.dataset.c, cpu=opts[Math.floor(Math.random()*3)];
       resEl.textContent=me+'  مقابل  '+cpu;
-      let msg;
-      if(me===cpu) msg='تعادل!';
-      else if(beats[me]===cpu) msg='كسبت! 🎉';
-      else msg='خسرت 😅';
-      statEl.textContent=msg;
+      statEl.textContent = me===cpu?'تعادل!':(beats[me]===cpu?'كسبت! 🎉':'خسرت 😅');
     });
   });
 })();
 
-// ---------- Guess ----------
+/* Guess */
 (function(){
   let target=Math.ceil(Math.random()*50), tries=0;
   const input=document.getElementById('guessInput'), statusEl=document.getElementById('guessStatus');
   document.getElementById('guessGo').addEventListener('click',()=>{
-    const v=Number(input.value);
-    if(!v) return;
-    tries++;
-    if(v===target) statusEl.textContent='صح! الرقم كان '+target+' 🎉 (عدد محاولاتك: '+tries+')';
-    else if(v<target) statusEl.textContent='أكبر من كده ⬆️';
-    else statusEl.textContent='أصغر من كده ⬇️';
+    const v=Number(input.value); if(!v)return; tries++;
+    statusEl.textContent = v===target?('صح! الرقم كان '+target+' 🎉 (محاولات: '+tries+')') : (v<target?'أكبر من كده ⬆️':'أصغر من كده ⬇️');
   });
-  document.getElementById('guessReset').addEventListener('click',()=>{
-    target=Math.ceil(Math.random()*50); tries=0; input.value=''; statusEl.textContent='';
-  });
+  document.getElementById('guessReset').addEventListener('click',()=>{target=Math.ceil(Math.random()*50);tries=0;input.value='';statusEl.textContent='';});
 })();
 
-// ---------- Memory ----------
+/* Memory */
 (function(){
   const icons=['🍎','🍌','🍇','🍉','🍒','🍋','🍑','🥝'];
   const boardEl=document.getElementById('memBoard'), statusEl=document.getElementById('memStatus');
   let cards=[], flipped=[], matched=0, lock=false;
   function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-  function build(){
-    cards=shuffle([...icons,...icons]);
-    flipped=[]; matched=0; lock=false;
-    statusEl.textContent='لاقي كل الأزواج';
-    boardEl.innerHTML='';
-    cards.forEach((icon,i)=>{
-      const c=document.createElement('div');
-      c.className='mcard'; c.dataset.i=i;
-      c.addEventListener('click',()=>flip(i,c));
-      boardEl.appendChild(c);
-    });
-  }
-  function flip(i,el){
-    if(lock||el.classList.contains('flipped')||el.classList.contains('matched')) return;
-    el.textContent=cards[i]; el.classList.add('flipped');
-    flipped.push({i,el});
-    if(flipped.length===2){
-      lock=true;
-      const [a,b]=flipped;
-      if(cards[a.i]===cards[b.i]){
-        a.el.classList.add('matched'); b.el.classList.add('matched');
-        matched++; flipped=[]; lock=false;
-        if(matched===icons.length) statusEl.textContent='برافو! خلصت اللعبة 🎉';
-      } else {
-        setTimeout(()=>{
-          a.el.textContent=''; b.el.textContent='';
-          a.el.classList.remove('flipped'); b.el.classList.remove('flipped');
-          flipped=[]; lock=false;
-        },700);
-      }
-    }
-  }
+  function build(){cards=shuffle([...icons,...icons]);flipped=[];matched=0;lock=false;statusEl.textContent='لاقي كل الأزواج';boardEl.innerHTML='';
+    cards.forEach((icon,i)=>{const c=document.createElement('div');c.className='mcard';c.addEventListener('click',()=>flip(i,c));boardEl.appendChild(c);});}
+  function flip(i,el){if(lock||el.classList.contains('flipped')||el.classList.contains('matched'))return;
+    el.textContent=cards[i];el.classList.add('flipped');flipped.push({i,el});
+    if(flipped.length===2){lock=true;const [a,b]=flipped;
+      if(cards[a.i]===cards[b.i]){a.el.classList.add('matched');b.el.classList.add('matched');matched++;flipped=[];lock=false;
+        if(matched===icons.length)statusEl.textContent='برافو! خلصت اللعبة 🎉';}
+      else{setTimeout(()=>{a.el.textContent='';b.el.textContent='';a.el.classList.remove('flipped');b.el.classList.remove('flipped');flipped=[];lock=false;},700);}}}
   document.getElementById('memReset').addEventListener('click',build);
   build();
 })();
 
-// ---------- Snake ----------
+/* Snake */
 let snakeTimer=null;
 (function(){
   const canvas=document.getElementById('snakeCanvas'), ctx=canvas.getContext('2d');
-  const size=12, cols=20, rows=20;
-  let snake, dir, food, score, gameOver;
-  function reset(){
-    snake=[{x:10,y:10}]; dir={x:1,y:0}; score=0; gameOver=false;
-    placeFood();
-    document.getElementById('snakeStatus').textContent='النقاط: 0';
-  }
-  function placeFood(){
-    food={x:Math.floor(Math.random()*cols), y:Math.floor(Math.random()*rows)};
-  }
-  function tick(){
-    if(gameOver) return;
-    const head={x:snake[0].x+dir.x, y:snake[0].y+dir.y};
-    if(head.x<0||head.y<0||head.x>=cols||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){
-      gameOver=true;
-      document.getElementById('snakeStatus').textContent='خسرت! النقاط: '+score+' — اضغط زرار عشان تلعب تاني';
-      draw();
-      return;
-    }
-    snake.unshift(head);
-    if(head.x===food.x&&head.y===food.y){ score++; placeFood(); document.getElementById('snakeStatus').textContent='النقاط: '+score; }
-    else snake.pop();
-    draw();
-  }
-  function draw(){
-    const css=getComputedStyle(document.documentElement);
-    ctx.fillStyle=css.getPropertyValue('--line'); ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle=css.getPropertyValue('--acc1');
-    ctx.fillRect(food.x*size, food.y*size, size-1, size-1);
-    ctx.fillStyle=css.getPropertyValue('--acc2');
-    snake.forEach(s=>ctx.fillRect(s.x*size, s.y*size, size-1, size-1));
-  }
-  function setDir(x,y){ if(dir.x===-x&&dir.y===-y) return; dir={x,y}; }
+  const size=12, cols=20, rows=20; let snake,dir,food,score,gameOver;
+  function reset(){snake=[{x:10,y:10}];dir={x:1,y:0};score=0;gameOver=false;placeFood();document.getElementById('snakeStatus').textContent='النقاط: 0';}
+  function placeFood(){food={x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)};}
+  function tick(){if(gameOver)return;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+    if(head.x<0||head.y<0||head.x>=cols||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){gameOver=true;document.getElementById('snakeStatus').textContent='خسرت! النقاط: '+score;draw();return;}
+    snake.unshift(head);if(head.x===food.x&&head.y===food.y){score++;placeFood();document.getElementById('snakeStatus').textContent='النقاط: '+score;}else snake.pop();draw();}
+  function draw(){const css=getComputedStyle(document.documentElement);
+    ctx.fillStyle=css.getPropertyValue('--bg1');ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle=css.getPropertyValue('--c3');ctx.fillRect(food.x*size,food.y*size,size-1,size-1);
+    ctx.fillStyle=css.getPropertyValue('--c5');snake.forEach(s=>ctx.fillRect(s.x*size,s.y*size,size-1,size-1));}
+  function setDir(x,y){if(dir.x===-x&&dir.y===-y)return;dir={x,y};}
   document.getElementById('snUp').addEventListener('click',()=>setDir(0,-1));
   document.getElementById('snDown').addEventListener('click',()=>setDir(0,1));
   document.getElementById('snLeft').addEventListener('click',()=>setDir(-1,0));
   document.getElementById('snRight').addEventListener('click',()=>setDir(1,0));
-  document.getElementById('game-snake').addEventListener('click',(e)=>{ if(gameOver && e.target.tagName!=='BUTTON'){ reset(); draw(); } });
-  document.addEventListener('keydown',(e)=>{
-    if(!document.getElementById('game-snake').classList.contains('active')) return;
-    if(e.key==='ArrowUp') setDir(0,-1);
-    if(e.key==='ArrowDown') setDir(0,1);
-    if(e.key==='ArrowLeft') setDir(-1,0);
-    if(e.key==='ArrowRight') setDir(1,0);
+  document.getElementById('game-snake').addEventListener('click',(e)=>{if(gameOver&&e.target.tagName!=='BUTTON'){reset();draw();}});
+  document.addEventListener('keydown',(e)=>{if(!document.getElementById('game-snake').classList.contains('active'))return;
+    if(e.key==='ArrowUp')setDir(0,-1);if(e.key==='ArrowDown')setDir(0,1);if(e.key==='ArrowLeft')setDir(-1,0);if(e.key==='ArrowRight')setDir(1,0);});
+  window.startSnake=function(){reset();draw();if(snakeTimer)clearInterval(snakeTimer);snakeTimer=setInterval(tick,180);};
+  window.stopSnake=function(){if(snakeTimer){clearInterval(snakeTimer);snakeTimer=null;}};
+})();
+
+/* Whack-a-mole */
+let whackTimer=null, whackUpTimer=null;
+(function(){
+  const boardEl=document.getElementById('whackBoard'), statusEl=document.getElementById('whackStatus');
+  let score=0, timeLeft=30, holes=[], running=false;
+  function build(){boardEl.innerHTML='';holes=[];for(let i=0;i<9;i++){const h=document.createElement('div');h.className='hole';h.addEventListener('click',()=>hit(i));boardEl.appendChild(h);holes.push(h);}}
+  function hit(i){if(!running||!holes[i].classList.contains('up'))return;holes[i].classList.remove('up');holes[i].textContent='';score++;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;}
+  function popRandom(){holes.forEach(h=>{h.classList.remove('up');h.textContent='';});const i=Math.floor(Math.random()*9);holes[i].classList.add('up');holes[i].textContent='🐹';}
+  window.stopWhack=function(){running=false;if(whackTimer)clearInterval(whackTimer);if(whackUpTimer)clearInterval(whackUpTimer);};
+  document.getElementById('whackReset').addEventListener('click',()=>{
+    stopWhack();build();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';
+    whackUpTimer=setInterval(popRandom,700);
+    whackTimer=setInterval(()=>{timeLeft--;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
+      if(timeLeft<=0){stopWhack();holes.forEach(h=>{h.classList.remove('up');h.textContent='';});statusEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
   });
-  window.startSnake=function(){
-    reset(); draw();
-    if(snakeTimer) clearInterval(snakeTimer);
-    snakeTimer=setInterval(tick,180);
-  };
-  window.stopSnake=function(){
-    if(snakeTimer){clearInterval(snakeTimer); snakeTimer=null;}
-  };
+  build();
+})();
+
+/* Trivia quiz */
+(function(){
+  const questions=[
+    {q:'كام عاصمة مصر؟',opts:['القاهرة','الإسكندرية','أسوان'],a:0},
+    {q:'كام لون في علم مصر؟',opts:['اتنين','تلاتة','أربعة'],a:1},
+    {q:'أكبر كوكب في المجموعة الشمسية؟',opts:['الأرض','المشتري','زحل'],a:1},
+    {q:'كام قارة في العالم؟',opts:['5','6','7'],a:2},
+    {q:'أسرع حيوان بري؟',opts:['الفهد','الأسد','الحصان'],a:0},
+    {q:'كام يوم في السنة الكبيسة؟',opts:['364','365','366'],a:2},
+    {q:'العملة الرسمية في مصر؟',opts:['الدولار','الجنيه','الريال'],a:1},
+    {q:'أطول نهر في العالم؟',opts:['الأمازون','النيل','الفرات'],a:1}
+  ];
+  let idx=0, score=0;
+  const qEl=document.getElementById('quizQ'), optsEl=document.getElementById('quizOpts'), scoreEl=document.getElementById('quizScore');
+  function render(){
+    if(idx>=questions.length){qEl.textContent='خلصت! نقاطك: '+score+' من '+questions.length+' 🎉';optsEl.innerHTML='';scoreEl.textContent='';return;}
+    const q=questions[idx];scoreEl.textContent='سؤال '+(idx+1)+' من '+questions.length;qEl.textContent=q.q;optsEl.innerHTML='';
+    q.opts.forEach((opt,i)=>{const b=document.createElement('button');b.textContent=opt;
+      b.addEventListener('click',()=>{
+        [...optsEl.children].forEach((x,xi)=>{x.disabled=true;if(xi===q.a)x.classList.add('correct');});
+        if(i!==q.a)b.classList.add('wrong'); else score++;
+        setTimeout(()=>{idx++;render();},900);
+      });
+      optsEl.appendChild(b);
+    });
+  }
+  document.getElementById('quizReset').addEventListener('click',()=>{idx=0;score=0;render();});
+  render();
+})();
+
+/* Simon */
+(function(){
+  const colors=[0,1,2,3];
+  const btns=colors.map(i=>document.getElementById('simon'+i));
+  const statusEl=document.getElementById('simonStatus');
+  let sequence=[], userStep=0, playing=false;
+  function flash(i){return new Promise(res=>{btns[i].classList.add('lit');setTimeout(()=>{btns[i].classList.remove('lit');res();},420);});}
+  async function playSequence(){playing=false;statusEl.textContent='بص واذكر...';for(const i of sequence){await flash(i);await new Promise(r=>setTimeout(r,200));}playing=true;userStep=0;statusEl.textContent='دورك! (طول السلسلة: '+sequence.length+')';}
+  function nextRound(){sequence.push(Math.floor(Math.random()*4));playSequence();}
+  btns.forEach((b,i)=>b.addEventListener('click',()=>{
+    if(!playing)return;
+    flash(i);
+    if(i===sequence[userStep]){userStep++;if(userStep===sequence.length){playing=false;statusEl.textContent='صح! هنزود واحدة 🎉';setTimeout(nextRound,700);}}
+    else{playing=false;statusEl.textContent='خسرت! طول السلسلة كانت '+sequence.length+' — دوس ابدأ تاني';sequence=[];}
+  }));
+  document.getElementById('simonReset').addEventListener('click',()=>{sequence=[];nextRound();});
+})();
+
+/* Math race */
+let mathTimer=null;
+(function(){
+  const eqEl=document.getElementById('mathEq'), optsEl=document.getElementById('mathOpts'), statusEl=document.getElementById('mathStatus');
+  let score=0, timeLeft=30, answer=0, running=false;
+  function newEq(){
+    const a=Math.ceil(Math.random()*20), b=Math.ceil(Math.random()*20);
+    const ops=['+','-']; const op=ops[Math.floor(Math.random()*2)];
+    answer = op==='+' ? a+b : a-b;
+    eqEl.textContent = a+' '+op+' '+b+' = ؟';
+    const opts=new Set([answer]);
+    while(opts.size<3) opts.add(answer+Math.floor(Math.random()*9)-4);
+    const arr=[...opts].sort(()=>Math.random()-0.5);
+    optsEl.innerHTML='';
+    arr.forEach(v=>{const b2=document.createElement('button');b2.textContent=v;b2.addEventListener('click',()=>{if(!running)return;if(v===answer){score++;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;}newEq();});optsEl.appendChild(b2);});
+  }
+  window.stopMath=function(){running=false;if(mathTimer)clearInterval(mathTimer);};
+  document.getElementById('mathReset').addEventListener('click',()=>{
+    stopMath();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';newEq();
+    mathTimer=setInterval(()=>{timeLeft--;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
+      if(timeLeft<=0){stopMath();optsEl.innerHTML='';eqEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
+  });
+  eqEl.textContent='دوس ابدأ اللعب';
+})();
+
+/* Reaction */
+let reactTimeout=null;
+(function(){
+  const box=document.getElementById('reactBox'), statusEl=document.getElementById('reactStatus');
+  let waitingGo=false, startTime=0;
+  window.stopReact=function(){if(reactTimeout)clearTimeout(reactTimeout);box.classList.remove('go');box.textContent='استنى...';waitingGo=false;};
+  document.getElementById('reactReset').addEventListener('click',()=>{
+    stopReact();statusEl.textContent='استنى اللون يتغير...';box.textContent='استنى...';
+    reactTimeout=setTimeout(()=>{box.classList.add('go');box.textContent='دوس دلوقتي!';waitingGo=true;startTime=Date.now();},800+Math.random()*2000);
+  });
+  box.addEventListener('click',()=>{
+    if(waitingGo){const ms=Date.now()-startTime;statusEl.textContent='وقتك: '+ms+' مللي ثانية ⚡';waitingGo=false;box.classList.remove('go');box.textContent='دوس ابدأ تاني';}
+    else if(box.textContent==='استنى...'){statusEl.textContent='بدري! استنى اللون يتغير';}
+  });
 })();
 </script>
 </body>
