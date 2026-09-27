@@ -144,8 +144,55 @@ button.reset{margin-top:18px;padding:10px 22px;background:var(--c4);color:#fff;b
 .adv-memory button.done{background:transparent;border:2px solid var(--c5);color:var(--c5)}
 
 </style>
+
+<style id="dula-pro-upgrade-v2">
+/* DULA Pro Upgrade v2 */
+.dula-topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:12px auto;max-width:1100px}
+.dula-chip{background:var(--card,#fff);border:1px solid rgba(127,127,127,.18);border-radius:14px;padding:8px 12px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.dula-chip small{display:block;opacity:.65;font-weight:500;font-size:11px}
+.dula-hero{max-width:1100px;margin:12px auto 18px;padding:20px;border-radius:22px;background:linear-gradient(135deg,#6c5ce7,#00b894);color:#fff;box-shadow:0 12px 35px rgba(0,0,0,.14)}
+.dula-hero h2{margin:0 0 7px}.dula-hero p{margin:0;opacity:.92}
+.dula-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.dula-btn{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:800;background:#fff;color:#333}
+.dula-btn.alt{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.dula-search{max-width:1100px;margin:0 auto 15px}
+.dula-search input{width:100%;box-sizing:border-box;padding:13px 15px;border-radius:14px;border:1px solid rgba(127,127,127,.22);font-size:16px;background:var(--card,#fff);color:inherit}
+.dula-game-card{transition:transform .18s,box-shadow .18s}.dula-game-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.11)}
+.dula-badge{display:inline-block;padding:3px 8px;border-radius:999px;background:rgba(108,92,231,.12);font-size:11px;font-weight:800;margin-top:5px}
+.dula-notice{max-width:1100px;margin:12px auto;padding:12px 14px;border-radius:14px;background:rgba(253,203,110,.16);border:1px solid rgba(253,203,110,.45);font-size:13px}
+.dula-footer{max-width:1100px;margin:35px auto 20px;padding:20px 5px;text-align:center;opacity:.75;font-size:13px}
+@media(max-width:650px){.dula-hero{margin:10px;padding:16px;border-radius:18px}.dula-chip{flex:1;min-width:110px}.dula-topbar{gap:7px}}
+</style>
+
 </head>
 <body>
+
+<!-- DULA Pro Upgrade v2 -->
+<div class="dula-topbar" id="dulaProBar">
+  <div class="dula-chip"><small>المستوى</small><span id="dulaLevel">1</span> ⭐</div>
+  <div class="dula-chip"><small>الخبرة</small><span id="dulaXP">0</span></div>
+  <div class="dula-chip"><small>العملات</small><span id="dulaCoins">0</span> 🪙</div>
+  <div class="dula-chip"><small>سلسلة اللعب</small><span id="dulaStreak">0</span> 🔥</div>
+</div>
+
+<section class="dula-hero">
+  <h2>🎮 مغامرة DULA</h2>
+  <p>العب مراحل متنوعة، اجمع الخبرة والعملات، وافتح مستويات جديدة.</p>
+  <div class="dula-actions">
+    <button class="dula-btn" onclick="openAdventure()">ابدأ المغامرة</button>
+    <button class="dula-btn alt" onclick="dulaDaily()">🎁 تحدي اليوم</button>
+    <button class="dula-btn alt" onclick="dulaResetProgress()">إعادة التقدم</button>
+  </div>
+</section>
+
+<div class="dula-search">
+  <input id="dulaGameSearch" type="search" placeholder="🔎 ابحث عن لعبة..." oninput="filterDulaGames(this.value)">
+</div>
+
+<div class="dula-notice">
+  💡 <b>نسخة الربح:</b> هذه النسخة مجهزة لإضافة إعلانات قانونية لاحقًا بعد نشر الموقع واستيفاء متطلبات شبكة الإعلانات، بدون التأثير على اللعب.
+</div>
+
 <header>
   <h1>🎮 العاب DULA</h1>
   <p>اختار لعبة، أو ادخل مغامرة DULA وخلي كل مرحلة مختلفة عن اللي قبلها 🎮</p>
@@ -784,5 +831,57 @@ let reactTimeout=null;
 })();
 
 </script>
+
+<script id="dula-pro-upgrade-js">
+(function(){
+  const KEY="dulaProProfile";
+  const load=()=>JSON.parse(localStorage.getItem(KEY)||'{"xp":0,"coins":0,"streak":0,"lastDay":""}');
+  const save=p=>localStorage.setItem(KEY,JSON.stringify(p));
+  function level(xp){return Math.floor(xp/100)+1}
+  window.updateDulaProfile=function(){
+    const p=load(), lv=level(p.xp);
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    set("dulaLevel",lv);set("dulaXP",p.xp);set("dulaCoins",p.coins);set("dulaStreak",p.streak);
+  };
+  window.dulaReward=function(xp=20,coins=5){
+    const p=load();p.xp+=xp;p.coins+=coins;
+    const today=new Date().toISOString().slice(0,10);
+    if(p.lastDay!==today){p.streak+=1;p.lastDay=today}
+    save(p);updateDulaProfile();
+  };
+  window.dulaDaily=function(){
+    const p=load(), today=new Date().toISOString().slice(0,10);
+    if(p.lastDay===today){alert("أكملت تحدي اليوم بالفعل 🎉");return}
+    dulaReward(40,15);
+    alert("🎁 حصلت على 40 XP و15 عملة! ابدأ أي لعبة لإكمال تحدي اليوم.");
+  };
+  window.dulaResetProgress=function(){
+    if(confirm("هل تريد حذف مستوى DULA والعملات والتقدم المحفوظ؟")){
+      localStorage.removeItem(KEY);updateDulaProfile();alert("تمت إعادة التقدم.");
+    }
+  };
+  window.filterDulaGames=function(q){
+    q=(q||"").trim().toLowerCase();
+    document.querySelectorAll("button, .game-card, [class*='game-card']").forEach(el=>{
+      const txt=(el.innerText||el.textContent||"").toLowerCase();
+      if(el.closest("#dulaProBar")||el.closest(".dula-hero")||el.closest(".dula-search")) return;
+      if(q && txt && (el.tagName==="BUTTON" || el.className.toString().includes("game-card")))
+        el.style.display=txt.includes(q)?"":"none";
+      else if(!q && (el.tagName==="BUTTON" || el.className.toString().includes("game-card"))) el.style.display="";
+    });
+  };
+  window.openAdventure=function(){
+    const candidates=[...document.querySelectorAll("button")];
+    const b=candidates.find(x=>(x.textContent||"").includes("مغامرة DULA"));
+    if(b){b.click();return}
+    const el=document.getElementById("adventure");
+    if(el) el.scrollIntoView({behavior:"smooth"});
+    else alert("وضع المغامرة موجود في النسخة المطورة. ابحث عن قسم المغامرة داخل الصفحة.");
+  };
+  document.addEventListener("DOMContentLoaded",updateDulaProfile);
+})();
+</script>
+
+<div class="dula-footer">© DULA Games — ألعاب مجانية للمتصفح • تصميم متجاوب للموبايل والكمبيوتر</div>
 </body>
 </html>
