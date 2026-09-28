@@ -1,82 +1,102 @@
 /* ============================================
-   DULA Games - Main Script
+   DULA Pro - Main Script v2.0
+   كل حاجة: اسم اللاعب + المتجر + الثيمات + الألعاب
    ============================================ */
 
-/* ====== 1. نظام البيانات الموحّد ====== */
-const STORAGE_KEY = 'dulaGames_v3';
+/* ====== 1. البيانات الأساسية ====== */
+const STORAGE_KEY = 'dulaPro_v2';
 
 const defaultState = {
+  playerName: '',
   xp: 0,
-  coins: 0,
+  coins: 50,
   streak: 0,
   lastDay: '',
-  scores: {},      // أفضل سكور لكل لعبة
-  plays: {},       // عدد مرات لعب كل لعبة
-  owned: [],       // العناصر المشتراة من المتجر
-  theme: 'default'
+  lastDailyClaim: '',
+  scores: {},
+  plays: {},
+  ownedThemes: ['gaming'],
+  ownedAvatars: ['default'],
+  currentTheme: 'gaming',
+  currentAvatar: 'default'
 };
 
 let state = { ...defaultState };
 
+/* ====== 2. تحميل وحفظ البيانات ====== */
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) state = { ...defaultState, ...JSON.parse(saved) };
   } catch (e) { console.warn('Load error', e); }
-  checkStreak();
-  renderAll();
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) { console.warn('Save error', e); }
 }
 
-function checkStreak() {
-  const today = new Date().toDateString();
-  if (state.lastDay !== today) {
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
-    if (state.lastDay === yesterday) state.streak++;
-    else if (state.lastDay !== today) state.streak = 1;
-    state.lastDay = today;
-    saveState();
-  }
-}
+/* ====== 3. الثيمات ====== */
+const THEMES = [
+  { id: 'gaming',  name: 'Gaming',  icon: '🎮', price: 0,    tag: 'مجاني',   desc: 'الثيم الافتراضي' },
+  { id: 'ocean',   name: 'Ocean',   icon: '🌊', price: 100,  tag: 'مبتدئ',   desc: 'أزرق هادئ' },
+  { id: 'fire',    name: 'Fire',    icon: '🔥', price: 300,  tag: 'متوسط',   desc: 'نار برتقالية' },
+  { id: 'galaxy',  name: 'Galaxy',  icon: '🌌', price: 800,  tag: 'متقدم',   desc: 'فضاء بنفسجي' },
+  { id: 'diamond', name: 'Diamond', icon: '💎', price: 2000, tag: 'نادر',    desc: 'ألماس أزرق' },
+  { id: 'royal',   name: 'Royal',   icon: '👑', price: 5000, tag: 'أسطوري',  desc: 'ملكي ذهبي' }
+];
 
-/* ====== 2. المستوى والكوينز ====== */
+const AVATARS = [
+  { id: 'default', name: 'افتراضي', icon: '🎮', price: 0 },
+  { id: 'cat',     name: 'قطة',      icon: '🐱', price: 50 },
+  { id: 'lion',    name: 'أسد',      icon: '🦁', price: 150 },
+  { id: 'robot',   name: 'روبوت',    icon: '🤖', price: 250 },
+  { id: 'dragon',  name: 'تنين',     icon: '🐉', price: 500 },
+  { id: 'wizard',  name: 'ساحر',     icon: '🧙', price: 800 },
+  { id: 'ninja',   name: 'نينجا',    icon: '🥷', price: 1200 },
+  { id: 'crown',   name: 'تاج',      icon: '👑', price: 2500 }
+];
+
+/* ====== 4. قائمة الألعاب ====== */
+const GAMES = [
+  { id: 'xo',        name: 'إكس أوه',       icon: '❌' },
+  { id: 'rps',       name: 'حجر ورقة مقص',  icon: '✊' },
+  { id: 'guess',     name: 'خمن الرقم',     icon: '🔢' },
+  { id: 'memory',    name: 'الذاكرة',       icon: '🧠' },
+  { id: 'snake',     name: 'أفعى',          icon: '🐍' },
+  { id: 'whack',     name: 'اضرب الخلد',    icon: '🔨' },
+  { id: 'quiz',      name: 'سؤال وجواب',    icon: '❓' },
+  { id: 'simon',     name: 'ذاكر الألوان',  icon: '🎨' },
+  { id: 'math',      name: 'سباق الحساب',   icon: '➕' },
+  { id: 'react',     name: 'سرعة البديهة',  icon: '⚡' },
+  { id: 'ucl',       name: 'دوري الأبطال',  icon: '🏆' },
+  { id: 'epl',       name: 'الدوري الإنجليزي', icon: '⚽' },
+  { id: 'wc',        name: 'كأس العالم',    icon: '🌍' },
+  { id: 'player',    name: 'حياة لاعب',     icon: '🌟' },
+  { id: 'about',     name: 'عن الموقع',     icon: 'ℹ️' }
+];
+
+/* ====== 5. المستوى والخبرة ====== */
 function getLevel() { return Math.floor(state.xp / 100) + 1; }
 function getXPInLevel() { return state.xp % 100; }
 
+/* ====== 6. إضافة مكافآت ====== */
 function addReward(xp, coins) {
   state.xp += xp;
   state.coins += coins;
   saveState();
   renderAll();
-  showToast(`+${xp} XP و +${coins} 🪙`);
 }
 
-function addCoins(n) {
-  state.coins += n;
-  saveState();
-  renderTopbar();
-  showToast(`+${n} 🪙`);
-}
-
-function spendCoins(n) {
-  if (state.coins < n) return false;
-  state.coins -= n;
-  saveState();
-  renderTopbar();
-  return true;
-}
-
-/* ====== 3. تسجيل نتيجة اللعبة ====== */
-function recordScore(gameId, score, coinsEarned) {
+/* ====== 7. تسجيل نتيجة لعبة ====== */
+function recordScore(gameId, score) {
   const isNewBest = !state.scores[gameId] || score > state.scores[gameId];
   if (isNewBest) state.scores[gameId] = score;
   state.plays[gameId] = (state.plays[gameId] || 0) + 1;
 
   const xp = Math.max(5, Math.floor(score / 5));
-  const coins = coinsEarned || Math.max(1, Math.floor(score / 10));
+  const coins = Math.max(1, Math.floor(score / 10));
 
   state.xp += xp;
   state.coins += coins;
@@ -86,21 +106,39 @@ function recordScore(gameId, score, coinsEarned) {
   return { isNewBest, xp, coins, best: state.scores[gameId] };
 }
 
-/* ====== 4. عرض الواجهة ====== */
+/* ====== 8. عرض الواجهة ====== */
 function renderAll() {
   renderTopbar();
+  renderQuickStats();
   renderLeaderboard();
   renderGames();
   renderShop();
 }
 
 function renderTopbar() {
-  const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
-  el('topLevel', getLevel());
-  el('topXP', state.xp);
-  el('topCoins', state.coins);
-  el('topStreak', state.streak);
-  el('shopCoins', state.coins);
+  const set = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  set('userName', state.playerName || 'لاعب');
+  set('userLevel', 'المستوى ' + getLevel());
+  set('topCoins', state.coins);
+  set('topStreak', state.streak);
+  set('xpText', getXPInLevel() + ' / 100 XP');
+  set('shopCoins', state.coins);
+
+  const xpFill = document.getElementById('xpFill');
+  if (xpFill) xpFill.style.width = getXPInLevel() + '%';
+
+  const avatar = AVATARS.find(a => a.id === state.currentAvatar);
+  const avatarEl = document.getElementById('userAvatar');
+  if (avatarEl && avatar) avatarEl.textContent = avatar.icon;
+}
+
+function renderQuickStats() {
+  const set = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  const totalPlays = Object.values(state.plays).reduce((a, b) => a + b, 0);
+  const bestScore = Math.max(0, ...Object.values(state.scores));
+  set('qsGamesPlayed', totalPlays);
+  set('qsBestScore', bestScore);
+  set('qsThemes', state.ownedThemes.length);
 }
 
 function renderLeaderboard() {
@@ -108,24 +146,22 @@ function renderLeaderboard() {
   if (!list) return;
 
   const entries = Object.entries(state.scores)
-    .map(([id, score]) => ({
-      id,
-      name: GAMES.find(g => g.id === id)?.name || id,
-      icon: GAMES.find(g => g.id === id)?.icon || '🎮',
-      score
-    }))
+    .map(([id, score]) => {
+      const g = GAMES.find(x => x.id === id);
+      return { name: g ? g.name : id, icon: g ? g.icon : '🎮', score };
+    })
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
 
   if (entries.length === 0) {
-    list.innerHTML = '<li style="justify-content:center;opacity:0.6">لا يوجد سكور بعد — ابدأ اللعب! 🎮</li>';
+    list.innerHTML = '<li class="lb-empty">لا يوجد سكور بعد — ابدأ اللعب! 🎮</li>';
     return;
   }
 
   const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
   list.innerHTML = entries.map((e, i) => `
     <li class="${i < 3 ? 'top' + (i + 1) : ''}">
-      <span class="rank">${medals[i]}</span>
+      <span class="lb-rank">${medals[i]}</span>
       <span class="lb-name">${e.icon} ${e.name}</span>
       <span class="lb-score">${e.score}</span>
     </li>
@@ -137,8 +173,7 @@ function renderGames() {
   if (!grid) return;
 
   grid.innerHTML = GAMES.map(g => `
-    <div class="game-card" data-name="${g.name}" style="--tc:var(--c${(GAMES.indexOf(g) % 6) + 1})" onclick="startGame('${g.id}')">
-      ${g.isNew ? '<span class="gc-badge">جديد</span>' : ''}
+    <div class="game-card" data-name="${g.name}" onclick="startGame('${g.id}')">
       <span class="gc-icon">${g.icon}</span>
       <div class="gc-name">${g.name}</div>
       <div class="gc-best">🏆 ${state.scores[g.id] || 0}</div>
@@ -155,42 +190,218 @@ function filterGames(q) {
   });
 }
 
-/* ====== 5. قائمة الألعاب ====== */
-const GAMES = [
-  { id: 'xo', name: 'إكس أوه', icon: '❌' },
-  { id: 'rps', name: 'حجر ورقة مقص', icon: '✊' },
-  { id: 'guess', name: 'خمن الرقم', icon: '🔢' },
-  { id: 'memory', name: 'الذاكرة', icon: '🧠' },
-  { id: 'snake', name: 'أفعى', icon: '🐍' },
-  { id: 'whack', name: 'اضرب الخلد', icon: '🔨' },
-  { id: 'quiz', name: 'سؤال وجواب', icon: '❓' },
-  { id: 'simon', name: 'ذاكر الألوان', icon: '🎨' },
-  { id: 'math', name: 'سباق الحساب', icon: '➕' },
-  { id: 'react', name: 'سرعة البديهة', icon: '⚡' },
-  { id: 'adventure', name: 'مغامرة DULA', icon: '🗺️', isNew: true },
-  { id: 'about', name: 'عن الموقع', icon: 'ℹ️' },
-  { id: 'ucl', name: 'دوري الأبطال', icon: '🏆' },
-  { id: 'epl', name: 'الدوري الإنجليزي', icon: '⚽' },
-  { id: 'player', name: 'حياة لاعب', icon: '🌟' },
-  { id: 'wc', name: 'كأس العالم', icon: '🌍' }
-];
+/* ====== 9. المتجر ====== */
+function openShop() {
+  document.getElementById('shopModal').classList.add('active');
+  renderShop();
+}
 
-/* ====== 6. التنقل ====== */
+function closeShop() {
+  document.getElementById('shopModal').classList.remove('active');
+}
+
+function renderShop() {
+  const themesGrid = document.getElementById('themesGrid');
+  const avatarsGrid = document.getElementById('avatarsGrid');
+  if (!themesGrid || !avatarsGrid) return;
+
+  themesGrid.innerHTML = THEMES.map(t => {
+    const owned = state.ownedThemes.includes(t.id);
+    const active = state.currentTheme === t.id;
+    return `
+      <div class="shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''}">
+        ${active ? '<span class="si-tag">مفعّل</span>' : ''}
+        <span class="si-icon">${t.icon}</span>
+        <div class="si-name">${t.name}</div>
+        <button class="si-price" ${owned ? (active ? 'disabled' : '') : ''} onclick="buyTheme('${t.id}')">
+          ${owned ? (active ? '✅ مفعّل' : 'استخدام') : t.price + ' 🪙'}
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  avatarsGrid.innerHTML = AVATARS.map(a => {
+    const owned = state.ownedAvatars.includes(a.id);
+    const active = state.currentAvatar === a.id;
+    return `
+      <div class="shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''}">
+        ${active ? '<span class="si-tag">مفعّل</span>' : ''}
+        <span class="si-icon">${a.icon}</span>
+        <div class="si-name">${a.name}</div>
+        <button class="si-price" ${owned ? (active ? 'disabled' : '') : ''} onclick="buyAvatar('${a.id}')">
+          ${owned ? (active ? '✅ مفعّل' : 'استخدام') : a.price + ' 🪙'}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function buyTheme(id) {
+  const theme = THEMES.find(t => t.id === id);
+  if (!theme) return;
+
+  const owned = state.ownedThemes.includes(id);
+
+  if (owned) {
+    state.currentTheme = id;
+    applyTheme(id);
+    saveState();
+    renderAll();
+    showToast('✅ تم تفعيل ثيم ' + theme.name);
+    return;
+  }
+
+  if (state.coins < theme.price) {
+    showToast('❌ محتاج ' + theme.price + ' 🪙 — ناقص ' + (theme.price - state.coins));
+    return;
+  }
+
+  state.coins -= theme.price;
+  state.ownedThemes.push(id);
+  state.currentTheme = id;
+  applyTheme(id);
+  saveState();
+  renderAll();
+  showToast('🎉 اشتريت ثيم ' + theme.name + '!');
+}
+
+function buyAvatar(id) {
+  const avatar = AVATARS.find(a => a.id === id);
+  if (!avatar) return;
+
+  const owned = state.ownedAvatars.includes(id);
+
+  if (owned) {
+    state.currentAvatar = id;
+    saveState();
+    renderAll();
+    showToast('✅ تم تفعيل أفاتار ' + avatar.name);
+    return;
+  }
+
+  if (state.coins < avatar.price) {
+    showToast('❌ محتاج ' + avatar.price + ' 🪙');
+    return;
+  }
+
+  state.coins -= avatar.price;
+  state.ownedAvatars.push(id);
+  state.currentAvatar = id;
+  saveState();
+  renderAll();
+  showToast('🎉 اشتريت أفاتار ' + avatar.name + '!');
+}
+
+function applyTheme(id) {
+  if (id === 'gaming') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', id);
+  }
+}
+
+/* ====== 10. الهدية اليومية ====== */
+function claimDaily() {
+  const today = new Date().toDateString();
+  if (state.lastDailyClaim === today) {
+    showToast('🎁 خدت هدية النهاردة! ارجع بكرة');
+    return;
+  }
+  state.lastDailyClaim = today;
+
+  const bonus = 50 + state.streak * 10;
+  const xpBonus = 20 + state.streak * 5;
+  state.coins += bonus;
+  state.xp += xpBonus;
+  saveState();
+  renderAll();
+
+  document.getElementById('rewardText').textContent = '+' + bonus + ' 🪙 و +' + xpBonus + ' XP';
+  document.getElementById('rewardModal').classList.add('active');
+}
+
+function closeReward() {
+  document.getElementById('rewardModal').classList.remove('active');
+}
+
+/* ====== 11. Streak ====== */
+function checkStreak() {
+  const today = new Date().toDateString();
+  if (state.lastDay === today) return;
+
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  if (state.lastDay === yesterday) state.streak++;
+  else state.streak = 1;
+
+  state.lastDay = today;
+  saveState();
+}
+
+/* ====== 12. Toast ====== */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ====== 13. أدوات ====== */
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ====== 14. التنقل بين الشاشات ====== */
 let activeGame = null;
+let snakeTimer = null;
+let whackTimer = null;
+let whackUpTimer = null;
+let mathTimer = null;
+let reactTimeout = null;
+
+function clearTimers() {
+  if (snakeTimer) clearInterval(snakeTimer);
+  if (whackTimer) clearInterval(whackTimer);
+  if (whackUpTimer) clearInterval(whackUpTimer);
+  if (mathTimer) clearInterval(mathTimer);
+  if (reactTimeout) clearTimeout(reactTimeout);
+  snakeTimer = whackTimer = whackUpTimer = mathTimer = reactTimeout = null;
+}
 
 function startGame(id) {
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('gameScreen').style.display = 'block';
+  if (id === 'about') {
+    document.getElementById('homeScreen').classList.remove('active');
+    document.getElementById('gameScreen').classList.add('active');
+    document.getElementById('gameTitle').textContent = 'ℹ️ عن الموقع';
+    document.getElementById('currentScore').textContent = '—';
+    document.getElementById('gameArea').innerHTML = `
+      <div style="text-align:right;padding:20px;line-height:1.9">
+        <p style="text-align:center;font-size:50px;margin:0">🎮</p>
+        <h3 style="text-align:center;margin:12px 0">DULA Pro</h3>
+        <p style="color:var(--ink-soft)">موقع ألعاب احترافي فيه ${GAMES.length} لعبة مختلفة.</p>
+        <p style="color:var(--ink-soft)">🎯 اجمع الكوينز من الألعاب وافتح ثيمات فخمة!</p>
+        <p style="color:var(--ink-soft)">🎨 ${THEMES.length} ثيمات مختلفة بأسعار متدرجة</p>
+        <p style="color:var(--ink-soft)">👤 ${AVATARS.length} أفاتار مميز</p>
+        <p style="color:var(--ink-soft);text-align:center;margin-top:20px;opacity:0.6">© DULA Pro 2025</p>
+      </div>
+    `;
+    return;
+  }
 
+  document.getElementById('homeScreen').classList.remove('active');
+  document.getElementById('gameScreen').classList.add('active');
   const game = GAMES.find(g => g.id === id);
   document.getElementById('gameTitle').textContent = game.icon + ' ' + game.name;
   document.getElementById('currentScore').textContent = '0';
-
   const area = document.getElementById('gameArea');
   area.innerHTML = '';
-
   activeGame = id;
-  clearAllTimers();
+  clearTimers();
 
   switch (id) {
     case 'xo': initXO(area); break;
@@ -203,19 +414,17 @@ function startGame(id) {
     case 'simon': initSimon(area); break;
     case 'math': initMath(area); break;
     case 'react': initReact(area); break;
-    case 'adventure': initAdventure(area); break;
-    case 'about': initAbout(area); break;
     case 'ucl': initQuiz(area, uclQuestions, 'ucl'); break;
     case 'epl': initQuiz(area, eplQuestions, 'epl'); break;
-    case 'player': initQuiz(area, playerQuestions, 'player'); break;
     case 'wc': initQuiz(area, wcQuestions, 'wc'); break;
+    case 'player': initQuiz(area, playerQuestions, 'player'); break;
   }
 }
 
 function backHome() {
-  clearAllTimers();
-  document.getElementById('homeScreen').style.display = 'block';
-  document.getElementById('gameScreen').style.display = 'none';
+  clearTimers();
+  document.getElementById('homeScreen').classList.add('active');
+  document.getElementById('gameScreen').classList.remove('active');
   activeGame = null;
   renderAll();
 }
@@ -226,51 +435,18 @@ function endGame(id, score) {
 
   area.innerHTML = `
     <div style="text-align:center;padding:30px 10px">
-      <h2 style="font-size:2rem;color:var(--c3);margin-bottom:14px">🎉 انتهت اللعبة!</h2>
-      <div style="font-size:2rem;font-weight:800;margin:14px 0">سكورك: ${score}</div>
-      ${result.isNewBest ? '<div style="color:var(--c5);font-weight:800;margin-bottom:10px">🏆 رقم قياسي جديد!</div>' : ''}
-      <div style="margin:12px 0;font-size:1.1rem">💰 +${result.coins} كوين &nbsp; ⭐ +${result.xp} XP</div>
+      <h2 style="font-size:1.8rem;color:var(--accent);margin-bottom:14px">🎉 انتهت اللعبة!</h2>
+      <div style="font-size:2rem;font-weight:900;margin:14px 0">سكورك: ${score}</div>
+      ${result.isNewBest ? '<div style="color:var(--success);font-weight:800;margin-bottom:10px">🏆 رقم قياسي جديد!</div>' : ''}
+      <div style="margin:12px 0;font-size:1.05rem">💰 +${result.coins} كوين &nbsp; ⭐ +${result.xp} XP</div>
       <div style="color:var(--muted);margin-bottom:16px">أفضل نتيجة: ${result.best}</div>
-      <button class="reset" onclick="startGame('${id}')">🔄 العب مرة تانية</button>
-      <button class="reset" onclick="backHome()" style="background:var(--c4)">🏠 الرئيسية</button>
+      <button class="reset" onclick="startGame('${id}')">🔄 العب تاني</button>
+      <button class="reset" onclick="backHome()" style="background:var(--gradient-2)">🏠 الرئيسية</button>
     </div>
   `;
 }
 
-function clearAllTimers() {
-  if (snakeTimer) clearInterval(snakeTimer);
-  if (whackTimer) clearInterval(whackTimer);
-  if (whackUpTimer) clearInterval(whackUpTimer);
-  if (mathTimer) clearInterval(mathTimer);
-  if (reactTimeout) clearTimeout(reactTimeout);
-  if (advReactTimer) clearTimeout(advReactTimer);
-  snakeTimer = whackTimer = whackUpTimer = mathTimer = reactTimeout = advReactTimer = null;
-}
-
-/* ====== 7. أدوات مساعدة ====== */
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[c]));
-}
-
-/* ====== 8. لعبة X-O ====== */
+/* ====== 15. لعبة X-O ====== */
 function initXO(area) {
   let cells = Array(9).fill(null);
   let turn = 'X';
@@ -344,11 +520,11 @@ function initXO(area) {
   build();
 }
 
-/* ====== 9. حجر ورقة مقص ====== */
+/* ====== 16. حجر ورقة مقص ====== */
 function initRPS(area) {
   const opts = ['✊', '✋', '✌️'];
   const beats = { '✊': '✌️', '✋': '✊', '✌️': '✋' };
-  let wins = 0, losses = 0;
+  let wins = 0;
 
   area.innerHTML = `
     <p class="status">اختار سلاحك!</p>
@@ -374,16 +550,16 @@ function initRPS(area) {
       else if (beats[me] === cpu) {
         wins++;
         statEl.textContent = 'كسبت! 🎉 (' + wins + ' فوز)';
+        document.getElementById('currentScore').textContent = wins * 30;
         if (wins % 3 === 0) recordScore('rps', wins * 30);
       } else {
-        losses++;
-        statEl.textContent = 'خسرت 😅 (' + losses + ' خسارة)';
+        statEl.textContent = 'خسرت 😅';
       }
     };
   });
 }
 
-/* ====== 10. خمن الرقم ====== */
+/* ====== 17. خمن الرقم ====== */
 function initGuess(area) {
   let target = Math.ceil(Math.random() * 50);
   let tries = 0;
@@ -406,10 +582,10 @@ function initGuess(area) {
     if (!v) return;
     tries++;
     if (v === target) {
-      status.textContent = 'صح! الرقم كان ' + target + ' 🎉 (محاولات: ' + tries + ')';
+      status.textContent = 'صح! الرقم كان ' + target + ' 🎉';
       const score = Math.max(20, 200 - tries * 20);
-      recordScore('guess', score);
       document.getElementById('currentScore').textContent = score;
+      recordScore('guess', score);
     } else {
       status.textContent = v < target ? 'أكبر من كده ⬆️' : 'أصغر من كده ⬇️';
     }
@@ -425,7 +601,7 @@ function initGuess(area) {
   };
 }
 
-/* ====== 11. لعبة الذاكرة ====== */
+/* ====== 18. لعبة الذاكرة ====== */
 function initMemory(area) {
   const icons = ['🍎','🍌','🍇','🍉','🍒','🍋','🍑','🥝'];
   let cards, flipped, matched, lock;
@@ -471,8 +647,7 @@ function initMemory(area) {
         lock = false;
         document.getElementById('currentScore').textContent = matched * 50;
         if (matched === icons.length) {
-          const score = Math.max(200, 1000 - matched * 20);
-          endGame('memory', score);
+          endGame('memory', Math.max(200, 800 - matched * 20));
         }
       } else {
         setTimeout(() => {
@@ -491,15 +666,13 @@ function initMemory(area) {
   build();
 }
 
-/* ====== 12. لعبة الأفعى ====== */
-let snakeTimer = null;
-
+/* ====== 19. لعبة الأفعى ====== */
 function initSnake(area) {
   const size = 12, cols = 20, rows = 20;
 
   area.innerHTML = `
     <p class="status" id="snakeStatus">النقاط: 0</p>
-    <p class="best" id="snakeBest">أفضل نتيجة: ${state.scores.snake || 0}</p>
+    <p class="best" id="snakeBest">أفضل: ${state.scores.snake || 0}</p>
     <canvas id="snakeCanvas" width="240" height="240"></canvas>
     <div class="snake-controls">
       <span></span><button id="snUp">↑</button><span></span>
@@ -510,7 +683,6 @@ function initSnake(area) {
   const canvas = document.getElementById('snakeCanvas');
   const ctx = canvas.getContext('2d');
   const status = document.getElementById('snakeStatus');
-
   let snake, dir, food, score, gameOver;
 
   function reset() {
@@ -525,16 +697,12 @@ function initSnake(area) {
   }
 
   function placeFood() {
-    food = {
-      x: Math.floor(Math.random() * cols),
-      y: Math.floor(Math.random() * rows)
-    };
+    food = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows) };
   }
 
   function tick() {
     if (gameOver) return;
     const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-
     if (head.x < 0 || head.y < 0 || head.x >= cols || head.y >= rows ||
         snake.some(s => s.x === head.x && s.y === head.y)) {
       gameOver = true;
@@ -543,28 +711,23 @@ function initSnake(area) {
       endGame('snake', score);
       return;
     }
-
     snake.unshift(head);
     if (head.x === food.x && head.y === food.y) {
       score += 10;
       placeFood();
       status.textContent = 'النقاط: ' + score;
       document.getElementById('currentScore').textContent = score;
-    } else {
-      snake.pop();
-    }
+    } else snake.pop();
     draw();
   }
 
   function draw() {
     const css = getComputedStyle(document.documentElement);
-    ctx.fillStyle = css.getPropertyValue('--bg1') || '#fff';
+    ctx.fillStyle = css.getPropertyValue('--bg2').trim() || '#1a1f3a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = css.getPropertyValue('--c3') || '#ffb703';
+    ctx.fillStyle = css.getPropertyValue('--accent').trim() || '#00f5ff';
     ctx.fillRect(food.x * size, food.y * size, size - 1, size - 1);
-
-    ctx.fillStyle = css.getPropertyValue('--c5') || '#51cf66';
+    ctx.fillStyle = css.getPropertyValue('--success').trim() || '#00ff88';
     snake.forEach(s => ctx.fillRect(s.x * size, s.y * size, size - 1, size - 1));
   }
 
@@ -590,17 +753,15 @@ function initSnake(area) {
   snakeTimer = setInterval(tick, 170);
 }
 
-/* ====== 13. اضرب الخلد ====== */
-let whackTimer = null, whackUpTimer = null;
-
+/* ====== 20. اضرب الخلد ====== */
 function initWhack(area) {
   let score = 0, timeLeft = 30, holes = [], running = false;
 
   area.innerHTML = `
     <p class="status" id="whackStatus">النقاط: 0 — الوقت: 30</p>
-    <p class="best" id="whackBest">أفضل نتيجة: ${state.scores.whack || 0}</p>
+    <p class="best" id="whackBest">أفضل: ${state.scores.whack || 0}</p>
     <div id="whackBoard"></div>
-    <button class="reset" id="whackReset">ابدأ اللعب</button>
+    <button class="reset" id="whackReset">ابدأ</button>
   `;
 
   const board = document.getElementById('whackBoard');
@@ -638,12 +799,9 @@ function initWhack(area) {
     clearInterval(whackTimer);
     clearInterval(whackUpTimer);
     build();
-    score = 0;
-    timeLeft = 30;
-    running = true;
+    score = 0; timeLeft = 30; running = true;
     status.textContent = 'النقاط: 0 — الوقت: 30';
     document.getElementById('currentScore').textContent = '0';
-
     whackUpTimer = setInterval(popRandom, 700);
     whackTimer = setInterval(() => {
       timeLeft--;
@@ -660,7 +818,7 @@ function initWhack(area) {
   build();
 }
 
-/* ====== 14. أسئلة (مشترك) ====== */
+/* ====== 21. أسئلة ====== */
 const quizQuestions = [
   { q: 'ما عاصمة مصر؟', opts: ['القاهرة', 'الإسكندرية', 'أسوان'], a: 0 },
   { q: 'أكبر كوكب في المجموعة الشمسية؟', opts: ['الأرض', 'المشتري', 'زحل'], a: 1 },
@@ -669,22 +827,22 @@ const quizQuestions = [
   { q: 'أطول نهر في العالم؟', opts: ['الأمازون', 'النيل', 'الفرات'], a: 1 },
   { q: 'أكبر محيط في العالم؟', opts: ['الأطلسي', 'الهادي', 'الهندي'], a: 1 },
   { q: 'أعلى جبل في العالم؟', opts: ['إفرست', 'كليمنجارو', 'الألب'], a: 0 },
-  { q: 'أول رائد فضاء وصل للقمر؟', opts: ['يوري جاجارين', 'نيل أرمسترونج', 'باز ألدرين'], a: 1 }
+  { q: 'أول رائد فضاء وصل للقمر؟', opts: ['جاجارين', 'أرمسترونج', 'ألدرين'], a: 1 }
 ];
 
 const uclQuestions = [
-  { q: 'الفريق الأكتر تتويجًا بدوري أبطال أوروبا؟', opts: ['ميلان', 'ريال مدريد', 'بايرن ميونخ'], a: 1 },
-  { q: 'ملعب "أنفيلد" ملعب أي فريق؟', opts: ['إيفرتون', 'ليفربول', 'مانشستر يونايتد'], a: 1 },
-  { q: 'أول نسخة من دوري أبطال أوروبا كانت في؟', opts: ['الأربعينات', 'الخمسينات', 'الستينات'], a: 1 },
-  { q: 'ملعب "سانتياجو برنابيو" ملعب أي فريق؟', opts: ['برشلونة', 'أتلتيكو مدريد', 'ريال مدريد'], a: 2 },
-  { q: 'مين صاحب أكبر عدد أهداف في تاريخ دوري الأبطال؟', opts: ['ميسي', 'ليفاندوفسكي', 'رونالدو'], a: 2 },
-  { q: 'نادي يوفنتوس الإيطالي من أي مدينة؟', opts: ['ميلانو', 'روما', 'تورينو'], a: 2 }
+  { q: 'الأكتر تتويجًا بدوري أبطال أوروبا؟', opts: ['ميلان', 'ريال مدريد', 'بايرن'], a: 1 },
+  { q: 'ملعب "أنفيلد" ملعب أي فريق؟', opts: ['إيفرتون', 'ليفربول', 'مان يونايتد'], a: 1 },
+  { q: 'ملعب "سانتياجو برنابيو"؟', opts: ['برشلونة', 'أتلتيكو', 'ريال مدريد'], a: 2 },
+  { q: 'أكتر لاعب أهداف في دوري الأبطال؟', opts: ['ميسي', 'ليفاندوفسكي', 'رونالدو'], a: 2 },
+  { q: 'يوفنتوس من أي مدينة؟', opts: ['ميلانو', 'روما', 'تورينو'], a: 2 },
+  { q: 'أول نسخة من دوري الأبطال كانت في؟', opts: ['الأربعينات', 'الخمسينات', 'الستينات'], a: 1 }
 ];
 
 const eplQuestions = [
   { q: 'الأكتر تتويجًا بالدوري الإنجليزي؟', opts: ['مان سيتي', 'مان يونايتد', 'ليفربول'], a: 1 },
-  { q: 'ملعب "أولد ترافورد" ملعب أي فريق؟', opts: ['مان سيتي', 'مان يونايتد', 'ليدز'], a: 1 },
-  { q: 'ملعب "الإمارات" ملعب أي فريق؟', opts: ['تشيلسي', 'توتنهام', 'أرسنال'], a: 2 },
+  { q: 'ملعب "أولد ترافورد"؟', opts: ['مان سيتي', 'مان يونايتد', 'ليدز'], a: 1 },
+  { q: 'ملعب "الإمارات"؟', opts: ['تشيلسي', 'توتنهام', 'أرسنال'], a: 2 },
   { q: 'نادي أرسنال بيتلقب بـ؟', opts: ['المدفعجية', 'الشياطين', 'السباع'], a: 0 },
   { q: 'نادي تشيلسي بيتلقب بـ؟', opts: ['البلوز', 'الريدز', 'الجانرز'], a: 0 },
   { q: 'الدوري الإنجليزي بشكله الحالي بدأ سنة؟', opts: ['1988', '1992', '1998'], a: 1 }
@@ -695,7 +853,7 @@ const playerQuestions = [
   { q: 'محمد صلاح من مواليد أي محافظة؟', opts: ['الغربية', 'الإسكندرية', 'الجيزة'], a: 0 },
   { q: 'محمد صلاح بيلعب حاليًا لأي نادي؟', opts: ['تشيلسي', 'ليفربول', 'مان سيتي'], a: 1 },
   { q: 'محمد صلاح لعب في إيطاليا لنادي؟', opts: ['يوفنتوس', 'روما', 'إنتر'], a: 1 },
-  { q: 'رقم قميص محمد صلاح في ليفربول؟', opts: ['7', '9', '11'], a: 2 }
+  { q: 'رقم قميص محمد صلاح؟', opts: ['7', '9', '11'], a: 2 }
 ];
 
 const wcQuestions = [
@@ -709,10 +867,11 @@ const wcQuestions = [
 function initQuiz(area, questions, gameId) {
   let idx = 0, score = 0;
   const totalQ = Math.min(8, questions.length);
+  const shuffled = shuffle(questions.slice()).slice(0, totalQ);
 
   area.innerHTML = `
     <p class="status" id="quizScore"></p>
-    <p class="best" id="quizBest">أفضل نتيجة: ${state.scores[gameId] || 0}</p>
+    <p class="best" id="quizBest">أفضل: ${state.scores[gameId] || 0}</p>
     <p class="quiz-q" id="quizQ"></p>
     <div class="quiz-opts" id="quizOpts"></div>
   `;
@@ -720,8 +879,6 @@ function initQuiz(area, questions, gameId) {
   const qEl = document.getElementById('quizQ');
   const optsEl = document.getElementById('quizOpts');
   const scoreEl = document.getElementById('quizScore');
-
-  const shuffled = shuffle(questions.slice()).slice(0, totalQ);
 
   function render() {
     if (idx >= totalQ) {
@@ -732,7 +889,6 @@ function initQuiz(area, questions, gameId) {
     scoreEl.textContent = 'سؤال ' + (idx + 1) + ' من ' + totalQ;
     qEl.textContent = q.q;
     optsEl.innerHTML = '';
-
     q.opts.forEach((opt, i) => {
       const b = document.createElement('button');
       b.textContent = opt;
@@ -753,11 +909,11 @@ function initQuiz(area, questions, gameId) {
   render();
 }
 
-/* ====== 15. سيمون ====== */
+/* ====== 22. سيمون ====== */
 function initSimon(area) {
   area.innerHTML = `
     <p class="status" id="simonStatus">دوس ابدأ وذاكر الترتيب</p>
-    <p class="best" id="simonBest">أفضل نتيجة: ${state.scores.simon || 0}</p>
+    <p class="best" id="simonBest">أفضل: ${state.scores.simon || 0}</p>
     <div id="simonBoard">
       <button class="simon-btn" id="simon0"></button>
       <button class="simon-btn" id="simon1"></button>
@@ -788,8 +944,9 @@ function initSimon(area) {
     }
     playing = true;
     userStep = 0;
-      status.textContent = 'دورك! (طول السلسلة: ' + sequence.length + ')';
-}
+    status.textContent = 'دورك! (طول السلسلة: ' + sequence.length + ')';
+  }
+
   function nextRound() {
     sequence.push(Math.floor(Math.random() * 4));
     playSequence();
@@ -804,6 +961,7 @@ function initSimon(area) {
         if (userStep === sequence.length) {
           playing = false;
           status.textContent = 'صح! هنزود واحدة 🎉';
+          document.getElementById('currentScore').textContent = sequence.length * 10;
           setTimeout(nextRound, 700);
         }
       } else {
@@ -820,18 +978,16 @@ function initSimon(area) {
   };
 }
 
-/* ====== 16. سباق الحساب ====== */
-let mathTimer = null;
-
+/* ====== 23. سباق الحساب ====== */
 function initMath(area) {
   let score = 0, timeLeft = 30, answer = 0, running = false;
 
   area.innerHTML = `
     <p class="status" id="mathStatus">النقاط: 0 — الوقت: 30</p>
-    <p class="best" id="mathBest">أفضل نتيجة: ${state.scores.math || 0}</p>
+    <p class="best" id="mathBest">أفضل: ${state.scores.math || 0}</p>
     <p class="math-eq" id="mathEq"></p>
     <div class="math-opts" id="mathOpts"></div>
-    <button class="reset" id="mathReset">ابدأ اللعب</button>
+    <button class="reset" id="mathReset">ابدأ</button>
   `;
 
   const eqEl = document.getElementById('mathEq');
@@ -845,16 +1001,13 @@ function initMath(area) {
     const op = ops[Math.floor(Math.random() * 2)];
     answer = op === '+' ? a + b : a - b;
     eqEl.textContent = a + ' ' + op + ' ' + b + ' = ؟';
-
     const opts = new Set([answer]);
     while (opts.size < 3) opts.add(answer + Math.floor(Math.random() * 9) - 4);
-
-    const arr = shuffle([...opts]);
     optsEl.innerHTML = '';
-    arr.forEach(v => {
-      const btn = document.createElement('button');
-      btn.textContent = v;
-      btn.onclick = () => {
+    shuffle([...opts]).forEach(v => {
+      const b2 = document.createElement('button');
+      b2.textContent = v;
+      b2.onclick = () => {
         if (!running) return;
         if (v === answer) {
           score += 10;
@@ -863,19 +1016,16 @@ function initMath(area) {
         }
         newEq();
       };
-      optsEl.appendChild(btn);
+      optsEl.appendChild(b2);
     });
   }
 
   document.getElementById('mathReset').onclick = () => {
     clearInterval(mathTimer);
-    score = 0;
-    timeLeft = 30;
-    running = true;
+    score = 0; timeLeft = 30; running = true;
     status.textContent = 'النقاط: 0 — الوقت: 30';
     document.getElementById('currentScore').textContent = '0';
     newEq();
-
     mathTimer = setInterval(() => {
       timeLeft--;
       status.textContent = 'النقاط: ' + score + ' — الوقت: ' + timeLeft;
@@ -887,18 +1037,16 @@ function initMath(area) {
     }, 1000);
   };
 
-  eqEl.textContent = 'دوس ابدأ اللعب';
+  eqEl.textContent = 'دوس ابدأ';
 }
 
-/* ====== 17. سرعة البديهة ====== */
-let reactTimeout = null;
-
+/* ====== 24. سرعة البديهة ====== */
 function initReact(area) {
   let waitingGo = false, startTime = 0;
 
   area.innerHTML = `
-    <p class="status" id="reactStatus">دوس ابدأ واستنى اللون يتغير</p>
-    <p class="best" id="reactBest">أفضل نتيجة: ${state.scores.react ? state.scores.react + ' مللي' : '—'}</p>
+    <p class="status" id="reactStatus">دوس ابدأ واستنى اللون</p>
+    <p class="best" id="reactBest">أفضل: ${state.scores.react ? state.scores.react + ' مللي' : '—'}</p>
     <div id="reactBox">استنى...</div>
     <button class="reset" id="reactReset">ابدأ</button>
   `;
@@ -912,7 +1060,6 @@ function initReact(area) {
     box.textContent = 'استنى...';
     waitingGo = false;
     status.textContent = 'استنى اللون يتغير...';
-
     reactTimeout = setTimeout(() => {
       box.classList.add('go');
       box.textContent = 'دوس دلوقتي!';
@@ -925,9 +1072,9 @@ function initReact(area) {
     if (waitingGo) {
       const ms = Date.now() - startTime;
       const score = Math.max(10, 1000 - ms);
+      document.getElementById('currentScore').textContent = ms + 'ms';
       recordScore('react', score);
       status.textContent = 'وقتك: ' + ms + ' مللي ثانية ⚡';
-      document.getElementById('currentScore').textContent = ms + 'ms';
       waitingGo = false;
       box.classList.remove('go');
       box.textContent = 'دوس ابدأ تاني';
@@ -937,390 +1084,59 @@ function initReact(area) {
   };
 }
 
-/* ====== 18. مغامرة DULA ====== */
-let advReactTimer = null;
-
-function initAdventure(area) {
-  let stage = 0, lives = 3, locked = false;
-  const used = [];
-
-  const generalQ = [
-    { q: 'ما هو الكوكب الأحمر؟', o: ['المريخ', 'الزهرة', 'عطارد'], a: 0 },
-    { q: 'كم يوم في الأسبوع؟', o: ['5', '7', '9'], a: 1 },
-    { q: 'ما أكبر كوكب؟', o: ['الأرض', 'المشتري', 'المريخ'], a: 1 },
-    { q: 'ما عاصمة مصر؟', o: ['القاهرة', 'الجيزة', 'أسوان'], a: 0 },
-    { q: 'كم ضلع للمثلث؟', o: ['2', '3', '4'], a: 1 },
-    { q: 'ما سفينة الصحراء؟', o: ['الجمل', 'الحصان', 'الفيل'], a: 0 },
-    { q: 'ما الغاز الذي نتنفسه؟', o: ['الأكسجين', 'الهيدروجين', 'الهيليوم'], a: 0 },
-    { q: 'كم شهر في السنة؟', o: ['10', '11', '12'], a: 2 }
-  ];
-
-  area.innerHTML = `
-    <div class="adventure-head">
-      <div>
-        <h2>🗺️ مغامرة DULA</h2>
-        <p id="advStage">المرحلة 1 من 12</p>
-      </div>
-      <div class="adv-hearts" id="advLives">❤️❤️❤️</div>
-    </div>
-    <div class="adv-progress"><i id="advProgressFill"></i></div>
-    <div class="adventure-card">
-      <div class="adv-badge" id="advType">تحدي</div>
-      <h3 id="advTitle"></h3>
-      <p id="advQuestion"></p>
-      <div id="advArea"></div>
-    </div>
-    <p class="status" id="advStatus"></p>
-    <button class="reset" id="advNext" style="display:none">المرحلة التالية →</button>
-    <button class="reset" id="advRestart">ابدأ مغامرة جديدة</button>
-  `;
-
-  const stageEl = document.getElementById('advStage');
-  const livesEl = document.getElementById('advLives');
-  const fillEl = document.getElementById('advProgressFill');
-  const typeEl = document.getElementById('advType');
-  const titleEl = document.getElementById('advTitle');
-  const qEl = document.getElementById('advQuestion');
-  const areaEl = document.getElementById('advArea');
-  const statusEl = document.getElementById('advStatus');
-  const nextBtn = document.getElementById('advNext');
-
-  function pick(arr) {
-    const avail = arr.filter((_, i) => !used.includes(i));
-    if (!avail.length) { used.length = 0; return arr[Math.floor(Math.random() * arr.length)]; }
-    const idx = arr.indexOf(avail[Math.floor(Math.random() * avail.length)]);
-    used.push(idx);
-    return arr[idx];
-  }
-
-  function setCommon(title, type, q) {
-    typeEl.textContent = type;
-    titleEl.textContent = title;
-    qEl.textContent = q || '';
-    statusEl.textContent = '';
-    areaEl.innerHTML = '';
-    nextBtn.style.display = 'none';
-  }
-
-  function renderLives() {
-    livesEl.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
-  }
-
-  function loseLife(msg) {
-    if (locked) return;
-    lives--;
-    renderLives();
-    statusEl.textContent = msg + ' ❤️ متبقي: ' + lives;
-    if (lives <= 0) {
-      locked = true;
-      statusEl.textContent = 'انتهت المغامرة! وصلت للمرحلة ' + stage + ' من 12';
-      return;
-    }
-    setTimeout(() => { stage++; renderStage(); }, 700);
-  }
-
-  function winStage(msg, xp, coins) {
-    if (locked) return;
-    locked = true;
-    addReward(xp, coins);
-    statusEl.textContent = msg + ' 🎉 +' + xp + ' XP و +' + coins + ' 🪙';
-    nextBtn.style.display = stage < 11 ? 'inline-block' : 'none';
-    if (stage === 11) {
-      statusEl.textContent = '🏆 خلصت المغامرة! +50 XP إضافية';
-      addReward(50, 20);
-    }
-  }
-
-  function renderStage() {
-    locked = false;
-    renderLives();
-    stageEl.textContent = 'المرحلة ' + (stage + 1) + ' من 12';
-    fillEl.style.width = ((stage + 1) / 12 * 100) + '%';
-
-    const type = stage % 6;
-    if (type === 0) mathStage();
-    else if (type === 1) quizStage();
-    else if (type === 2) guessStage();
-    else if (type === 3) memoryStage();
-    else if (type === 4) reactionStage();
-    else rpsStage();
-  }
-
-  function mathStage() {
-    const n = 2 + Math.floor(stage / 3);
-    const a = 5 + Math.floor(Math.random() * 10 * n);
-    const b = 2 + Math.floor(Math.random() * 10 * n);
-    const ops = stage >= 6 ? ['+', '-', '×'] : ['+', '-'];
-    const op = ops[Math.floor(Math.random() * ops.length)];
-    const ans = op === '+' ? a + b : op === '-' ? a - b : a * b;
-
-    setCommon('سباق الحساب', '🧮 حساب', 'حل العملية قبل الانتقال');
-    areaEl.innerHTML = '<div class="adv-number">' + a + ' ' + op + ' ' + b + ' = ؟</div><div class="adv-options"></div>';
-    const opts = areaEl.querySelector('.adv-options');
-    const vals = new Set([ans]);
-    while (vals.size < 3) vals.add(ans + Math.floor(Math.random() * 15) - 7);
-
-    shuffle([...vals]).forEach(v => {
-      const btn = document.createElement('button');
-      btn.textContent = v;
-      btn.onclick = () => {
-        if (locked) return;
-        if (v === ans) winStage('إجابة صحيحة!', 25, 7);
-        else { btn.classList.add('wrong'); loseLife('الإجابة غلط.'); }
-      };
-      opts.appendChild(btn);
-    });
-  }
-
-  function quizStage() {
-    const item = pick(generalQ);
-    setCommon('اختبر معلوماتك', '❓ سؤال', item.q);
-    const opts = document.createElement('div');
-    opts.className = 'adv-options';
-    shuffle(item.o.map((v, i) => ({ v, i }))).forEach(x => {
-      const b = document.createElement('button');
-      b.textContent = x.v;
-      b.onclick = () => {
-        if (locked) return;
-        if (x.i === item.a) { b.classList.add('correct'); winStage('إجابة ممتازة!', 22, 6); }
-        else { b.classList.add('wrong'); loseLife('اختيار غير صحيح.'); }
-      };
-      opts.appendChild(b);
-    });
-    areaEl.appendChild(opts);
-  }
-
-  function guessStage() {
-    const max = stage < 6 ? 30 : 60;
-    const target = 1 + Math.floor(Math.random() * max);
-    let tries = 0;
-
-    setCommon('خمن الرقم', '🔢 تخمين', 'رقم سري من 1 إلى ' + max);
-    areaEl.innerHTML = '<div class="adv-input"><input id="advGuess" type="number" min="1" max="' + max + '"><button class="adv-action">تخمين</button></div><p id="advHint" class="status"></p>';
-
-    const input = document.getElementById('advGuess');
-    const hint = document.getElementById('advHint');
-
-    areaEl.querySelector('button').onclick = () => {
-      if (locked) return;
-      const v = Number(input.value);
-      if (!v) return;
-      tries++;
-      if (v === target) winStage('صح! الرقم كان ' + target, 28, 8);
-      else if (tries >= 4) { loseLife('الرقم كان ' + target); input.disabled = true; }
-      else hint.textContent = v < target ? 'أكبر ⬆️' : 'أصغر ⬇️';
-    };
-    input.focus();
-  }
-
-  function memoryStage() {
-    const icons = ['🍎', '🚗', '⭐', '🐶', '⚽', '🚀'];
-    const pairCount = stage < 6 ? 3 : 4;
-    const vals = shuffle([...icons].slice(0, pairCount).flatMap(x => [x, x]));
-    let open = [], done = 0, lock = false;
-
-    setCommon('ذاكرة سريعة', '🧠 ذاكرة', 'افتح كل الأزواج');
-    const grid = document.createElement('div');
-    grid.className = 'adv-memory';
-    areaEl.appendChild(grid);
-
-    vals.forEach((v, i) => {
-      const b = document.createElement('button');
-      b.dataset.i = i;
-      b.onclick = () => {
-        if (lock || b.classList.contains('done') || b.classList.contains('open')) return;
-        b.textContent = v;
-        b.classList.add('open');
-        open.push(b);
-
-        if (open.length === 2) {
-          lock = true;
-          if (open[0].textContent === open[1].textContent) {
-            open.forEach(x => { x.classList.add('done'); x.classList.remove('open'); });
-            open = [];
-            done++;
-            lock = false;
-            if (done === pairCount) winStage('ذاكرة قوية!', 26, 7);
-          } else {
-            setTimeout(() => {
-              open.forEach(x => { x.textContent = ''; x.classList.remove('open'); });
-              open = [];
-              lock = false;
-            }, 500);
-          }
-        }
-      };
-      grid.appendChild(b);
-    });
-  }
-
-  function reactionStage() {
-    setCommon('سرعة البديهة', '⚡ رد فعل', 'اضغط فقط عندما يتغير اللون');
-    const box = document.createElement('div');
-    box.className = 'adv-reaction';
-    box.textContent = 'استنى...';
-    areaEl.appendChild(box);
-
-    const delay = 700 + Math.random() * (stage >= 6 ? 1300 : 2300);
-    advReactTimer = setTimeout(() => {
-      box.classList.add('go');
-      box.textContent = 'اضغط الآن!';
-      box.dataset.go = '1';
-      box.dataset.t = Date.now();
-    }, delay);
-
-    box.onclick = () => {
-      if (box.dataset.go === '1') {
-        const ms = Date.now() - Number(box.dataset.t);
-        clearTimeout(advReactTimer);
-        winStage('وقت رد فعلك: ' + ms + ' مللي', 30, 9);
-      } else {
-        clearTimeout(advReactTimer);
-        loseLife('ضغطت بدري!');
-      }
-    };
-  }
-
-  function rpsStage() {
-    setCommon('مواجهة سريعة', '✊ حجر ورقة مقص', 'اكسب الجولة أمام الكمبيوتر');
-    const choices = ['✊', '✋', '✌️'];
-    const beats = { '✊': '✌️', '✋': '✊', '✌️': '✋' };
-    const wrap = document.createElement('div');
-    wrap.className = 'adv-options';
-
-    shuffle(choices.slice()).forEach(c => {
-      const b = document.createElement('button');
-      b.textContent = c;
-      b.onclick = () => {
-        if (locked) return;
-        const cpu = choices[Math.floor(Math.random() * 3)];
-        if (c === cpu) { statusEl.textContent = 'تعادل — حاول مرة أخرى'; return; }
-        if (beats[c] === cpu) winStage(c + ' ضد ' + cpu + ' — كسبت!', 24, 6);
-        else loseLife(c + ' ضد ' + cpu + ' — خسرت الجولة.');
-      };
-      wrap.appendChild(b);
-    });
-    areaEl.appendChild(wrap);
-  }
-
-  nextBtn.onclick = () => { if (stage < 11) { stage++; renderStage(); } };
-  document.getElementById('advRestart').onclick = () => {
-    stage = 0;
-    lives = 3;
-    used.length = 0;
-    clearTimeout(advReactTimer);
-    renderStage();
-  };
-
-  renderStage();
-}
-
-/* ====== 19. عن الموقع ====== */
-function initAbout(area) {
-  area.innerHTML = `
-    <div class="about-box">
-      <p class="about-emoji">🎮</p>
-      <h2>DULA Games</h2>
-      <p>موقع فيه مجموعة ألعاب بسيطة وسريعة تقدر تلعبها في أي وقت من غير تحميل أي برنامج.</p>
-      <p>الموقع اتعمل كمشروع شخصي، وبيتزود بألعاب جديدة بشكل مستمر.</p>
-      <p>🎯 كل لعبة بتحفظ أفضل نتيجة وصلت ليها على نفس الجهاز.</p>
-      <p>💰 العب واجمع الكوينز واطلع في لوحة المتصدرين!</p>
-      <p style="text-align:center;margin-top:20px;opacity:0.7">© DULA Games 2025</p>
-    </div>
-  `;
-}
-
-/* ====== 20. المتجر ====== */
-const SHOP_ITEMS = [
-  { id: 'theme-dark', name: 'ثيم داكن', icon: '🌙', price: 50, type: 'theme' },
-  { id: 'theme-sunset', name: 'ثيم الغروب', icon: '🌅', price: 80, type: 'theme' },
-  { id: 'avatar-cat', name: 'أفاتار قطة', icon: '🐱', price: 40, type: 'avatar' },
-  { id: 'avatar-lion', name: 'أفاتار أسد', icon: '🦁', price: 60, type: 'avatar' },
-  { id: 'avatar-robot', name: 'أفاتار روبوت', icon: '🤖', price: 70, type: 'avatar' },
-  { id: 'boost-xp', name: 'مضاعف XP', icon: '⚡', price: 100, type: 'boost' }
-];
-
-function openShop() {
-  document.getElementById('shopModal').classList.add('active');
-  renderShop();
-}
-
-function closeShop() {
-  document.getElementById('shopModal').classList.remove('active');
-}
-
-function renderShop() {
-  const grid = document.getElementById('shopGrid');
-  if (!grid) return;
-
-  grid.innerHTML = SHOP_ITEMS.map(item => {
-    const owned = state.owned.includes(item.id);
-    return `
-      <div class="shop-item ${owned ? 'owned' : ''}">
-        <span class="si-icon">${item.icon}</span>
-        <div class="si-name">${item.name}</div>
-        <button class="si-price" ${owned ? 'disabled' : ''} onclick="buyItem('${item.id}')">
-          ${owned ? '✅ مملوك' : item.price + ' 🪙'}
-        </button>
-      </div>
-    `;
-  }).join('');
-}
-
-function buyItem(id) {
-  const item = SHOP_ITEMS.find(x => x.id === id);
-  if (!item || state.owned.includes(id)) return;
-
-  if (state.coins < item.price) {
-    showToast('❌ كوينز غير كافية!');
-    return;
-  }
-
-  state.coins -= item.price;
-  state.owned.push(id);
-
-  if (item.type === 'theme') {
-    state.theme = id;
-    applyTheme(id);
-  }
-
-  saveState();
-  renderAll();
-  showToast('✅ اشتريت ' + item.name);
-}
-
-function applyTheme(id) {
-  if (id === 'theme-dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-  }
-}
-
-/* ====== 21. التحدي اليومي ====== */
-function claimDaily() {
-  const today = new Date().toDateString();
-  if (state.lastDay === today && state._dailyClaimed === today) {
-    showToast('🎁 خدت مكافأة النهاردة!');
-    return;
-  }
-  state._dailyClaimed = today;
-  addReward(40, 15);
-  saveState();
-}
-
-/* ====== 22. التشغيل ====== */
+/* ====== 25. التشغيل ====== */
 window.addEventListener('DOMContentLoaded', () => {
   loadState();
-  if (state.theme) applyTheme(state.theme);
+  checkStreak();
+  applyTheme(state.currentTheme);
 
-  // إغلاق المتجر بالضغط برا
+  // إخفاء شاشة البداية بعد ثانيتين
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(() => {
+      if (!state.playerName) {
+        document.getElementById('nameScreen').classList.add('active');
+      } else {
+        document.getElementById('app').classList.add('active');
+        renderAll();
+      }
+    }, 400);
+  }, 2000);
+
+  // حفظ الاسم
+  const nameBtn = document.getElementById('saveNameBtn');
+  const nameInput = document.getElementById('playerNameInput');
+
+  nameBtn.onclick = () => {
+    const name = nameInput.value.trim();
+    if (!name) {
+      showToast('⚠️ اكتب اسمك الأول');
+      return;
+    }
+    state.playerName = name;
+    saveState();
+    document.getElementById('nameScreen').classList.remove('active');
+    document.getElementById('app').classList.add('active');
+    renderAll();
+    showToast('أهلاً بيك يا ' + name + ' 🎉');
+  };
+
+  nameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') nameBtn.click();
+  });
+
+  // إغلاق المودالات بالضغط برا
   document.getElementById('shopModal').addEventListener('click', (e) => {
     if (e.target.id === 'shopModal') closeShop();
   });
-
-  // إغلاق بأي كليك على زر Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeShop();
+  document.getElementById('rewardModal').addEventListener('click', (e) => {
+    if (e.target.id === 'rewardModal') closeReward();
   });
-});      
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeShop();
+      closeReward();
+    }
+  });
+});
