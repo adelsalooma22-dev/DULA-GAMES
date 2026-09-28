@@ -3,713 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>العاب DULA</title>
+<meta name="theme-color" content="#6c5ce7">
+<title>🎮 DULA Games - عالم الألعاب</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
-<style>
-:root{
-  --bg1:#0a0d1a; --bg2:#151230; --bg3:#0d1b2e; --ink:#eef1fb; --card:#1a1f36; --card2:#20263f;
-  --c1:#ff3d7f; --c2:#00e5ff; --c3:#ffd23f; --c4:#b34dff; --c5:#39ff9e; --c6:#4d8bff;
-  --muted:#8b93b8; --shadow:rgba(0,0,0,0.55); --glow:rgba(179,77,255,0.45);
-  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
-}
-*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-html,body{height:100%;}
-body{margin:0;min-height:100%;color:var(--ink);font-family:"Baloo 2","Segoe UI",Tahoma,sans-serif;
-  background:
-    radial-gradient(circle at 15% 0%, rgba(179,77,255,0.18), transparent 45%),
-    radial-gradient(circle at 90% 15%, rgba(0,229,255,0.14), transparent 40%),
-    linear-gradient(165deg,var(--bg1),var(--bg2) 55%,var(--bg3));
-  background-attachment:fixed;}
-header{padding:36px 16px 10px;text-align:center;}
-header h1{margin:0 0 6px;font-size:clamp(28px,7vw,42px);font-weight:800;
-  text-shadow:0 0 14px var(--glow),0 0 30px rgba(0,229,255,0.25);}
-header p{margin:0;color:var(--muted);font-size:15px;}
-#home{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;max-width:760px;margin:26px auto;padding:0 16px 40px;}
-.tile{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:26px 8px 20px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink);font-family:inherit;
-  box-shadow:0 0 0 1px rgba(255,255,255,0.03) inset,0 6px 0 var(--tc,var(--c1)),0 8px 20px var(--shadow),0 0 18px -6px var(--tc,var(--c1));transition:transform .12s ease,box-shadow .12s ease;min-height:96px;}
-.tile:hover{transform:translateY(-3px);box-shadow:0 6px 0 var(--tc,var(--c1)),0 12px 26px var(--shadow),0 0 26px -4px var(--tc,var(--c1));}
-.tile:active{transform:translateY(2px);box-shadow:0 2px 0 var(--tc,var(--c1)),0 4px 10px var(--shadow);}
-.tile .emoji{display:block;font-size:36px;margin-bottom:9px;filter:drop-shadow(0 0 8px rgba(255,255,255,0.15));}
-.game{max-width:520px;margin:0 auto;padding:6px 16px 40px;text-align:center;display:none;}
-.game.active{display:block;}
-.back{background:var(--card);border:1px solid rgba(255,255,255,0.08);color:var(--ink);font-size:14px;cursor:pointer;font-family:inherit;
-  padding:10px 18px;border-radius:20px;margin-bottom:16px;font-weight:700;box-shadow:0 3px 10px var(--shadow);}
-.status{margin:16px 0;font-size:17px;min-height:26px;font-weight:700;}
-button.reset{margin-top:18px;padding:12px 24px;background:linear-gradient(135deg,var(--c4),var(--c6));color:#fff;border:none;border-radius:24px;
-  font-size:15px;cursor:pointer;font-family:inherit;font-weight:700;box-shadow:0 4px 16px var(--glow);min-height:46px;}
-
-/* X-O */
-#xoBoard{display:grid;grid-template-columns:repeat(3,minmax(64px,84px));grid-template-rows:repeat(3,minmax(64px,84px));gap:6px;
-  background:var(--card);padding:6px;border-radius:14px;justify-content:center;margin:0 auto;box-shadow:0 6px 16px var(--shadow);}
-.cell{background:var(--card2);border:none;border-radius:8px;font-size:32px;font-weight:800;cursor:pointer;color:var(--ink);min-height:64px;}
-.cell.x{color:var(--c1);text-shadow:0 0 10px var(--c1);} .cell.o{color:var(--c2);text-shadow:0 0 10px var(--c2);}
-
-/* RPS */
-.rps-choices{display:flex;gap:12px;justify-content:center;margin-top:8px;}
-.rps-choices button{font-size:34px;background:var(--card);border:none;border-radius:16px;padding:14px 18px;cursor:pointer;box-shadow:0 4px 10px var(--shadow);}
-.rps-result{display:flex;justify-content:center;gap:40px;margin-top:18px;font-size:40px;}
-
-/* Guess */
-#guessInput{font-size:18px;padding:9px 12px;border-radius:12px;border:none;width:100px;text-align:center;background:var(--card);color:var(--ink);font-family:inherit;box-shadow:0 3px 8px var(--shadow);}
-#guessGo{font-size:16px;padding:10px 18px;border-radius:20px;border:none;background:var(--c3);color:#3a2e00;cursor:pointer;margin-inline-start:8px;font-family:inherit;font-weight:700;}
-
-/* Memory */
-#memBoard{display:grid;grid-template-columns:repeat(4,minmax(56px,68px));gap:7px;justify-content:center;margin:0 auto;}
-.mcard{aspect-ratio:1;background:var(--c4);border-radius:10px;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;box-shadow:0 3px 8px var(--shadow);}
-.mcard.flipped{background:var(--card);color:var(--ink);}
-.mcard.matched{background:transparent;border:2px solid var(--c5);color:var(--c5);opacity:.6;box-shadow:none;}
-
-/* Snake */
-#snakeCanvas{background:var(--card);border-radius:14px;touch-action:none;box-shadow:0 6px 16px var(--shadow);}
-.snake-controls{display:grid;grid-template-columns:repeat(3,46px);gap:6px;justify-content:center;margin-top:14px;}
-.snake-controls button{font-size:20px;padding:8px;border-radius:10px;border:none;background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 3px 8px var(--shadow);}
-
-/* Whack */
-#whackBoard{display:grid;grid-template-columns:repeat(3,minmax(64px,84px));grid-template-rows:repeat(3,minmax(64px,84px));gap:8px;justify-content:center;margin:0 auto;}
-.hole{background:var(--card2);border-radius:50%;font-size:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px var(--shadow);}
-.hole.up{background:var(--c3);box-shadow:0 0 24px -2px var(--c3);}
-
-/* Trivia */
-.quiz-q{font-size:19px;font-weight:700;margin:14px 0;}
-.quiz-opts{display:grid;gap:10px;}
-.quiz-opts button{background:var(--card);border:none;border-radius:14px;padding:14px;font-size:15px;cursor:pointer;color:var(--ink);font-family:inherit;box-shadow:0 3px 8px var(--shadow);}
-.quiz-opts button.correct{background:var(--c5);color:#fff;}
-.quiz-opts button.wrong{background:var(--c1);color:#fff;}
-
-/* Simon */
-#simonBoard{display:grid;grid-template-columns:repeat(2,90px);grid-template-rows:repeat(2,90px);gap:8px;justify-content:center;margin:10px auto;}
-.simon-btn{border:none;border-radius:14px;cursor:pointer;opacity:.55;}
-.simon-btn.lit{opacity:1;}
-#simon0{background:var(--c1);} #simon1{background:var(--c2);} #simon2{background:var(--c3);} #simon3{background:var(--c4);}
-
-/* Math */
-.math-eq{font-size:30px;font-weight:800;margin:16px 0;}
-.math-opts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.math-opts button{background:var(--card);border:none;border-radius:14px;padding:12px 18px;font-size:18px;cursor:pointer;color:var(--ink);font-family:inherit;box-shadow:0 3px 8px var(--shadow);}
-
-/* Reaction */
-#reactBox{width:220px;height:220px;border-radius:20px;margin:16px auto;display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:700;font-size:18px;cursor:pointer;background:var(--c1);box-shadow:0 0 30px -6px var(--c1);}
-#reactBox.go{background:var(--c5);box-shadow:0 0 34px -4px var(--c5);}
-
-/* About */
-.about-box{background:var(--card);border-radius:18px;padding:28px 20px;box-shadow:0 6px 16px var(--shadow);text-align:right;}
-.about-emoji{font-size:40px;margin:0 0 6px;text-align:center;}
-.about-box h2{margin:0 0 12px;text-align:center;}
-.about-box p{margin:0 0 10px;line-height:1.7;color:var(--muted);}
-
-/* Leaderboard line */
-.best{font-size:13px;color:var(--muted);font-weight:700;margin-top:-6px;margin-bottom:6px;}
-
-@media (max-width:380px){
-  #home{grid-template-columns:repeat(2,1fr);gap:12px;}
-  .tile{padding:22px 6px 16px;font-size:15px;min-height:100px;}
-  .tile .emoji{font-size:32px;}
-  .game{padding:6px 12px 40px;}
-  .quiz-opts button, .math-opts button, .keyboard button{min-height:44px;}
-  button.reset, .back{min-height:46px;}
-}
-
-/* Word guess */
-.word-display{font-size:34px;font-weight:800;letter-spacing:8px;margin:18px 0;min-height:44px;}
-.hearts{font-size:20px;margin-bottom:10px;}
-.keyboard{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:420px;margin:0 auto;}
-.keyboard button{background:var(--card);border:none;border-radius:8px;padding:10px 0;font-size:16px;cursor:pointer;color:var(--ink);font-family:inherit;box-shadow:0 2px 6px var(--shadow);}
-.keyboard button:disabled{opacity:.35;}
-
-/* Click speed */
-#clickBtn{width:200px;height:200px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff6b9d,var(--c1));color:#fff;font-size:20px;font-weight:800;border:none;cursor:pointer;margin:18px auto;display:block;box-shadow:0 0 40px -6px var(--c1),0 8px 18px var(--shadow);}
-
-/* Color match */
-.color-word{font-size:38px;font-weight:800;margin:18px 0;}
-.color-opts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.color-opts button{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;box-shadow:0 3px 8px var(--shadow);}
-
-/* Sequence memory */
-#seqBoard{display:grid;grid-template-columns:repeat(3,minmax(64px,84px));grid-template-rows:repeat(3,minmax(64px,84px));gap:6px;justify-content:center;margin:14px auto;}
-.seq-cell{background:var(--card);border:none;border-radius:10px;font-size:26px;font-weight:800;cursor:pointer;color:var(--ink);box-shadow:0 3px 8px var(--shadow);}
-.seq-cell.done{background:var(--c5);color:#fff;}
-
-/* Hi-Lo */
-.hilo-num{font-size:54px;font-weight:800;margin:18px 0;}
-.hilo-opts{display:flex;gap:14px;justify-content:center;}
-.hilo-opts button{padding:14px 26px;font-size:18px;border-radius:16px;border:none;background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit;font-weight:700;box-shadow:0 3px 8px var(--shadow);}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-  <h1>🎮 العاب DULA</h1>
-  <p>اختار لعبة وابدأ اللعب</p>
-</header>
 
-<div id="home">
-  <button class="tile" data-game="xo" style="--tc:var(--c1)"><span class="emoji">❌</span>إكس أوه</button>
-  <button class="tile" data-game="rps" style="--tc:var(--c2)"><span class="emoji">✊</span>حجر ورقة مقص</button>
-  <button class="tile" data-game="guess" style="--tc:var(--c3)"><span class="emoji">🔢</span>خمن الرقم</button>
-  <button class="tile" data-game="memory" style="--tc:var(--c4)"><span class="emoji">🧠</span>الذاكرة</button>
-  <button class="tile" data-game="snake" style="--tc:var(--c5)"><span class="emoji">🐍</span>أفعى</button>
-  <button class="tile" data-game="whack" style="--tc:var(--c6)"><span class="emoji">🔨</span>اضرب الخلد</button>
-  <button class="tile" data-game="quiz" style="--tc:var(--c1)"><span class="emoji">❓</span>سؤال وجواب</button>
-  <button class="tile" data-game="simon" style="--tc:var(--c2)"><span class="emoji">🎨</span>ذاكر الألوان</button>
-  <button class="tile" data-game="math" style="--tc:var(--c3)"><span class="emoji">➕</span>سباق الحساب</button>
-  <button class="tile" data-game="react" style="--tc:var(--c4)"><span class="emoji">⚡</span>سرعة البديهة</button>
-  <button class="tile" data-game="about" style="--tc:var(--c5)"><span class="emoji">ℹ️</span>عن الموقع</button>
-  <button class="tile" data-game="ucl" style="--tc:var(--c6)"><span class="emoji">🏆</span>دوري الأبطال</button>
-  <button class="tile" data-game="epl" style="--tc:var(--c1)"><span class="emoji">⚽</span>الدوري الإنجليزي</button>
-  <button class="tile" data-game="player" style="--tc:var(--c2)"><span class="emoji">🌟</span>حياة لاعب</button>
-  <button class="tile" data-game="wc" style="--tc:var(--c3)"><span class="emoji">🌍</span>كأس العالم</button>
-  <button class="tile" data-game="word" style="--tc:var(--c1)"><span class="emoji">🔤</span>خمن الكلمة</button>
-  <button class="tile" data-game="click" style="--tc:var(--c2)"><span class="emoji">🎯</span>دقة النقر</button>
-  <button class="tile" data-game="color" style="--tc:var(--c3)"><span class="emoji">🌈</span>الألوان السريعة</button>
-  <button class="tile" data-game="seq" style="--tc:var(--c4)"><span class="emoji">🔢</span>رتب الأرقام</button>
-  <button class="tile" data-game="hilo" style="--tc:var(--c5)"><span class="emoji">⚖️</span>الأكبر ولا الأصغر</button>
-  <button class="tile" data-game="mult" style="--tc:var(--c6)"><span class="emoji">✖️</span>جدول الضرب</button>
+<!-- ===== الشريط العلوي ===== -->
+<div class="topbar">
+  <div class="chip"><small>المستوى</small><span id="topLevel">1</span> ⭐</div>
+  <div class="chip"><small>الخبرة</small><span id="topXP">0</span></div>
+  <div class="chip"><small>العملات</small><span id="topCoins">0</span> 🪙</div>
+  <div class="chip"><small>السلسلة</small><span id="topStreak">0</span> 🔥</div>
 </div>
 
-<section class="game" id="game-xo"><button class="back">← رجوع</button>
-  <div id="xoBoard"></div><p class="status" id="xoStatus"></p>
-  <button class="reset" id="xoReset">جولة جديدة</button></section>
-
-<section class="game" id="game-rps"><button class="back">← رجوع</button>
-  <p class="status">اختار حجر ولا ورقة ولا مقص</p>
-  <div class="rps-choices"><button data-c="✊">✊</button><button data-c="✋">✋</button><button data-c="✌️">✌️</button></div>
-  <div class="rps-result" id="rpsResult"></div><p class="status" id="rpsStatus"></p></section>
-
-<section class="game" id="game-guess"><button class="back">← رجوع</button>
-  <p class="status">فكرت في رقم من 1 لـ 50</p>
-  <div><input type="number" id="guessInput" min="1" max="50"><button id="guessGo">جرّب</button></div>
-  <p class="status" id="guessStatus"></p><button class="reset" id="guessReset">لعبة جديدة</button></section>
-
-<section class="game" id="game-memory"><button class="back">← رجوع</button>
-  <p class="status" id="memStatus">لاقي كل الأزواج</p>
-  <div id="memBoard"></div><button class="reset" id="memReset">لعبة جديدة</button></section>
-
-<section class="game" id="game-snake"><button class="back">← رجوع</button>
-  <p class="status" id="snakeStatus">النقاط: 0</p>
-  <p class="best" id="snakeBest"></p>
-  <canvas id="snakeCanvas" width="240" height="240"></canvas>
-  <div class="snake-controls"><span></span><button id="snUp">↑</button><span></span>
-  <button id="snLeft">←</button><button id="snDown">↓</button><button id="snRight">→</button></div></section>
-
-<section class="game" id="game-whack"><button class="back">← رجوع</button>
-  <p class="status" id="whackStatus">النقاط: 0 — الوقت: 30</p>
-  <p class="best" id="whackBest"></p>
-  <div id="whackBoard"></div><button class="reset" id="whackReset">ابدأ اللعب</button></section>
-
-<section class="game" id="game-quiz"><button class="back">← رجوع</button>
-  <p class="status" id="quizScore">النقطة 1 من 8</p>
-  <p class="best" id="quizBest"></p>
-  <p class="quiz-q" id="quizQ"></p>
-  <div class="quiz-opts" id="quizOpts"></div>
-  <button class="reset" id="quizReset">ابدأ من جديد</button></section>
-
-<section class="game" id="game-simon"><button class="back">← رجوع</button>
-  <p class="status" id="simonStatus">دوس ابدأ وذاكر الترتيب</p>
-  <p class="best" id="simonBest"></p>
-  <div id="simonBoard">
-    <button class="simon-btn" id="simon0"></button><button class="simon-btn" id="simon1"></button>
-    <button class="simon-btn" id="simon2"></button><button class="simon-btn" id="simon3"></button>
+<!-- ===== الهيرو ===== -->
+<section class="hero">
+  <h1>🎮 DULA Games</h1>
+  <p>العب، اجمع الكوينز، وارتقِ في لوحة المتصدرين!</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="openAdventure()">🗺️ ابدأ المغامرة</button>
+    <button class="btn-ghost" onclick="claimDaily()">🎁 تحدي اليوم</button>
+    <button class="btn-ghost" onclick="openShop()">🛒 المتجر</button>
   </div>
-  <button class="reset" id="simonReset">ابدأ</button></section>
+</section>
 
-<section class="game" id="game-math"><button class="back">← رجوع</button>
-  <p class="status" id="mathStatus">النقاط: 0 — الوقت: 30</p>
-  <p class="best" id="mathBest"></p>
-  <p class="math-eq" id="mathEq"></p>
-  <div class="math-opts" id="mathOpts"></div>
-  <button class="reset" id="mathReset">ابدأ اللعب</button></section>
+<!-- ===== الشاشة الرئيسية ===== -->
+<main id="homeScreen">
 
-<section class="game" id="game-react"><button class="back">← رجوع</button>
-  <p class="status" id="reactStatus">دوس ابدأ واستنى اللون يتغير</p>
-  <p class="best" id="reactBest"></p>
-  <div id="reactBox">استنى...</div>
-  <button class="reset" id="reactReset">ابدأ</button></section>
+  <!-- لوحة المتصدرين -->
+  <section class="leaderboard">
+    <h2>🏆 أفضل 5 لاعبين</h2>
+    <ol id="leaderboardList"></ol>
+  </section>
 
-<section class="game" id="game-about"><button class="back">← رجوع</button>
-  <div class="about-box">
-    <p class="about-emoji">🎮</p>
-    <h2>العاب DULA</h2>
-    <p>موقع فيه مجموعة ألعاب بسيطة وسريعة تقدر تلعبها في أي وقت من غير تحميل أي برنامج.</p>
-    <p>الموقع اتعمل كمشروع شخصي، وبيتزود بألعاب جديدة بشكل مستمر.</p>
-    <p>كل لعبة بتحفظ أفضل نتيجة وصلت ليها على نفس الجهاز.</p>
-  </div></section>
+  <!-- البحث -->
+  <div class="search-box">
+    <input id="gameSearch" type="search" placeholder="🔎 ابحث عن لعبة..." oninput="filterGames(this.value)">
+  </div>
 
-<section class="game" id="game-ucl"><button class="back">← رجوع</button>
-  <p class="status" id="uclScore"></p><p class="best" id="uclBest"></p>
-  <p class="quiz-q" id="uclQ"></p><div class="quiz-opts" id="uclOpts"></div>
-  <button class="reset" id="uclReset">ابدأ من جديد</button></section>
+  <!-- الألعاب -->
+  <section class="games-grid" id="gamesGrid"></section>
 
-<section class="game" id="game-epl"><button class="back">← رجوع</button>
-  <p class="status" id="eplScore"></p><p class="best" id="eplBest"></p>
-  <p class="quiz-q" id="eplQ"></p><div class="quiz-opts" id="eplOpts"></div>
-  <button class="reset" id="eplReset">ابدأ من جديد</button></section>
+</main>
 
-<section class="game" id="game-player"><button class="back">← رجوع</button>
-  <p class="status" id="playerScore"></p><p class="best" id="playerBest"></p>
-  <p class="quiz-q" id="playerQ"></p><div class="quiz-opts" id="playerOpts"></div>
-  <button class="reset" id="playerReset">ابدأ من جديد</button></section>
+<!-- ===== شاشة اللعبة ===== -->
+<main id="gameScreen" style="display:none">
+  <div class="game-header">
+    <button class="back-btn" onclick="backHome()">⬅ رجوع</button>
+    <h2 id="gameTitle"></h2>
+    <div class="score-display">💯 <span id="currentScore">0</span></div>
+  </div>
+  <div id="gameArea"></div>
+</main>
 
-<section class="game" id="game-wc"><button class="back">← رجوع</button>
-  <p class="status" id="wcScore"></p><p class="best" id="wcBest"></p>
-  <p class="quiz-q" id="wcQ"></p><div class="quiz-opts" id="wcOpts"></div>
-  <button class="reset" id="wcReset">ابدأ من جديد</button></section>
+<!-- ===== شاشة المتجر ===== -->
+<div id="shopModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-head">
+      <h2>🛒 المتجر</h2>
+      <button onclick="closeShop()">✖</button>
+    </div>
+    <p class="shop-coins">رصيدك: <b><span id="shopCoins">0</span></b> 🪙</p>
+    <div class="shop-grid" id="shopGrid"></div>
+  </div>
+</div>
 
-<section class="game" id="game-word"><button class="back">← رجوع</button>
-  <p class="hearts" id="wordHearts"></p>
-  <p class="word-display" id="wordDisplay"></p>
-  <p class="status" id="wordStatus"></p>
-  <div class="keyboard" id="wordKeyboard"></div>
-  <button class="reset" id="wordReset">كلمة جديدة</button></section>
+<!-- ===== إشعار ===== -->
+<div id="toast" class="toast"></div>
 
-<section class="game" id="game-click"><button class="back">← رجوع</button>
-  <p class="status" id="clickStatus">دوس زرار "ابدأ" وبعدين دوس بسرعة لمدة 5 ثواني</p>
-  <p class="best" id="clickBest"></p>
-  <button id="clickBtn">دوس هنا!</button>
-  <button class="reset" id="clickReset">ابدأ</button></section>
-
-<section class="game" id="game-color"><button class="back">← رجوع</button>
-  <p class="status" id="colorStatus">النقاط: 0 — الوقت: 30</p>
-  <p class="best" id="colorBest"></p>
-  <p class="status">دوس على اللون اللي متلون بيه النص (مش اللي مكتوب)</p>
-  <p class="color-word" id="colorWord"></p>
-  <div class="color-opts" id="colorOpts"></div>
-  <button class="reset" id="colorReset">ابدأ اللعب</button></section>
-
-<section class="game" id="game-seq"><button class="back">← رجوع</button>
-  <p class="status" id="seqStatus">دوس ابدأ واحفظ ترتيب الأرقام</p>
-  <p class="best" id="seqBest"></p>
-  <div id="seqBoard"></div>
-  <button class="reset" id="seqReset">ابدأ</button></section>
-
-<section class="game" id="game-hilo"><button class="back">← رجوع</button>
-  <p class="status" id="hiloStatus">الرقم ده أعلى ولا أقل من اللي بعده؟</p>
-  <p class="best" id="hiloBest"></p>
-  <p class="hilo-num" id="hiloNum"></p>
-  <div class="hilo-opts">
-    <button id="hiloUp">⬆️ أعلى</button>
-    <button id="hiloDown">⬇️ أقل</button>
-  </div></section>
-
-<section class="game" id="game-mult"><button class="back">← رجوع</button>
-  <p class="status" id="multStatus">النقاط: 0 — الوقت: 30</p>
-  <p class="best" id="multBest"></p>
-  <p class="math-eq" id="multEq"></p>
-  <div class="math-opts" id="multOpts"></div>
-  <button class="reset" id="multReset">ابدأ اللعب</button></section>
-
-<script>
-function bestGet(key){const v=localStorage.getItem(key);return v===null?null:Number(v);}
-function bestTry(key,val,lowerBetter){const cur=bestGet(key);const isNew=cur===null||(lowerBetter?val<cur:val>cur);if(isNew)localStorage.setItem(key,val);return isNew;}
-function bestLabel(key,lowerBetter,suffix){const v=bestGet(key);return v===null?'أفضل نتيجة: —':'أفضل نتيجة: '+v+(suffix||'');}
-
-const home=document.getElementById('home');
-document.querySelectorAll('.tile').forEach(t=>t.addEventListener('click',()=>showGame(t.dataset.game)));
-document.querySelectorAll('.back').forEach(b=>b.addEventListener('click',showHome));
-function showGame(id){
-  home.style.display='none';
-  document.querySelectorAll('.game').forEach(g=>g.classList.remove('active'));
-  document.getElementById('game-'+id).classList.add('active');
-  if(id==='snake') startSnake();
-}
-function showHome(){
-  home.style.display='grid';
-  document.querySelectorAll('.game').forEach(g=>g.classList.remove('active'));
-  stopSnake(); stopWhack(); stopMath(); stopReact(); stopClick(); stopColorGame(); stopMult();
-}
-
-/* X-O */
-(function(){
-  const boardEl=document.getElementById('xoBoard'), statusEl=document.getElementById('xoStatus');
-  let cells=Array(9).fill(null), turn='X', active=true;
-  const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  function build(){boardEl.innerHTML='';cells.forEach((v,i)=>{const b=document.createElement('button');b.className='cell';b.addEventListener('click',()=>play(i));boardEl.appendChild(b);});render();}
-  function render(){[...boardEl.children].forEach((b,i)=>{b.textContent=cells[i]||'';b.className='cell'+(cells[i]==='X'?' x':cells[i]==='O'?' o':'');b.disabled=!!cells[i]||!active;});if(active)statusEl.textContent='دور اللاعب '+turn;}
-  function winner(){for(const [a,b,c] of wins)if(cells[a]&&cells[a]===cells[b]&&cells[a]===cells[c])return cells[a];if(cells.every(c=>c))return 'D';return null;}
-  function play(i){if(cells[i]||!active)return;cells[i]=turn;const w=winner();if(w){active=false;statusEl.textContent=w==='D'?'تعادل!':'فاز اللاعب '+w+' 🎉';render();return;}turn=turn==='X'?'O':'X';render();}
-  document.getElementById('xoReset').addEventListener('click',()=>{cells=Array(9).fill(null);turn='X';active=true;build();});
-  build();
-})();
-
-/* RPS */
-(function(){
-  const opts=['✊','✋','✌️'], beats={'✊':'✌️','✋':'✊','✌️':'✋'};
-  const resEl=document.getElementById('rpsResult'), statEl=document.getElementById('rpsStatus');
-  document.querySelectorAll('.rps-choices button').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const me=btn.dataset.c, cpu=opts[Math.floor(Math.random()*3)];
-      resEl.textContent=me+'  مقابل  '+cpu;
-      statEl.textContent = me===cpu?'تعادل!':(beats[me]===cpu?'كسبت! 🎉':'خسرت 😅');
-    });
-  });
-})();
-
-/* Guess */
-(function(){
-  let target=Math.ceil(Math.random()*50), tries=0;
-  const input=document.getElementById('guessInput'), statusEl=document.getElementById('guessStatus');
-  document.getElementById('guessGo').addEventListener('click',()=>{
-    const v=Number(input.value); if(!v)return; tries++;
-    statusEl.textContent = v===target?('صح! الرقم كان '+target+' 🎉 (محاولات: '+tries+')') : (v<target?'أكبر من كده ⬆️':'أصغر من كده ⬇️');
-  });
-  document.getElementById('guessReset').addEventListener('click',()=>{target=Math.ceil(Math.random()*50);tries=0;input.value='';statusEl.textContent='';});
-})();
-
-/* Memory */
-(function(){
-  const icons=['🍎','🍌','🍇','🍉','🍒','🍋','🍑','🥝'];
-  const boardEl=document.getElementById('memBoard'), statusEl=document.getElementById('memStatus');
-  let cards=[], flipped=[], matched=0, lock=false;
-  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-  function build(){cards=shuffle([...icons,...icons]);flipped=[];matched=0;lock=false;statusEl.textContent='لاقي كل الأزواج';boardEl.innerHTML='';
-    cards.forEach((icon,i)=>{const c=document.createElement('div');c.className='mcard';c.addEventListener('click',()=>flip(i,c));boardEl.appendChild(c);});}
-  function flip(i,el){if(lock||el.classList.contains('flipped')||el.classList.contains('matched'))return;
-    el.textContent=cards[i];el.classList.add('flipped');flipped.push({i,el});
-    if(flipped.length===2){lock=true;const [a,b]=flipped;
-      if(cards[a.i]===cards[b.i]){a.el.classList.add('matched');b.el.classList.add('matched');matched++;flipped=[];lock=false;
-        if(matched===icons.length)statusEl.textContent='برافو! خلصت اللعبة 🎉';}
-      else{setTimeout(()=>{a.el.textContent='';b.el.textContent='';a.el.classList.remove('flipped');b.el.classList.remove('flipped');flipped=[];lock=false;},700);}}}
-  document.getElementById('memReset').addEventListener('click',build);
-  build();
-})();
-
-/* Snake */
-let snakeTimer=null;
-(function(){
-  const canvas=document.getElementById('snakeCanvas'), ctx=canvas.getContext('2d');
-  const size=12, cols=20, rows=20; let snake,dir,food,score,gameOver;
-  function reset(){snake=[{x:10,y:10}];dir={x:1,y:0};score=0;gameOver=false;placeFood();document.getElementById('snakeStatus').textContent='النقاط: 0';document.getElementById('snakeBest').textContent=bestLabel('best_snake');}
-  function placeFood(){food={x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)};}
-  function tick(){if(gameOver)return;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
-    if(head.x<0||head.y<0||head.x>=cols||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){gameOver=true;bestTry('best_snake',score,false);document.getElementById('snakeStatus').textContent='خسرت! النقاط: '+score;document.getElementById('snakeBest').textContent=bestLabel('best_snake');draw();return;}
-    snake.unshift(head);if(head.x===food.x&&head.y===food.y){score++;placeFood();document.getElementById('snakeStatus').textContent='النقاط: '+score;}else snake.pop();draw();}
-  function draw(){const css=getComputedStyle(document.documentElement);
-    ctx.fillStyle=css.getPropertyValue('--bg1');ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle=css.getPropertyValue('--c3');ctx.fillRect(food.x*size,food.y*size,size-1,size-1);
-    ctx.fillStyle=css.getPropertyValue('--c5');snake.forEach(s=>ctx.fillRect(s.x*size,s.y*size,size-1,size-1));}
-  function setDir(x,y){if(dir.x===-x&&dir.y===-y)return;dir={x,y};}
-  document.getElementById('snUp').addEventListener('click',()=>setDir(0,-1));
-  document.getElementById('snDown').addEventListener('click',()=>setDir(0,1));
-  document.getElementById('snLeft').addEventListener('click',()=>setDir(-1,0));
-  document.getElementById('snRight').addEventListener('click',()=>setDir(1,0));
-  document.getElementById('game-snake').addEventListener('click',(e)=>{if(gameOver&&e.target.tagName!=='BUTTON'){reset();draw();}});
-  document.addEventListener('keydown',(e)=>{if(!document.getElementById('game-snake').classList.contains('active'))return;
-    if(e.key==='ArrowUp')setDir(0,-1);if(e.key==='ArrowDown')setDir(0,1);if(e.key==='ArrowLeft')setDir(-1,0);if(e.key==='ArrowRight')setDir(1,0);});
-  window.startSnake=function(){reset();draw();if(snakeTimer)clearInterval(snakeTimer);snakeTimer=setInterval(tick,180);};
-  window.stopSnake=function(){if(snakeTimer){clearInterval(snakeTimer);snakeTimer=null;}};
-})();
-
-/* Whack-a-mole */
-let whackTimer=null, whackUpTimer=null;
-(function(){
-  const boardEl=document.getElementById('whackBoard'), statusEl=document.getElementById('whackStatus');
-  let score=0, timeLeft=30, holes=[], running=false;
-  function build(){boardEl.innerHTML='';holes=[];for(let i=0;i<9;i++){const h=document.createElement('div');h.className='hole';h.addEventListener('click',()=>hit(i));boardEl.appendChild(h);holes.push(h);}}
-  function hit(i){if(!running||!holes[i].classList.contains('up'))return;holes[i].classList.remove('up');holes[i].textContent='';score++;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;}
-  function popRandom(){holes.forEach(h=>{h.classList.remove('up');h.textContent='';});const i=Math.floor(Math.random()*9);holes[i].classList.add('up');holes[i].textContent='🐹';}
-  window.stopWhack=function(){running=false;if(whackTimer)clearInterval(whackTimer);if(whackUpTimer)clearInterval(whackUpTimer);};
-  document.getElementById('whackReset').addEventListener('click',()=>{
-    stopWhack();build();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';
-    whackUpTimer=setInterval(popRandom,700);
-    whackTimer=setInterval(()=>{timeLeft--;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
-      if(timeLeft<=0){stopWhack();holes.forEach(h=>{h.classList.remove('up');h.textContent='';});bestTry('best_whack',score,false);document.getElementById('whackBest').textContent=bestLabel('best_whack');statusEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
-  });
-  build();
-  document.getElementById('whackBest').textContent=bestLabel('best_whack');
-})();
-
-/* Trivia quiz */
-const quizQuestions=[
-    {q:'كام عاصمة مصر؟',opts:['القاهرة','الإسكندرية','أسوان'],a:0},
-    {q:'كام لون في علم مصر؟',opts:['اتنين','تلاتة','أربعة'],a:1},
-    {q:'أكبر كوكب في المجموعة الشمسية؟',opts:['الأرض','المشتري','زحل'],a:1},
-    {q:'كام قارة في العالم؟',opts:['5','6','7'],a:2},
-    {q:'أسرع حيوان بري؟',opts:['الفهد','الأسد','الحصان'],a:0},
-    {q:'كام يوم في السنة الكبيسة؟',opts:['364','365','366'],a:2},
-    {q:'العملة الرسمية في مصر؟',opts:['الدولار','الجنيه','الريال'],a:1},
-    {q:'أطول نهر في العالم؟',opts:['الأمازون','النيل','الفرات'],a:1},
-    {q:'عاصمة السعودية؟',opts:['جدة','الرياض','مكة'],a:1},
-    {q:'أكبر محيط في العالم؟',opts:['الأطلسي','الهادي','الهندي'],a:1},
-    {q:'كام يوم في الأسبوع؟',opts:['6','7','8'],a:1},
-    {q:'أصغر دولة في العالم مساحة؟',opts:['موناكو','الفاتيكان','سنغافورة'],a:1},
-    {q:'اللغة الرسمية في البرازيل؟',opts:['الإسبانية','البرتغالية','الإنجليزية'],a:1},
-    {q:'كام رجل للعنكبوت؟',opts:['6','8','10'],a:1},
-    {q:'أعلى جبل في العالم؟',opts:['إفرست','كليمنجارو','الألب'],a:0},
-    {q:'أول رائد فضاء وصل للقمر؟',opts:['يوري جاجارين','نيل أرمسترونج','باز ألدرين'],a:1},
-    {q:'كام لون في قوس قزح؟',opts:['5','6','7'],a:2},
-    {q:'عاصمة اليابان؟',opts:['طوكيو','أوساكا','كيوتو'],a:0},
-    {q:'أكبر صحراء حارة في العالم؟',opts:['صحراء ناميب','الصحراء الكبرى','صحراء أستراليا'],a:1}
-];
-
-const uclQuestions=[
-  {q:'الفريق الأكتر تتويجًا بدوري أبطال أوروبا؟',opts:['ميلان','ريال مدريد','بايرن ميونخ'],a:1},
-  {q:'ملعب "أنفيلد" ملعب أي فريق؟',opts:['إيفرتون','ليفربول','مانشستر يونايتد'],a:1},
-  {q:'ريال مدريد بيتلقب بـ إيه؟',opts:['الملكي','الأحمر','النمور'],a:0},
-  {q:'أول نسخة من دوري أبطال أوروبا كانت في أي عقد؟',opts:['الأربعينات','الخمسينات','الستينات'],a:1},
-  {q:'مانشستر يونايتد بيتلقب بـ إيه؟',opts:['الشياطين الحمر','الملوك','الصقور'],a:0},
-  {q:'ملعب "سانتياجو برنابيو" ملعب أي فريق؟',opts:['برشلونة','أتلتيكو مدريد','ريال مدريد'],a:2},
-  {q:'الفريق الألماني الأكتر تتويجًا بالبطولة؟',opts:['بوروسيا دورتموند','بايرن ميونخ','باير ليفركوزن'],a:1},
-  {q:'ألوان قميص نادي برشلونة الأساسية؟',opts:['أزرق وأحمر','أبيض وأزرق','أصفر وأخضر'],a:0},
-  {q:'نادي ميلان الإيطالي بيتلقب بـ إيه؟',opts:['البيانكونيري','الروسونيري','النيراتزوري'],a:1},
-  {q:'ملعب "كامب نو" ملعب أي فريق؟',opts:['ريال مدريد','برشلونة','إشبيلية'],a:1},
-  {q:'نادي تشيلسي الإنجليزي بيتلقب بـ إيه؟',opts:['البلوز','الريدز','الجانرز'],a:0},
-  {q:'مين صاحب أكبر عدد أهداف في تاريخ دوري الأبطال؟',opts:['ليونيل ميسي','روبرت ليفاندوفسكي','كريستيانو رونالدو'],a:2},
-  {q:'نادي يوفنتوس الإيطالي من أي مدينة؟',opts:['ميلانو','روما','تورينو'],a:2},
-  {q:'لون قميص ريال مدريد الأساسي؟',opts:['أبيض','أزرق','أحمر'],a:0},
-  {q:'نادي بنفيكا البرتغالي من أي مدينة؟',opts:['بورتو','لشبونة','براجا'],a:1}
-];
-
-const eplQuestions=[
-  {q:'الفريق الأكتر تتويجًا بالدوري الإنجليزي الممتاز؟',opts:['مانشستر سيتي','مانشستر يونايتد','ليفربول'],a:1},
-  {q:'ملعب "أولد ترافورد" ملعب أي فريق؟',opts:['مانشستر سيتي','مانشستر يونايتد','ليدز يونايتد'],a:1},
-  {q:'ملعب "الإمارات" ملعب أي فريق؟',opts:['تشيلسي','توتنهام','أرسنال'],a:2},
-  {q:'نادي أرسنال بيتلقب بـ إيه؟',opts:['المدفعجية','الشياطين','السباع'],a:0},
-  {q:'نادي ليفربول من أي مدينة إنجليزية؟',opts:['مانشستر','ليفربول','برمنجهام'],a:1},
-  {q:'نادي مانشستر سيتي بيتلقب بـ إيه؟',opts:['السيتزنز','الريدز','الفوكسز'],a:0},
-  {q:'ملعب "ستامفورد بريدج" ملعب أي فريق؟',opts:['تشيلسي','فولهام','وست هام'],a:0},
-  {q:'نادي توتنهام هوتسبير بيتلقب بـ إيه؟',opts:['السبيرز','الهامرز','الفوكسز'],a:0},
-  {q:'لون قميص إيفرتون الأساسي؟',opts:['أخضر','أزرق','أحمر'],a:1},
-  {q:'نادي ليفربول بيتلقب بـ إيه؟',opts:['الريدز','البلوز','الجانرز'],a:0},
-  {q:'نادي نيوكاسل يونايتد من أي مدينة؟',opts:['ليدز','نيوكاسل','شيفيلد'],a:1},
-  {q:'نادي ليستر سيتي بيتلقب بـ إيه؟',opts:['الفوكسز','الوولفز','السبيرز'],a:0},
-  {q:'الدوري الإنجليزي الممتاز بشكله الحالي بدأ سنة كام؟',opts:['1988','1992','1998'],a:1},
-  {q:'نادي وست هام يونايتد بيتلقب بـ إيه؟',opts:['ذا هامرز','ذا جانرز','ذا بلوز'],a:0},
-  {q:'ألوان قميص أستون فيلا الأساسية؟',opts:['أبيض وأزرق','كستنائي وأزرق فاتح','أخضر وأصفر'],a:1}
-];
-
-const playerQuestions=[
-  {q:'محمد صلاح بيلعب في أي مركز؟',opts:['حارس مرمى','جناح/مهاجم','مدافع'],a:1},
-  {q:'محمد صلاح من مواليد أي محافظة مصرية؟',opts:['الغربية','الإسكندرية','الجيزة'],a:0},
-  {q:'محمد صلاح بيلعب حاليًا لأي نادي إنجليزي؟',opts:['تشيلسي','ليفربول','مانشستر سيتي'],a:1},
-  {q:'محمد صلاح لعب قبل ليفربول في الدوري الإيطالي لنادي؟',opts:['يوفنتوس','روما','إنتر ميلان'],a:1},
-  {q:'أشهر لقب بيتنادى بيه محمد صلاح؟',opts:['الفرعون المصري','الأسد','النمر'],a:0},
-  {q:'محمد صلاح فاز بجائزة هداف الدوري الإنجليزي (الحذاء الذهبي)؟',opts:['ولا مرة','مرة واحدة بس','أكتر من مرة'],a:2},
-  {q:'محمد صلاح بدأ مشواره الاحترافي في نادي مصري اسمه؟',opts:['الأهلي','الزمالك','المقاولون العرب'],a:2},
-  {q:'رقم قميص محمد صلاح في ليفربول؟',opts:['7','9','11'],a:2},
-  {q:'محمد صلاح لعب مع منتخب مصر في نهائيات كأس العالم سنة؟',opts:['2014','2018','2022'],a:1},
-  {q:'محمد صلاح لعب فترة قصيرة في إنجلترا قبل روما مع نادي؟',opts:['تشيلسي','آرسنال','ليفربول'],a:0}
-];
-
-const wcQuestions=[
-  {q:'الفريق الأكتر تتويجًا بكأس العالم؟',opts:['ألمانيا','البرازيل','الأرجنتين'],a:1},
-  {q:'كأس العالم بيتقام كل قد إيه؟',opts:['كل سنتين','كل 3 سنين','كل 4 سنين'],a:2},
-  {q:'أول دولة استضافت كأس العالم؟',opts:['البرازيل','الأوروغواي','إيطاليا'],a:1},
-  {q:'مصر شاركت في كأس العالم آخر مرة سنة؟',opts:['2010','2014','2018'],a:2},
-  {q:'الأرجنتين فازت بكأس العالم كام مرة؟',opts:['مرتين','3 مرات','4 مرات'],a:1},
-  {q:'مين صاحب أكبر عدد أهداف في تاريخ كأس العالم؟',opts:['بيليه','ميروسلاف كلوزه','رونالدو نازاريو'],a:1},
-  {q:'كأس العالم 2022 اتقامت في أي دولة؟',opts:['قطر','الإمارات','السعودية'],a:0},
-  {q:'ألمانيا فازت بكأس العالم كام مرة؟',opts:['3 مرات','4 مرات','5 مرات'],a:1},
-  {q:'مين بيصنع الكرة الرسمية لكأس العالم عادة؟',opts:['نايكي','أديداس','بوما'],a:1},
-  {q:'فرنسا فازت بكأس العالم آخر مرة سنة؟',opts:['2014','2018','2022'],a:1},
-  {q:'كأس العالم 2026 هيشارك فيه كام منتخب؟',opts:['32','40','48'],a:2},
-  {q:'كأس العالم 2026 هيتقام في قد ايه دولة؟',opts:['دولة واحدة','دولتين','3 دول'],a:2},
-  {q:'الجائزة اللي بتتديله لأفضل لاعب في البطولة؟',opts:['الكرة الذهبية','الحذاء الذهبي','القفاز الذهبي'],a:0},
-  {q:'إيطاليا فازت بكأس العالم كام مرة؟',opts:['3 مرات','4 مرات','5 مرات'],a:1},
-  {q:'أول هداف في تاريخ كأس العالم كان لاعب من دولة؟',opts:['فرنسا','الأرجنتين','الأوروغواي'],a:0}
-];
-
-function makeQuiz(p, questions, bestKey){
-  let idx=0, score=0;
-  const qEl=document.getElementById(p+'Q'), optsEl=document.getElementById(p+'Opts'), scoreEl=document.getElementById(p+'Score'), bestEl=document.getElementById(p+'Best');
-  function render(){
-    if(idx>=questions.length){bestTry(bestKey,score,false);bestEl.textContent=bestLabel(bestKey);qEl.textContent='خلصت! نقاطك: '+score+' من '+questions.length+' 🎉';optsEl.innerHTML='';scoreEl.textContent='';return;}
-    const q=questions[idx];scoreEl.textContent='سؤال '+(idx+1)+' من '+questions.length;qEl.textContent=q.q;optsEl.innerHTML='';
-    q.opts.forEach((opt,i)=>{const b=document.createElement('button');b.textContent=opt;
-      b.addEventListener('click',()=>{
-        [...optsEl.children].forEach((x,xi)=>{x.disabled=true;if(xi===q.a)x.classList.add('correct');});
-        if(i!==q.a)b.classList.add('wrong'); else score++;
-        setTimeout(()=>{idx++;render();},900);
-      });
-      optsEl.appendChild(b);
-    });
-  }
-  document.getElementById(p+'Reset').addEventListener('click',()=>{idx=0;score=0;bestEl.textContent=bestLabel(bestKey);render();});
-  bestEl.textContent=bestLabel(bestKey);
-  render();
-}
-makeQuiz('quiz', quizQuestions, 'best_quiz');
-makeQuiz('ucl', uclQuestions, 'best_ucl');
-makeQuiz('epl', eplQuestions, 'best_epl');
-makeQuiz('player', playerQuestions, 'best_player');
-makeQuiz('wc', wcQuestions, 'best_wc');
-
-/* Simon */
-(function(){
-  const colors=[0,1,2,3];
-  const btns=colors.map(i=>document.getElementById('simon'+i));
-  const statusEl=document.getElementById('simonStatus');
-  let sequence=[], userStep=0, playing=false;
-  function flash(i){return new Promise(res=>{btns[i].classList.add('lit');setTimeout(()=>{btns[i].classList.remove('lit');res();},420);});}
-  async function playSequence(){playing=false;statusEl.textContent='بص واذكر...';for(const i of sequence){await flash(i);await new Promise(r=>setTimeout(r,200));}playing=true;userStep=0;statusEl.textContent='دورك! (طول السلسلة: '+sequence.length+')';}
-  function nextRound(){sequence.push(Math.floor(Math.random()*4));playSequence();}
-  btns.forEach((b,i)=>b.addEventListener('click',()=>{
-    if(!playing)return;
-    flash(i);
-    if(i===sequence[userStep]){userStep++;if(userStep===sequence.length){playing=false;statusEl.textContent='صح! هنزود واحدة 🎉';setTimeout(nextRound,700);}}
-    else{playing=false;bestTry('best_simon',sequence.length-1,false);document.getElementById('simonBest').textContent=bestLabel('best_simon');statusEl.textContent='خسرت! طول السلسلة كانت '+sequence.length+' — دوس ابدأ تاني';sequence=[];}
-  }));
-  document.getElementById('simonReset').addEventListener('click',()=>{sequence=[];nextRound();});
-  document.getElementById('simonBest').textContent=bestLabel('best_simon');
-})();
-
-/* Math race */
-let mathTimer=null;
-(function(){
-  const eqEl=document.getElementById('mathEq'), optsEl=document.getElementById('mathOpts'), statusEl=document.getElementById('mathStatus');
-  let score=0, timeLeft=30, answer=0, running=false;
-  function newEq(){
-    const a=Math.ceil(Math.random()*20), b=Math.ceil(Math.random()*20);
-    const ops=['+','-']; const op=ops[Math.floor(Math.random()*2)];
-    answer = op==='+' ? a+b : a-b;
-    eqEl.textContent = a+' '+op+' '+b+' = ؟';
-    const opts=new Set([answer]);
-    while(opts.size<3) opts.add(answer+Math.floor(Math.random()*9)-4);
-    const arr=[...opts].sort(()=>Math.random()-0.5);
-    optsEl.innerHTML='';
-    arr.forEach(v=>{const b2=document.createElement('button');b2.textContent=v;b2.addEventListener('click',()=>{if(!running)return;if(v===answer){score++;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;}newEq();});optsEl.appendChild(b2);});
-  }
-  window.stopMath=function(){running=false;if(mathTimer)clearInterval(mathTimer);};
-  document.getElementById('mathReset').addEventListener('click',()=>{
-    stopMath();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';newEq();
-    mathTimer=setInterval(()=>{timeLeft--;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
-      if(timeLeft<=0){stopMath();optsEl.innerHTML='';bestTry('best_math',score,false);document.getElementById('mathBest').textContent=bestLabel('best_math');eqEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
-  });
-  eqEl.textContent='دوس ابدأ اللعب';
-  document.getElementById('mathBest').textContent=bestLabel('best_math');
-})();
-
-/* Reaction */
-let reactTimeout=null;
-(function(){
-  const box=document.getElementById('reactBox'), statusEl=document.getElementById('reactStatus');
-  let waitingGo=false, startTime=0;
-  document.getElementById('reactBest').textContent=bestLabel('best_react',true,' مللي ثانية');
-  window.stopReact=function(){if(reactTimeout)clearTimeout(reactTimeout);box.classList.remove('go');box.textContent='استنى...';waitingGo=false;};
-  document.getElementById('reactReset').addEventListener('click',()=>{
-    stopReact();statusEl.textContent='استنى اللون يتغير...';box.textContent='استنى...';
-    reactTimeout=setTimeout(()=>{box.classList.add('go');box.textContent='دوس دلوقتي!';waitingGo=true;startTime=Date.now();},800+Math.random()*2000);
-  });
-  box.addEventListener('click',()=>{
-    if(waitingGo){const ms=Date.now()-startTime;bestTry('best_react',ms,true);document.getElementById('reactBest').textContent=bestLabel('best_react',true,' مللي ثانية');statusEl.textContent='وقتك: '+ms+' مللي ثانية ⚡';waitingGo=false;box.classList.remove('go');box.textContent='دوس ابدأ تاني';}
-    else if(box.textContent==='استنى...'){statusEl.textContent='بدري! استنى اللون يتغير';}
-  });
-})();
-
-/* Word guess (hangman) */
-(function(){
-  const words=['برمجة','موقع','لعبة','قاهرة','نجاح','رياضة','ذاكرة','كمبيوتر','مدرسة','صداقة'];
-  const letters=['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
-  const heartsEl=document.getElementById('wordHearts'), dispEl=document.getElementById('wordDisplay'), statusEl=document.getElementById('wordStatus'), kbEl=document.getElementById('wordKeyboard');
-  let word, guessed, wrong; const maxWrong=6;
-  function buildKeyboard(){kbEl.innerHTML='';letters.forEach(ch=>{const b=document.createElement('button');b.textContent=ch;b.addEventListener('click',()=>guess(ch,b));kbEl.appendChild(b);});}
-  function render(){dispEl.textContent=[...word].map(ch=>guessed.has(ch)?ch:'_').join(' ');heartsEl.textContent='❤️'.repeat(maxWrong-wrong)+'🖤'.repeat(wrong);}
-  function guess(ch,btn){if(btn.disabled)return;btn.disabled=true;guessed.add(ch);if(!word.includes(ch))wrong++;render();
-    if([...word].every(c=>guessed.has(c))){statusEl.textContent='برافو! خمنت الكلمة 🎉';[...kbEl.children].forEach(b=>b.disabled=true);}
-    else if(wrong>=maxWrong){dispEl.textContent=word;statusEl.textContent='خسرت! حاول تاني';[...kbEl.children].forEach(b=>b.disabled=true);}}
-  function start(){word=words[Math.floor(Math.random()*words.length)];guessed=new Set();wrong=0;statusEl.textContent='خمن الكلمة حرف حرف';buildKeyboard();render();}
-  document.getElementById('wordReset').addEventListener('click',start);
-  start();
-})();
-
-/* Click speed test */
-let clickTimer=null;
-(function(){
-  const statusEl=document.getElementById('clickStatus'), bestEl=document.getElementById('clickBest'), btn=document.getElementById('clickBtn');
-  let clicks=0, running=false, timeLeft=5;
-  bestEl.textContent=bestLabel('best_cps');
-  btn.addEventListener('click',()=>{if(running)clicks++;});
-  window.stopClick=function(){running=false;if(clickTimer)clearInterval(clickTimer);};
-  document.getElementById('clickReset').addEventListener('click',()=>{
-    stopClick();clicks=0;timeLeft=5;running=true;statusEl.textContent='دوس بسرعة! الوقت: '+timeLeft;
-    clickTimer=setInterval(()=>{timeLeft--;
-      if(timeLeft<=0){running=false;clearInterval(clickTimer);bestTry('best_cps',clicks,false);bestEl.textContent=bestLabel('best_cps');statusEl.textContent='خلصت! ضغطت '+clicks+' مرة 🎉';}
-      else statusEl.textContent='دوس بسرعة! الوقت: '+timeLeft;
-    },1000);
-  });
-})();
-
-/* Stroop color test */
-let colorTimer=null;
-(function(){
-  const palette=[{name:'أحمر',hex:'#ff6b6b'},{name:'أزرق',hex:'#4dabf7'},{name:'أخضر',hex:'#51cf66'},{name:'أصفر',hex:'#ffd43b'},{name:'بنفسجي',hex:'#a78bfa'}];
-  const wordEl=document.getElementById('colorWord'), optsEl=document.getElementById('colorOpts'), statusEl=document.getElementById('colorStatus'), bestEl=document.getElementById('colorBest');
-  let score=0, timeLeft=30, running=false, correctHex;
-  bestEl.textContent=bestLabel('best_color');
-  function newRound(){
-    const wordObj=palette[Math.floor(Math.random()*palette.length)], inkObj=palette[Math.floor(Math.random()*palette.length)];
-    wordEl.textContent=wordObj.name;wordEl.style.color=inkObj.hex;correctHex=inkObj.hex;optsEl.innerHTML='';
-    [...palette].sort(()=>Math.random()-0.5).forEach(c=>{
-      const b=document.createElement('button');b.style.background=c.hex;
-      b.addEventListener('click',()=>{if(!running)return;if(c.hex===correctHex)score++;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;newRound();});
-      optsEl.appendChild(b);
-    });
-  }
-  window.stopColorGame=function(){running=false;if(colorTimer)clearInterval(colorTimer);};
-  document.getElementById('colorReset').addEventListener('click',()=>{
-    stopColorGame();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';newRound();
-    colorTimer=setInterval(()=>{timeLeft--;
-      if(timeLeft<=0){running=false;clearInterval(colorTimer);optsEl.innerHTML='';wordEl.textContent='';bestTry('best_color',score,false);bestEl.textContent=bestLabel('best_color');statusEl.textContent='خلصت! نقاطك: '+score+' 🎉';}
-      else statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
-    },1000);
-  });
-})();
-
-/* Number sequence memory */
-(function(){
-  const boardEl=document.getElementById('seqBoard'), statusEl=document.getElementById('seqStatus'), bestEl=document.getElementById('seqBest');
-  let cells=[], sequence=[], userStep=0, playing=false;
-  bestEl.textContent=bestLabel('best_seq');
-  function build(){boardEl.innerHTML='';cells=[];for(let i=0;i<9;i++){const b=document.createElement('button');b.className='seq-cell';b.textContent=i+1;b.addEventListener('click',()=>cellClick(i));boardEl.appendChild(b);cells.push(b);}}
-  function flash(i){return new Promise(res=>{cells[i].classList.add('done');setTimeout(()=>{cells[i].classList.remove('done');res();},380);});}
-  async function playSeq(){playing=false;statusEl.textContent='بص كويس...';for(const i of sequence){await flash(i);await new Promise(r=>setTimeout(r,150));}playing=true;userStep=0;statusEl.textContent='دورك! (الطول: '+sequence.length+')';}
-  function nextRound(){sequence.push(Math.floor(Math.random()*9));playSeq();}
-  function cellClick(i){if(!playing)return;cells[i].classList.add('done');setTimeout(()=>cells[i].classList.remove('done'),200);
-    if(i===sequence[userStep]){userStep++;if(userStep===sequence.length){playing=false;statusEl.textContent='صح! هنزود واحدة 🎉';setTimeout(nextRound,600);}}
-    else{playing=false;bestTry('best_seq',sequence.length-1,false);bestEl.textContent=bestLabel('best_seq');statusEl.textContent='خسرت! طول السلسلة كانت '+sequence.length+' — دوس ابدأ تاني';sequence=[];}}
-  document.getElementById('seqReset').addEventListener('click',()=>{build();sequence=[];nextRound();});
-  build();
-})();
-
-/* Higher or lower */
-(function(){
-  const numEl=document.getElementById('hiloNum'), statusEl=document.getElementById('hiloStatus'), bestEl=document.getElementById('hiloBest');
-  let current, streak=0;
-  bestEl.textContent=bestLabel('best_hilo');
-  function newNum(){current=Math.ceil(Math.random()*100);numEl.textContent=current;}
-  function guess(dir){
-    const next=Math.ceil(Math.random()*100);
-    const correct=dir==='up'?next>=current:next<=current;
-    if(correct){streak++;statusEl.textContent='صح! السلسلة: '+streak;current=next;numEl.textContent=current;}
-    else{bestTry('best_hilo',streak,false);bestEl.textContent=bestLabel('best_hilo');statusEl.textContent='خسرت! كانت السلسلة '+streak+' — نبدأ تاني';streak=0;newNum();}
-  }
-  document.getElementById('hiloUp').addEventListener('click',()=>guess('up'));
-  document.getElementById('hiloDown').addEventListener('click',()=>guess('down'));
-  newNum();
-})();
-
-/* Multiplication table race */
-let multTimer=null;
-(function(){
-  const eqEl=document.getElementById('multEq'), optsEl=document.getElementById('multOpts'), statusEl=document.getElementById('multStatus'), bestEl=document.getElementById('multBest');
-  let score=0, timeLeft=30, answer=0, running=false;
-  bestEl.textContent=bestLabel('best_mult');
-  function newEq(){
-    const a=Math.ceil(Math.random()*12), b=Math.ceil(Math.random()*12);
-    answer=a*b;eqEl.textContent=a+' × '+b+' = ؟';
-    const opts=new Set([answer]);while(opts.size<3)opts.add(answer+Math.floor(Math.random()*10)-5);
-    const arr=[...opts].sort(()=>Math.random()-0.5);optsEl.innerHTML='';
-    arr.forEach(v=>{const b2=document.createElement('button');b2.textContent=v;
-      b2.addEventListener('click',()=>{if(!running)return;if(v===answer){score++;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;}newEq();});
-      optsEl.appendChild(b2);
-    });
-  }
-  window.stopMult=function(){running=false;if(multTimer)clearInterval(multTimer);};
-  document.getElementById('multReset').addEventListener('click',()=>{
-    stopMult();score=0;timeLeft=30;running=true;statusEl.textContent='النقاط: 0 — الوقت: 30';newEq();
-    multTimer=setInterval(()=>{timeLeft--;statusEl.textContent='النقاط: '+score+' — الوقت: '+timeLeft;
-      if(timeLeft<=0){stopMult();optsEl.innerHTML='';bestTry('best_mult',score,false);bestEl.textContent=bestLabel('best_mult');eqEl.textContent='خلصت! نقاطك: '+score+' 🎉';}},1000);
-  });
-  eqEl.textContent='دوس ابدأ اللعب';
-})();
-</script>
+<script src="script.js"></script>
 </body>
 </html>
