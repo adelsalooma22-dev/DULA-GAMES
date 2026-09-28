@@ -1,19 +1,19 @@
 /* ============================================
-   DULA Pro - Main Script v2.0
-   كل حاجة: اسم اللاعب + المتجر + الثيمات + الألعاب
+   DULA Pro - Main Script v3.0
+   Stage 1: أساس + 5 ألعاب + 4 مراحل + متجر
    ============================================ */
 
-/* ====== 1. البيانات الأساسية ====== */
-const STORAGE_KEY = 'dulaPro_v2';
+/* ===== 1. البيانات الأساسية ===== */
+const STORAGE_KEY = 'dulaPro_v3';
 
 const defaultState = {
   playerName: '',
   xp: 0,
-  coins: 50,
+  coins: 100,
   streak: 0,
   lastDay: '',
-  lastDailyClaim: '',
-  scores: {},
+  lastDaily: '',
+  scores: {},        // { gameId_difficulty: bestScore }
   plays: {},
   ownedThemes: ['gaming'],
   ownedAvatars: ['default'],
@@ -23,7 +23,7 @@ const defaultState = {
 
 let state = { ...defaultState };
 
-/* ====== 2. تحميل وحفظ البيانات ====== */
+/* ===== 2. تحميل وحفظ ===== */
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -37,51 +37,51 @@ function saveState() {
   } catch (e) { console.warn('Save error', e); }
 }
 
-/* ====== 3. الثيمات ====== */
+/* ===== 3. الثيمات (أسعار صعبة) ===== */
 const THEMES = [
-  { id: 'gaming',  name: 'Gaming',  icon: '🎮', price: 0,    tag: 'مجاني',   desc: 'الثيم الافتراضي' },
-  { id: 'ocean',   name: 'Ocean',   icon: '🌊', price: 100,  tag: 'مبتدئ',   desc: 'أزرق هادئ' },
-  { id: 'fire',    name: 'Fire',    icon: '🔥', price: 300,  tag: 'متوسط',   desc: 'نار برتقالية' },
-  { id: 'galaxy',  name: 'Galaxy',  icon: '🌌', price: 800,  tag: 'متقدم',   desc: 'فضاء بنفسجي' },
-  { id: 'diamond', name: 'Diamond', icon: '💎', price: 2000, tag: 'نادر',    desc: 'ألماس أزرق' },
-  { id: 'royal',   name: 'Royal',   icon: '👑', price: 5000, tag: 'أسطوري',  desc: 'ملكي ذهبي' }
+  { id: 'gaming', name: 'Gaming', icon: '🎮', price: 0,     tag: 'مجاني' },
+  { id: 'ocean',  name: 'Ocean',  icon: '🌊', price: 1500,  tag: 'مبتدئ' },
+  { id: 'fire',   name: 'Fire',   icon: '🔥', price: 5000,  tag: 'متقدم' },
+  { id: 'galaxy', name: 'Galaxy', icon: '🌌', price: 15000, tag: 'أسطوري' }
 ];
 
+/* ===== 4. الأفاتارات ===== */
 const AVATARS = [
   { id: 'default', name: 'افتراضي', icon: '🎮', price: 0 },
-  { id: 'cat',     name: 'قطة',      icon: '🐱', price: 50 },
-  { id: 'lion',    name: 'أسد',      icon: '🦁', price: 150 },
-  { id: 'robot',   name: 'روبوت',    icon: '🤖', price: 250 },
-  { id: 'dragon',  name: 'تنين',     icon: '🐉', price: 500 },
-  { id: 'wizard',  name: 'ساحر',     icon: '🧙', price: 800 },
-  { id: 'ninja',   name: 'نينجا',    icon: '🥷', price: 1200 },
-  { id: 'crown',   name: 'تاج',      icon: '👑', price: 2500 }
+  { id: 'cat',     name: 'قطة',     icon: '🐱', price: 500 },
+  { id: 'robot',   name: 'روبوت',   icon: '🤖', price: 2000 },
+  { id: 'dragon',  name: 'تنين',    icon: '🐉', price: 5000 },
+  { id: 'wizard',  name: 'ساحر',    icon: '🧙', price: 10000 },
+  { id: 'ninja',   name: 'نينجا',   icon: '🥷', price: 20000 }
 ];
 
-/* ====== 4. قائمة الألعاب ====== */
+/* ===== 5. الألعاب ===== */
 const GAMES = [
-  { id: 'xo',        name: 'إكس أوه',       icon: '❌' },
-  { id: 'rps',       name: 'حجر ورقة مقص',  icon: '✊' },
-  { id: 'guess',     name: 'خمن الرقم',     icon: '🔢' },
-  { id: 'memory',    name: 'الذاكرة',       icon: '🧠' },
-  { id: 'snake',     name: 'أفعى',          icon: '🐍' },
-  { id: 'whack',     name: 'اضرب الخلد',    icon: '🔨' },
-  { id: 'quiz',      name: 'سؤال وجواب',    icon: '❓' },
-  { id: 'simon',     name: 'ذاكر الألوان',  icon: '🎨' },
-  { id: 'math',      name: 'سباق الحساب',   icon: '➕' },
-  { id: 'react',     name: 'سرعة البديهة',  icon: '⚡' },
-  { id: 'ucl',       name: 'دوري الأبطال',  icon: '🏆' },
-  { id: 'epl',       name: 'الدوري الإنجليزي', icon: '⚽' },
-  { id: 'wc',        name: 'كأس العالم',    icon: '🌍' },
-  { id: 'player',    name: 'حياة لاعب',     icon: '🌟' },
-  { id: 'about',     name: 'عن الموقع',     icon: 'ℹ️' }
+  { id: 'xo',     name: 'إكس أوه',   icon: '❌' },
+  { id: 'memory', name: 'الذاكرة',   icon: '🧠' },
+  { id: 'snake',  name: 'أفعى',      icon: '🐍' },
+  { id: 'math',   name: 'سباق الحساب', icon: '➕' },
+  { id: 'guess',  name: 'خمن الرقم', icon: '🔢' },
+  { id: 'rps',    name: 'حجر ورقة مقص', icon: '✊' },
+  { id: 'whack',  name: 'اضرب الخلد', icon: '🔨' },
+  { id: 'quiz',   name: 'سؤال وجواب', icon: '❓' },
+  { id: 'simon',  name: 'ذاكر الألوان', icon: '🎨' },
+  { id: 'movies', name: 'تخمين الأفلام', icon: '🎬' }
 ];
 
-/* ====== 5. المستوى والخبرة ====== */
+/* ===== 6. المراحل ===== */
+const DIFFICULTIES = [
+  { id: 'easy',      name: 'سهل',     icon: '🟢', desc: 'للمبتدئين' },
+  { id: 'medium',    name: 'متوسط',   icon: '🟡', desc: 'تحدي معقول' },
+  { id: 'hard',      name: 'صعب',     icon: '🔴', desc: 'للمحترفين' },
+  { id: 'legendary', name: 'أسطوري',  icon: '💜', desc: 'للمجانين بس!' }
+];
+
+/* ===== 7. المستوى ===== */
 function getLevel() { return Math.floor(state.xp / 100) + 1; }
 function getXPInLevel() { return state.xp % 100; }
 
-/* ====== 6. إضافة مكافآت ====== */
+/* ===== 8. المكافآت ===== */
 function addReward(xp, coins) {
   state.xp += xp;
   state.coins += coins;
@@ -89,24 +89,29 @@ function addReward(xp, coins) {
   renderAll();
 }
 
-/* ====== 7. تسجيل نتيجة لعبة ====== */
-function recordScore(gameId, score) {
-  const isNewBest = !state.scores[gameId] || score > state.scores[gameId];
-  if (isNewBest) state.scores[gameId] = score;
+/* ===== 9. حفظ النتيجة ===== */
+function recordScore(gameId, difficulty, score) {
+  const key = gameId + '_' + difficulty;
+  const isNewBest = !state.scores[key] || score > state.scores[key];
+  if (isNewBest) state.scores[key] = score;
   state.plays[gameId] = (state.plays[gameId] || 0) + 1;
 
-  const xp = Math.max(5, Math.floor(score / 5));
-  const coins = Math.max(1, Math.floor(score / 10));
+  // مكافآت قليلة عشان الكوينز تبقى صعبة
+  const multipliers = { easy: 1, medium: 1.5, hard: 2.2, legendary: 3.5 };
+  const mult = multipliers[difficulty] || 1;
+
+  const xp = Math.max(2, Math.floor(score / 15 * mult));
+  const coins = Math.max(1, Math.floor(score / 40 * mult));
 
   state.xp += xp;
   state.coins += coins;
   saveState();
   renderAll();
 
-  return { isNewBest, xp, coins, best: state.scores[gameId] };
+  return { isNewBest, xp, coins, best: state.scores[key] };
 }
 
-/* ====== 8. عرض الواجهة ====== */
+/* ===== 10. العرض العام ===== */
 function renderAll() {
   renderTopbar();
   renderQuickStats();
@@ -136,8 +141,8 @@ function renderQuickStats() {
   const set = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
   const totalPlays = Object.values(state.plays).reduce((a, b) => a + b, 0);
   const bestScore = Math.max(0, ...Object.values(state.scores));
-  set('qsGamesPlayed', totalPlays);
-  set('qsBestScore', bestScore);
+  set('qsPlays', totalPlays);
+  set('qsBest', bestScore);
   set('qsThemes', state.ownedThemes.length);
 }
 
@@ -146,9 +151,16 @@ function renderLeaderboard() {
   if (!list) return;
 
   const entries = Object.entries(state.scores)
-    .map(([id, score]) => {
-      const g = GAMES.find(x => x.id === id);
-      return { name: g ? g.name : id, icon: g ? g.icon : '🎮', score };
+    .map(([key, score]) => {
+      const [gameId, diff] = key.split('_');
+      const g = GAMES.find(x => x.id === gameId);
+      const d = DIFFICULTIES.find(x => x.id === diff);
+      return {
+        name: g ? g.name : gameId,
+        icon: g ? g.icon : '🎮',
+        diffIcon: d ? d.icon : '',
+        score
+      };
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
@@ -162,7 +174,7 @@ function renderLeaderboard() {
   list.innerHTML = entries.map((e, i) => `
     <li class="${i < 3 ? 'top' + (i + 1) : ''}">
       <span class="lb-rank">${medals[i]}</span>
-      <span class="lb-name">${e.icon} ${e.name}</span>
+      <span class="lb-name">${e.icon} ${e.name} ${e.diffIcon}</span>
       <span class="lb-score">${e.score}</span>
     </li>
   `).join('');
@@ -172,14 +184,22 @@ function renderGames() {
   const grid = document.getElementById('gamesGrid');
   if (!grid) return;
 
-  grid.innerHTML = GAMES.map(g => `
-    <div class="game-card" data-name="${g.name}" onclick="startGame('${g.id}')">
-      <span class="gc-icon">${g.icon}</span>
-      <div class="gc-name">${g.name}</div>
-      <div class="gc-best">🏆 ${state.scores[g.id] || 0}</div>
-      <div class="gc-plays">🎯 ${state.plays[g.id] || 0} مرة</div>
-    </div>
-  `).join('');
+  grid.innerHTML = GAMES.map(g => {
+    const bestAny = Math.max(0, ...[
+      state.scores[g.id + '_easy'] || 0,
+      state.scores[g.id + '_medium'] || 0,
+      state.scores[g.id + '_hard'] || 0,
+      state.scores[g.id + '_legendary'] || 0
+    ]);
+    return `
+      <div class="game-card" data-name="${g.name}" onclick="showDifficulty('${g.id}')">
+        <span class="gc-icon">${g.icon}</span>
+        <div class="gc-name">${g.name}</div>
+        <div class="gc-best">🏆 ${bestAny}</div>
+        <div class="gc-plays">🎯 ${state.plays[g.id] || 0} مرة</div>
+      </div>
+    `;
+  }).join('');
 }
 
 function filterGames(q) {
@@ -190,7 +210,7 @@ function filterGames(q) {
   });
 }
 
-/* ====== 9. المتجر ====== */
+/* ===== 11. المتجر ===== */
 function openShop() {
   document.getElementById('shopModal').classList.add('active');
   renderShop();
@@ -213,8 +233,8 @@ function renderShop() {
         ${active ? '<span class="si-tag">مفعّل</span>' : ''}
         <span class="si-icon">${t.icon}</span>
         <div class="si-name">${t.name}</div>
-        <button class="si-price" ${owned ? (active ? 'disabled' : '') : ''} onclick="buyTheme('${t.id}')">
-          ${owned ? (active ? '✅ مفعّل' : 'استخدام') : t.price + ' 🪙'}
+        <button class="si-price" ${owned && active ? 'disabled' : ''} onclick="buyTheme('${t.id}')">
+          ${owned ? (active ? '✅ مفعّل' : 'استخدام') : t.price.toLocaleString() + ' 🪙'}
         </button>
       </div>
     `;
@@ -228,8 +248,8 @@ function renderShop() {
         ${active ? '<span class="si-tag">مفعّل</span>' : ''}
         <span class="si-icon">${a.icon}</span>
         <div class="si-name">${a.name}</div>
-        <button class="si-price" ${owned ? (active ? 'disabled' : '') : ''} onclick="buyAvatar('${a.id}')">
-          ${owned ? (active ? '✅ مفعّل' : 'استخدام') : a.price + ' 🪙'}
+        <button class="si-price" ${owned && active ? 'disabled' : ''} onclick="buyAvatar('${a.id}')">
+          ${owned ? (active ? '✅ مفعّل' : 'استخدام') : a.price.toLocaleString() + ' 🪙'}
         </button>
       </div>
     `;
@@ -239,7 +259,6 @@ function renderShop() {
 function buyTheme(id) {
   const theme = THEMES.find(t => t.id === id);
   if (!theme) return;
-
   const owned = state.ownedThemes.includes(id);
 
   if (owned) {
@@ -252,7 +271,7 @@ function buyTheme(id) {
   }
 
   if (state.coins < theme.price) {
-    showToast('❌ محتاج ' + theme.price + ' 🪙 — ناقص ' + (theme.price - state.coins));
+    showToast('❌ ناقصك ' + (theme.price - state.coins).toLocaleString() + ' 🪙');
     return;
   }
 
@@ -268,7 +287,6 @@ function buyTheme(id) {
 function buyAvatar(id) {
   const avatar = AVATARS.find(a => a.id === id);
   if (!avatar) return;
-
   const owned = state.ownedAvatars.includes(id);
 
   if (owned) {
@@ -280,7 +298,7 @@ function buyAvatar(id) {
   }
 
   if (state.coins < avatar.price) {
-    showToast('❌ محتاج ' + avatar.price + ' 🪙');
+    showToast('❌ ناقصك ' + (avatar.price - state.coins).toLocaleString() + ' 🪙');
     return;
   }
 
@@ -300,44 +318,39 @@ function applyTheme(id) {
   }
 }
 
-/* ====== 10. الهدية اليومية ====== */
+/* ===== 12. الهدية اليومية ===== */
 function claimDaily() {
   const today = new Date().toDateString();
-  if (state.lastDailyClaim === today) {
+  if (state.lastDaily === today) {
     showToast('🎁 خدت هدية النهاردة! ارجع بكرة');
     return;
   }
-  state.lastDailyClaim = today;
-
-  const bonus = 50 + state.streak * 10;
-  const xpBonus = 20 + state.streak * 5;
+  state.lastDaily = today;
+  const bonus = 30 + state.streak * 5;
   state.coins += bonus;
-  state.xp += xpBonus;
   saveState();
   renderAll();
 
-  document.getElementById('rewardText').textContent = '+' + bonus + ' 🪙 و +' + xpBonus + ' XP';
-  document.getElementById('rewardModal').classList.add('active');
+  document.getElementById('dailyText').textContent = '+' + bonus + ' 🪙';
+  document.getElementById('dailyModal').classList.add('active');
 }
 
-function closeReward() {
-  document.getElementById('rewardModal').classList.remove('active');
+function closeDaily() {
+  document.getElementById('dailyModal').classList.remove('active');
 }
 
-/* ====== 11. Streak ====== */
+/* ===== 13. Streak ===== */
 function checkStreak() {
   const today = new Date().toDateString();
   if (state.lastDay === today) return;
-
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   if (state.lastDay === yesterday) state.streak++;
   else state.streak = 1;
-
   state.lastDay = today;
   saveState();
 }
 
-/* ====== 12. Toast ====== */
+/* ===== 14. Toast ===== */
 function showToast(msg) {
   const t = document.getElementById('toast');
   if (!t) return;
@@ -347,7 +360,7 @@ function showToast(msg) {
   t._timer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
-/* ====== 13. أدوات ====== */
+/* ===== 15. أدوات ===== */
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -356,69 +369,88 @@ function shuffle(a) {
   return a;
 }
 
-/* ====== 14. التنقل بين الشاشات ====== */
-let activeGame = null;
-let snakeTimer = null;
-let whackTimer = null;
-let whackUpTimer = null;
-let mathTimer = null;
-let reactTimeout = null;
+/* ===== 16. اختيار الصعوبة ===== */
+let pendingGame = null;
 
-function clearTimers() {
-  if (snakeTimer) clearInterval(snakeTimer);
-  if (whackTimer) clearInterval(whackTimer);
-  if (whackUpTimer) clearInterval(whackUpTimer);
-  if (mathTimer) clearInterval(mathTimer);
-  if (reactTimeout) clearTimeout(reactTimeout);
-  snakeTimer = whackTimer = whackUpTimer = mathTimer = reactTimeout = null;
+function showDifficulty(gameId) {
+  pendingGame = gameId;
+  const game = GAMES.find(g => g.id === gameId);
+  if (!game) return;
+
+  document.getElementById('diffTitle').textContent = game.icon + ' ' + game.name + ' — اختر الصعوبة';
+
+  const grid = document.getElementById('difficultyGrid');
+  grid.innerHTML = DIFFICULTIES.map(d => {
+    const best = state.scores[gameId + '_' + d.id] || 0;
+    return `
+      <button class="diff-btn ${d.id}" onclick="chooseDifficulty('${gameId}', '${d.id}')">
+        <span class="diff-icon">${d.icon}</span>
+        <div class="diff-name">${d.name}</div>
+        <div class="diff-desc">${d.desc}</div>
+        <div class="diff-desc" style="margin-top:6px;color:var(--accent)">🏆 ${best}</div>
+      </button>
+    `;
+  }).join('');
+
+  document.getElementById('difficultyModal').classList.add('active');
 }
 
-function startGame(id) {
-  if (id === 'about') {
-    document.getElementById('homeScreen').classList.remove('active');
-    document.getElementById('gameScreen').classList.add('active');
-    document.getElementById('gameTitle').textContent = 'ℹ️ عن الموقع';
-    document.getElementById('currentScore').textContent = '—';
-    document.getElementById('gameArea').innerHTML = `
-      <div style="text-align:right;padding:20px;line-height:1.9">
-        <p style="text-align:center;font-size:50px;margin:0">🎮</p>
-        <h3 style="text-align:center;margin:12px 0">DULA Pro</h3>
-        <p style="color:var(--ink-soft)">موقع ألعاب احترافي فيه ${GAMES.length} لعبة مختلفة.</p>
-        <p style="color:var(--ink-soft)">🎯 اجمع الكوينز من الألعاب وافتح ثيمات فخمة!</p>
-        <p style="color:var(--ink-soft)">🎨 ${THEMES.length} ثيمات مختلفة بأسعار متدرجة</p>
-        <p style="color:var(--ink-soft)">👤 ${AVATARS.length} أفاتار مميز</p>
-        <p style="color:var(--ink-soft);text-align:center;margin-top:20px;opacity:0.6">© DULA Pro 2025</p>
-      </div>
-    `;
-    return;
-  }
+function closeDifficulty() {
+  document.getElementById('difficultyModal').classList.remove('active');
+  pendingGame = null;
+}
+
+function chooseDifficulty(gameId, difficulty) {
+  closeDifficulty();
+  startGame(gameId, difficulty);
+}
+
+/* ===== 17. إدارة الألعاب ===== */
+let activeGame = null;
+let activeDifficulty = null;
+let snakeTimer = null;
+let mathTimer = null;
+let whackTimer = null;
+let whackUpTimer = null;
+
+function clearTimers() {
+  if (snakeTimer) { clearInterval(snakeTimer); snakeTimer = null; }
+  if (mathTimer) { clearInterval(mathTimer); mathTimer = null; }
+  if (whackTimer) { clearInterval(whackTimer); whackTimer = null; }
+  if (whackUpTimer) { clearInterval(whackUpTimer); whackUpTimer = null; }
+}
+
+function startGame(id, difficulty) {
+  clearTimers();
+  activeGame = id;
+  activeDifficulty = difficulty;
 
   document.getElementById('homeScreen').classList.remove('active');
   document.getElementById('gameScreen').classList.add('active');
+
   const game = GAMES.find(g => g.id === id);
-  document.getElementById('gameTitle').textContent = game.icon + ' ' + game.name;
+  const diff = DIFFICULTIES.find(d => d.id === difficulty);
+  document.getElementById('gameTitle').textContent = game.icon + ' ' + game.name + ' ' + diff.icon;
   document.getElementById('currentScore').textContent = '0';
+
   const area = document.getElementById('gameArea');
   area.innerHTML = '';
-  activeGame = id;
-  clearTimers();
+
+  const bestKey = id + '_' + difficulty;
+  const best = state.scores[bestKey] || 0;
 
   switch (id) {
-    case 'xo': initXO(area); break;
-    case 'rps': initRPS(area); break;
-    case 'guess': initGuess(area); break;
-    case 'memory': initMemory(area); break;
-    case 'snake': initSnake(area); break;
-    case 'whack': initWhack(area); break;
-    case 'quiz': initQuiz(area, quizQuestions, 'quiz'); break;
-    case 'simon': initSimon(area); break;
-    case 'math': initMath(area); break;
-    case 'react': initReact(area); break;
-    case 'ucl': initQuiz(area, uclQuestions, 'ucl'); break;
-    case 'epl': initQuiz(area, eplQuestions, 'epl'); break;
-    case 'wc': initQuiz(area, wcQuestions, 'wc'); break;
-    case 'player': initQuiz(area, playerQuestions, 'player'); break;
-  }
+  case 'xo':     initXO(area, difficulty, best); break;
+  case 'memory': initMemory(area, difficulty, best); break;
+  case 'snake':  initSnake(area, difficulty, best); break;
+  case 'math':   initMath(area, difficulty, best); break;
+  case 'guess':  initGuess(area, difficulty, best); break;
+  case 'rps':    initRPS(area, difficulty, best); break;
+  case 'whack':  initWhack(area, difficulty, best); break;
+  case 'quiz':   initQuiz(area, difficulty, best); break;
+  case 'simon':  initSimon(area, difficulty, best); break;
+  case 'movies': initMovies(area, difficulty, best); break;
+}
 }
 
 function backHome() {
@@ -426,34 +458,50 @@ function backHome() {
   document.getElementById('homeScreen').classList.add('active');
   document.getElementById('gameScreen').classList.remove('active');
   activeGame = null;
+  activeDifficulty = null;
   renderAll();
 }
 
-function endGame(id, score) {
-  const result = recordScore(id, score);
+function endGame(gameId, difficulty, score) {
+  const result = recordScore(gameId, difficulty, score);
   const area = document.getElementById('gameArea');
+  const game = GAMES.find(g => g.id === gameId);
+  const diff = DIFFICULTIES.find(d => d.id === difficulty);
 
   area.innerHTML = `
-    <div style="text-align:center;padding:30px 10px">
-      <h2 style="font-size:1.8rem;color:var(--accent);margin-bottom:14px">🎉 انتهت اللعبة!</h2>
-      <div style="font-size:2rem;font-weight:900;margin:14px 0">سكورك: ${score}</div>
-      ${result.isNewBest ? '<div style="color:var(--success);font-weight:800;margin-bottom:10px">🏆 رقم قياسي جديد!</div>' : ''}
-      <div style="margin:12px 0;font-size:1.05rem">💰 +${result.coins} كوين &nbsp; ⭐ +${result.xp} XP</div>
-      <div style="color:var(--muted);margin-bottom:16px">أفضل نتيجة: ${result.best}</div>
-      <button class="reset" onclick="startGame('${id}')">🔄 العب تاني</button>
+    <div style="text-align:center;padding:30px 12px">
+      <div style="font-size:70px;margin-bottom:10px">🎉</div>
+      <h2 style="font-size:26px;color:var(--accent);margin-bottom:14px">انتهت اللعبة!</h2>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">${game.icon} ${game.name} ${diff.icon} ${diff.name}</div>
+      <div style="font-size:2.4rem;font-weight:900;margin:12px 0;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${score}</div>
+      ${result.isNewBest ? '<div style="color:var(--success);font-weight:800;margin-bottom:12px;font-size:14px">🏆 رقم قياسي جديد!</div>' : ''}
+      <div style="margin:14px 0;font-size:15px;font-weight:800">
+        <span style="color:var(--warning)">💰 +${result.coins}</span>
+        &nbsp;|&nbsp;
+        <span style="color:var(--accent)">⭐ +${result.xp} XP</span>
+      </div>
+      <div style="color:var(--muted);margin-bottom:20px;font-size:13px">أفضل نتيجة: ${result.best}</div>
+      <button class="reset" onclick="startGame('${gameId}', '${difficulty}')">🔄 العب تاني</button>
       <button class="reset" onclick="backHome()" style="background:var(--gradient-2)">🏠 الرئيسية</button>
     </div>
   `;
 }
 
-/* ====== 15. لعبة X-O ====== */
-function initXO(area) {
+/* ===== 18. X-O ===== */
+function initXO(area, difficulty, best) {
+  // كل ما الصعوبة تزيد، الـ AI يبقى أذكى
+  // easy: مش بيلعب صح دايماً
+  // medium: بيلعب صح 50%
+  // hard: دايماً أحسن حركة
+  // legendary: دايماً أحسن حركة + مش بيغلط
+
   let cells = Array(9).fill(null);
   let turn = 'X';
   let active = true;
   const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
   area.innerHTML = `
+    <p class="best">🏆 أفضل: ${best}</p>
     <div id="xoBoard"></div>
     <p class="status" id="xoStatus"></p>
     <button class="reset" id="xoReset">جولة جديدة</button>
@@ -490,24 +538,103 @@ function initXO(area) {
     return null;
   }
 
+  function bestMove(player) {
+    // minimax بسيط
+    const opponent = player === 'O' ? 'X' : 'O';
+
+    function minimax(c, isMax) {
+      const w = (() => {
+        for (const [a, b, cc] of wins) {
+          if (c[a] && c[a] === c[b] && c[a] === c[cc]) return c[a];
+        }
+        if (c.every(x => x)) return 'D';
+        return null;
+      })();
+      if (w === player) return 10;
+      if (w === opponent) return -10;
+      if (w === 'D') return 0;
+
+      if (isMax) {
+        let best = -Infinity;
+        for (let i = 0; i < 9; i++) {
+          if (!c[i]) { c[i] = player; best = Math.max(best, minimax(c, false)); c[i] = null; }
+        }
+        return best;
+      } else {
+        let best = Infinity;
+        for (let i = 0; i < 9; i++) {
+          if (!c[i]) { c[i] = opponent; best = Math.min(best, minimax(c, true)); c[i] = null; }
+        }
+        return best;
+      }
+    }
+
+    let bestScore = -Infinity;
+    let move = -1;
+    for (let i = 0; i < 9; i++) {
+      if (!cells[i]) {
+        cells[i] = player;
+        const s = minimax(cells, false);
+        cells[i] = null;
+        if (s > bestScore) { bestScore = s; move = i; }
+      }
+    }
+    return move;
+  }
+
+  function randomMove() {
+    const empty = cells.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
+    return empty[Math.floor(Math.random() * empty.length)];
+  }
+
+  function aiPlay() {
+    if (!active || turn !== 'O') return;
+
+    let move;
+    const r = Math.random();
+    if (difficulty === 'easy') {
+      move = r < 0.6 ? randomMove() : bestMove('O');
+    } else if (difficulty === 'medium') {
+      move = r < 0.3 ? randomMove() : bestMove('O');
+    } else {
+      move = bestMove('O');
+    }
+    play(move);
+  }
+
   function play(i) {
     if (cells[i] || !active) return;
     cells[i] = turn;
     const w = winner();
+
     if (w) {
       active = false;
-      if (w === 'D') {
-        status.textContent = 'تعادل!';
-        recordScore('xo', 20);
+      let score = 0;
+      if (w === 'X') {
+        const baseScores = { easy: 30, medium: 60, hard: 120, legendary: 250 };
+        score = baseScores[difficulty] || 50;
+        status.textContent = 'كسبت! 🎉';
+      } else if (w === 'D') {
+        score = 10;
+        status.textContent = 'تعادل';
       } else {
-        status.textContent = 'فاز اللاعب ' + w + ' 🎉';
-        recordScore('xo', 100);
+        score = 0;
+        status.textContent = 'خسرت 😅';
       }
       render();
+      if (score > 0) {
+        document.getElementById('currentScore').textContent = score;
+        recordScore('xo', difficulty, score);
+      }
       return;
     }
+
     turn = turn === 'X' ? 'O' : 'X';
     render();
+
+    if (turn === 'O') {
+      setTimeout(aiPlay, 450);
+    }
   }
 
   document.getElementById('xoReset').onclick = () => {
@@ -520,95 +647,23 @@ function initXO(area) {
   build();
 }
 
-/* ====== 16. حجر ورقة مقص ====== */
-function initRPS(area) {
-  const opts = ['✊', '✋', '✌️'];
-  const beats = { '✊': '✌️', '✋': '✊', '✌️': '✋' };
-  let wins = 0;
+/* ===== 19. الذاكرة ===== */
+function initMemory(area, difficulty, best) {
+  // easy: 4 أزواج (3x3 مش هينفع، هتكون 4x2 = 8 cards)
+  // medium: 6 أزواج (4x3 = 12)
+  // hard: 8 أزواج (4x4 = 16)
+  // legendary: 10 أزواج (5x4 = 20)
+  const pairsMap = { easy: 4, medium: 6, hard: 8, legendary: 10 };
+  const pairCount = pairsMap[difficulty] || 6;
 
-  area.innerHTML = `
-    <p class="status">اختار سلاحك!</p>
-    <div class="rps-choices">
-      <button data-c="✊">✊</button>
-      <button data-c="✋">✋</button>
-      <button data-c="✌️">✌️</button>
-    </div>
-    <div class="rps-result" id="rpsResult"></div>
-    <p class="status" id="rpsStatus"></p>
-  `;
-
-  const resEl = document.getElementById('rpsResult');
-  const statEl = document.getElementById('rpsStatus');
-
-  area.querySelectorAll('.rps-choices button').forEach(btn => {
-    btn.onclick = () => {
-      const me = btn.dataset.c;
-      const cpu = opts[Math.floor(Math.random() * 3)];
-      resEl.textContent = me + '  مقابل  ' + cpu;
-
-      if (me === cpu) statEl.textContent = 'تعادل!';
-      else if (beats[me] === cpu) {
-        wins++;
-        statEl.textContent = 'كسبت! 🎉 (' + wins + ' فوز)';
-        document.getElementById('currentScore').textContent = wins * 30;
-        if (wins % 3 === 0) recordScore('rps', wins * 30);
-      } else {
-        statEl.textContent = 'خسرت 😅';
-      }
-    };
-  });
-}
-
-/* ====== 17. خمن الرقم ====== */
-function initGuess(area) {
-  let target = Math.ceil(Math.random() * 50);
-  let tries = 0;
-
-  area.innerHTML = `
-    <p class="status">فكرت في رقم من 1 لـ 50</p>
-    <div class="guess-input-wrap">
-      <input type="number" id="guessInput" min="1" max="50" placeholder="؟">
-      <button id="guessGo">جرّب</button>
-    </div>
-    <p class="status" id="guessStatus"></p>
-    <button class="reset" id="guessReset">لعبة جديدة</button>
-  `;
-
-  const input = document.getElementById('guessInput');
-  const status = document.getElementById('guessStatus');
-
-  document.getElementById('guessGo').onclick = () => {
-    const v = Number(input.value);
-    if (!v) return;
-    tries++;
-    if (v === target) {
-      status.textContent = 'صح! الرقم كان ' + target + ' 🎉';
-      const score = Math.max(20, 200 - tries * 20);
-      document.getElementById('currentScore').textContent = score;
-      recordScore('guess', score);
-    } else {
-      status.textContent = v < target ? 'أكبر من كده ⬆️' : 'أصغر من كده ⬇️';
-    }
-    input.value = '';
-    input.focus();
-  };
-
-  document.getElementById('guessReset').onclick = () => {
-    target = Math.ceil(Math.random() * 50);
-    tries = 0;
-    input.value = '';
-    status.textContent = '';
-  };
-}
-
-/* ====== 18. لعبة الذاكرة ====== */
-function initMemory(area) {
-  const icons = ['🍎','🍌','🍇','🍉','🍒','🍋','🍑','🥝'];
+  const allIcons = ['🍎','🍌','🍇','🍉','🍒','🍋','🍑','🥝','🍍','🥥'];
+  const icons = allIcons.slice(0, pairCount);
   let cards, flipped, matched, lock;
 
   area.innerHTML = `
+    <p class="best">🏆 أفضل: ${best}</p>
     <p class="status" id="memStatus">لاقي كل الأزواج</p>
-    <div id="memBoard"></div>
+    <div id="memBoard" style="grid-template-columns: repeat(${pairCount > 8 ? 5 : 4}, minmax(54px, 68px))"></div>
     <button class="reset" id="memReset">لعبة جديدة</button>
   `;
 
@@ -645,9 +700,10 @@ function initMemory(area) {
         matched++;
         flipped = [];
         lock = false;
-        document.getElementById('currentScore').textContent = matched * 50;
-        if (matched === icons.length) {
-          endGame('memory', Math.max(200, 800 - matched * 20));
+        document.getElementById('currentScore').textContent = matched * 20;
+        if (matched === pairCount) {
+          const baseScores = { easy: 80, medium: 150, hard: 280, legendary: 500 };
+          endGame('memory', difficulty, baseScores[difficulty] || 100);
         }
       } else {
         setTimeout(() => {
@@ -666,38 +722,49 @@ function initMemory(area) {
   build();
 }
 
-/* ====== 19. لعبة الأفعى ====== */
-function initSnake(area) {
+/* ===== 20. الأفعى ===== */
+function initSnake(area, difficulty, best) {
+  const speeds = { easy: 250, medium: 180, hard: 130, legendary: 90 };
+  const baseSpeed = speeds[difficulty] || 180;
+
   const size = 12, cols = 20, rows = 20;
 
   area.innerHTML = `
+    <p class="best">🏆 أفضل: ${best}</p>
     <p class="status" id="snakeStatus">النقاط: 0</p>
-    <p class="best" id="snakeBest">أفضل: ${state.scores.snake || 0}</p>
     <canvas id="snakeCanvas" width="240" height="240"></canvas>
     <div class="snake-controls">
       <span></span><button id="snUp">↑</button><span></span>
       <button id="snLeft">←</button><button id="snDown">↓</button><button id="snRight">→</button>
     </div>
+    <button class="reset" id="snakeReset" style="margin-top:14px">🔄 ابدأ من جديد</button>
   `;
 
   const canvas = document.getElementById('snakeCanvas');
   const ctx = canvas.getContext('2d');
   const status = document.getElementById('snakeStatus');
-  let snake, dir, food, score, gameOver;
+  let snake, dir, food, score, gameOver, speed;
 
   function reset() {
     snake = [{ x: 10, y: 10 }];
     dir = { x: 1, y: 0 };
     score = 0;
+    speed = baseSpeed;
     gameOver = false;
     placeFood();
     status.textContent = 'النقاط: 0';
     document.getElementById('currentScore').textContent = '0';
+    clearInterval(snakeTimer);
+    snakeTimer = setInterval(tick, speed);
     draw();
   }
 
   function placeFood() {
-    food = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows) };
+    let f;
+    do {
+      f = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows) };
+    } while (snake.some(s => s.x === f.x && s.y === f.y));
+    food = f;
   }
 
   function tick() {
@@ -707,14 +774,19 @@ function initSnake(area) {
         snake.some(s => s.x === head.x && s.y === head.y)) {
       gameOver = true;
       clearInterval(snakeTimer);
-      snakeTimer = null;
-      endGame('snake', score);
+      endGame('snake', difficulty, score);
       return;
     }
     snake.unshift(head);
     if (head.x === food.x && head.y === food.y) {
       score += 10;
       placeFood();
+      // يسرّع اللعبة تدريجياً
+      if (score % 50 === 0 && speed > 70) {
+        speed -= 10;
+        clearInterval(snakeTimer);
+        snakeTimer = setInterval(tick, speed);
+      }
       status.textContent = 'النقاط: ' + score;
       document.getElementById('currentScore').textContent = score;
     } else snake.pop();
@@ -723,16 +795,25 @@ function initSnake(area) {
 
   function draw() {
     const css = getComputedStyle(document.documentElement);
-    ctx.fillStyle = css.getPropertyValue('--bg2').trim() || '#1a1f3a';
+    ctx.fillStyle = css.getPropertyValue('--bg-2').trim() || '#0a0a1a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = css.getPropertyValue('--accent').trim() || '#00f5ff';
     ctx.fillStyle = css.getPropertyValue('--accent').trim() || '#00f5ff';
     ctx.fillRect(food.x * size, food.y * size, size - 1, size - 1);
+    ctx.shadowColor = css.getPropertyValue('--success').trim() || '#00ff88';
     ctx.fillStyle = css.getPropertyValue('--success').trim() || '#00ff88';
-    snake.forEach(s => ctx.fillRect(s.x * size, s.y * size, size - 1, size - 1));
+    snake.forEach((s, i) => {
+      ctx.globalAlpha = i === 0 ? 1 : 0.8;
+      ctx.fillRect(s.x * size, s.y * size, size - 1, size - 1);
+    });
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
   }
 
   function setDir(x, y) {
     if (dir.x === -x && dir.y === -y) return;
+    if (dir.x === x && dir.y === y) return;
     dir = { x, y };
   }
 
@@ -740,6 +821,7 @@ function initSnake(area) {
   document.getElementById('snDown').onclick = () => setDir(0, 1);
   document.getElementById('snLeft').onclick = () => setDir(-1, 0);
   document.getElementById('snRight').onclick = () => setDir(1, 0);
+  document.getElementById('snakeReset').onclick = reset;
 
   document.onkeydown = (e) => {
     if (activeGame !== 'snake') return;
@@ -750,18 +832,313 @@ function initSnake(area) {
   };
 
   reset();
-  snakeTimer = setInterval(tick, 170);
 }
 
-/* ====== 20. اضرب الخلد ====== */
-function initWhack(area) {
-  let score = 0, timeLeft = 30, holes = [], running = false;
+/* ===== 21. رياضيات ===== */
+function initMath(area, difficulty, best) {
+  // عدد الأرقام بيزيد حسب الصعوبة
+  const ranges = { easy: 10, medium: 25, hard: 50, legendary: 100 };
+  const maxNum = ranges[difficulty] || 25;
+  const durations = { easy: 40, medium: 30, hard: 25, legendary: 20 };
+  let timeLeft = durations[difficulty] || 30;
+
+  let score = 0, answer = 0, running = true;
 
   area.innerHTML = `
-    <p class="status" id="whackStatus">النقاط: 0 — الوقت: 30</p>
-    <p class="best" id="whackBest">أفضل: ${state.scores.whack || 0}</p>
+    <p class="best">🏆 أفضل: ${best}</p>
+    <p class="status" id="mathStatus">النقاط: 0 — الوقت: ${timeLeft}</p>
+    <p class="math-eq" id="mathEq">جاهز؟</p>
+    <div class="math-opts" id="mathOpts"></div>
+  `;
+
+  const eqEl = document.getElementById('mathEq');
+  const optsEl = document.getElementById('mathOpts');
+  const status = document.getElementById('mathStatus');
+
+  function newEq() {
+    const a = Math.ceil(Math.random() * maxNum);
+    const b = Math.ceil(Math.random() * maxNum);
+    const ops = difficulty === 'easy' ? ['+'] : difficulty === 'medium' ? ['+', '-'] : ['+', '-', '×'];
+    const op = ops[Math.floor(Math.random() * ops.length)];
+    if (op === '+') answer = a + b;
+    else if (op === '-') answer = a - b;
+    else answer = a * b;
+
+    eqEl.textContent = a + ' ' + op + ' ' + b + ' = ؟';
+
+    const opts = new Set([answer]);
+    while (opts.size < 3) {
+      const offset = Math.max(1, Math.floor(Math.random() * Math.max(5, maxNum / 2))) * (Math.random() < 0.5 ? 1 : -1);
+      opts.add(answer + offset);
+    }
+    optsEl.innerHTML = '';
+    shuffle([...opts]).forEach(v => {
+      const b2 = document.createElement('button');
+      b2.textContent = v;
+      b2.onclick = () => {
+        if (!running) return;
+        if (v === answer) {
+          score += 10;
+          status.textContent = 'النقاط: ' + score + ' — الوقت: ' + timeLeft;
+          document.getElementById('currentScore').textContent = score;
+        } else {
+          timeLeft = Math.max(0, timeLeft - 2);
+        }
+        newEq();
+      };
+      optsEl.appendChild(b2);
+    });
+  }
+
+  clearInterval(mathTimer);
+  mathTimer = setInterval(() => {
+    timeLeft--;
+    status.textContent = 'النقاط: ' + score + ' — الوقت: ' + timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(mathTimer);
+      running = false;
+      endGame('math', difficulty, score);
+    }
+  }, 1000);
+
+  newEq();
+}
+
+/* ===== 22. تخمين الرقم ===== */
+function initGuess(area, difficulty, best) {
+  // عدد الأرقام المتاح + عدد المحاولات
+  const maxMap = { easy: 30, medium: 50, hard: 100, legendary: 200 };
+  const triesMap = { easy: 10, medium: 8, hard: 6, legendary: 5 };
+  const maxNum = maxMap[difficulty] || 50;
+  const maxTries = triesMap[difficulty] || 8;
+
+  let target = Math.ceil(Math.random() * maxNum);
+  let tries = 0;
+
+  area.innerHTML = `
+    <p class="best">🏆 أفضل: ${best}</p>
+    <p class="status">فكرت في رقم من 1 لـ ${maxNum}</p>
+    <p class="status" style="font-size:13px;color:var(--muted)">محاولات مسموحة: ${maxTries}</p>
+    <div class="guess-input-wrap">
+      <input type="number" id="guessInput" min="1" max="${maxNum}" placeholder="؟">
+      <button id="guessGo">جرّب</button>
+    </div>
+    <p class="status" id="guessStatus"></p>
+    <button class="reset" id="guessReset">لعبة جديدة</button>
+  `;
+
+  const input = document.getElementById('guessInput');
+  const status = document.getElementById('guessStatus');
+
+  function doGuess() {
+    const v = Number(input.value);
+    if (!v || v < 1 || v > maxNum) return;
+    tries++;
+
+    if (v === target) {
+      const baseScores = { easy: 50, medium: 100, hard: 200, legendary: 400 };
+      let score = (baseScores[difficulty] || 100) - (tries - 1) * 10;
+      score = Math.max(20, score);
+      status.textContent = 'صح! الرقم كان ' + target + ' 🎉';
+      document.getElementById('currentScore').textContent = score;
+      recordScore('guess', difficulty, score);
+      input.disabled = true;
+      return;
+    }
+
+    if (tries >= maxTries) {
+      status.textContent = 'خلصت المحاولات! الرقم كان ' + target + ' 😅';
+      input.disabled = true;
+      recordScore('guess', difficulty, 5);
+      return;
+    }
+
+    status.textContent = (v < target ? 'أكبر من كده ⬆️' : 'أصغر من كده ⬇️') + ' (' + (maxTries - tries) + ' متبقي)';
+    input.value = '';
+    input.focus();
+  }
+
+  document.getElementById('guessGo').onclick = doGuess;
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doGuess();
+  });
+
+  document.getElementById('guessReset').onclick = () => {
+    target = Math.ceil(Math.random() * maxNum);
+    tries = 0;
+    input.value = '';
+    input.disabled = false;
+    status.textContent = '';
+    input.focus();
+  };
+}
+
+/* ===== 23. التشغيل ===== */
+window.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  checkStreak();
+  applyTheme(state.currentTheme);
+
+  // Splash Screen
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(() => {
+      if (!state.playerName) {
+        document.getElementById('nameScreen').classList.add('active');
+      } else {
+        document.getElementById('app').classList.add('active');
+        renderAll();
+      }
+    }, 500);
+  }, 2200);
+
+  // حفظ الاسم
+  const nameBtn = document.getElementById('saveNameBtn');
+  const nameInput = document.getElementById('playerNameInput');
+
+  nameBtn.onclick = () => {
+    const name = nameInput.value.trim();
+    if (!name) {
+      showToast('⚠️ اكتب اسمك الأول');
+      return;
+    }
+    state.playerName = name;
+    saveState();
+    document.getElementById('nameScreen').classList.remove('active');
+    document.getElementById('app').classList.add('active');
+    renderAll();
+    showToast('أهلاً بيك يا ' + name + ' 🎉');
+  };
+
+  nameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') nameBtn.click();
+  });
+
+  // إغلاق المودالات
+  document.getElementById('shopModal').addEventListener('click', (e) => {
+    if (e.target.id === 'shopModal') closeShop();
+  });
+  document.getElementById('dailyModal').addEventListener('click', (e) => {
+    if (e.target.id === 'dailyModal') closeDaily();
+  });
+  document.getElementById('difficultyModal').addEventListener('click', (e) => {
+    if (e.target.id === 'difficultyModal') closeDifficulty();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeShop();
+      closeDaily();
+      closeDifficulty();
+    }
+  });
+});
+/* ===== 24. حجر ورقة مقص ===== */
+function initRPS(area, difficulty, best) {
+  const opts = ['✊', '✋', '✌️'];
+  const beats = { '✊': '✌️', '✋': '✊', '✌️': '✋' };
+
+  // عدد الجولات المطلوب للفوز
+  const roundsToWin = { easy: 2, medium: 3, hard: 4, legendary: 5 };
+  const target = roundsToWin[difficulty] || 3;
+  const aiSmartness = { easy: 0.2, medium: 0.4, hard: 0.6, legendary: 0.85 };
+
+  let playerWins = 0, aiWins = 0, draws = 0;
+
+  area.innerHTML = `
+    <p class="best">🏆 أفضل: ${best}</p>
+    <p class="status">🎯 أول واحد يوصل ${target} فوز هو الفايز</p>
+    <p class="status" id="rpsScore">أنت: 0 — الخصم: 0</p>
+    <div class="rps-choices">
+      <button data-c="✊">✊</button>
+      <button data-c="✋">✋</button>
+      <button data-c="✌️">✌️</button>
+    </div>
+    <div class="rps-result" id="rpsResult"></div>
+    <p class="status" id="rpsStatus"></p>
+    <button class="reset" id="rpsReset">لعبة جديدة</button>
+  `;
+
+  const resEl = document.getElementById('rpsResult');
+  const statEl = document.getElementById('rpsStatus');
+  const scoreEl = document.getElementById('rpsScore');
+
+  function aiChoose() {
+    // كل ما الصعوبة تعلى، الـ AI يبقى أذكى
+    if (Math.random() < aiSmartness[difficulty]) {
+      // يختار اللي يغلب حركة اللاعب السابقة
+      const lastPlayer = document.querySelector('.rps-choices button:last-picked');
+      return opts[Math.floor(Math.random() * 3)];
+    }
+    return opts[Math.floor(Math.random() * 3)];
+  }
+
+  function play(me) {
+    const cpu = aiChoose();
+    resEl.innerHTML = `<span>${me}</span><span style="font-size:20px;color:var(--muted)">VS</span><span>${cpu}</span>`;
+
+    if (me === cpu) {
+      draws++;
+      statEl.textContent = 'تعادل!';
+    } else if (beats[me] === cpu) {
+      playerWins++;
+      statEl.textContent = 'كسبت الجولة! 🎉';
+    } else {
+      aiWins++;
+      statEl.textContent = 'خسرت الجولة 😅';
+    }
+
+    scoreEl.textContent = 'أنت: ' + playerWins + ' — الخصم: ' + aiWins;
+    document.getElementById('currentScore').textContent = playerWins * 10;
+
+    // فحص الفوز
+    if (playerWins >= target) {
+      const baseScores = { easy: 80, medium: 150, hard: 280, legendary: 500 };
+      setTimeout(() => {
+        endGame('rps', difficulty, baseScores[difficulty] || 150);
+      }, 800);
+      disableButtons();
+    } else if (aiWins >= target) {
+      setTimeout(() => {
+        endGame('rps', difficulty, playerWins * 20);
+      }, 800);
+      disableButtons();
+    }
+  }
+
+  function disableButtons() {
+    area.querySelectorAll('.rps-choices button').forEach(b => b.disabled = true);
+  }
+
+  area.querySelectorAll('.rps-choices button').forEach(btn => {
+    btn.onclick = () => play(btn.dataset.c);
+  });
+
+  document.getElementById('rpsReset').onclick = () => {
+    playerWins = 0; aiWins = 0; draws = 0;
+    resEl.innerHTML = '';
+    statEl.textContent = '';
+    scoreEl.textContent = 'أنت: 0 — الخصم: 0';
+    document.getElementById('currentScore').textContent = '0';
+    area.querySelectorAll('.rps-choices button').forEach(b => b.disabled = false);
+  };
+}
+
+/* ===== 25. اضرب الخلد ===== */
+function initWhack(area, difficulty, best) {
+  // سرعة ظهور الخلد + مدة اللعب
+  const speeds = { easy: 900, medium: 700, hard: 500, legendary: 350 };
+  const durations = { easy: 30, medium: 30, hard: 30, legendary: 25 };
+  const popSpeed = speeds[difficulty] || 700;
+  let timeLeft = durations[difficulty] || 30;
+
+  let score = 0, running = true;
+  let holes = [];
+
+  area.innerHTML = `
+    <p class="best">🏆 أفضل: ${best}</p>
+    <p class="status" id="whackStatus">النقاط: 0 — الوقت: ${timeLeft}</p>
     <div id="whackBoard"></div>
-    <button class="reset" id="whackReset">ابدأ</button>
   `;
 
   const board = document.getElementById('whackBoard');
@@ -789,37 +1166,45 @@ function initWhack(area) {
   }
 
   function popRandom() {
-    holes.forEach(h => { h.classList.remove('up'); h.textContent = ''; });
-    const i = Math.floor(Math.random() * 9);
-    holes[i].classList.add('up');
-    holes[i].textContent = '🐹';
+    if (!running) return;
+    // ممكن يظهر أكتر من واحد في الصعوبات العالية
+    const simultaneous = difficulty === 'legendary' ? 2 : 1;
+    for (let k = 0; k < simultaneous; k++) {
+      const free = holes.filter(h => !h.classList.contains('up'));
+      if (free.length === 0) return;
+      const h = free[Math.floor(Math.random() * free.length)];
+      h.classList.add('up');
+      h.textContent = '🐹';
+      // يختفي لوحده بعد فترة
+      setTimeout(() => {
+        if (h.classList.contains('up')) {
+          h.classList.remove('up');
+          h.textContent = '';
+        }
+      }, popSpeed - 100);
+    }
   }
 
-  document.getElementById('whackReset').onclick = () => {
-    clearInterval(whackTimer);
-    clearInterval(whackUpTimer);
-    build();
-    score = 0; timeLeft = 30; running = true;
-    status.textContent = 'النقاط: 0 — الوقت: 30';
-    document.getElementById('currentScore').textContent = '0';
-    whackUpTimer = setInterval(popRandom, 700);
-    whackTimer = setInterval(() => {
-      timeLeft--;
-      status.textContent = 'النقاط: ' + score + ' — الوقت: ' + timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(whackTimer);
-        clearInterval(whackUpTimer);
-        running = false;
-        endGame('whack', score);
-      }
-    }, 1000);
-  };
+  clearInterval(whackTimer);
+  clearInterval(whackUpTimer);
+
+  whackUpTimer = setInterval(popRandom, popSpeed);
+  whackTimer = setInterval(() => {
+    timeLeft--;
+    status.textContent = 'النقاط: ' + score + ' — الوقت: ' + timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(whackTimer);
+      clearInterval(whackUpTimer);
+      running = false;
+      endGame('whack', difficulty, score);
+    }
+  }, 1000);
 
   build();
 }
 
-/* ====== 21. أسئلة ====== */
-const quizQuestions = [
+/* ===== 26. سؤال وجواب ===== */
+const QUIZ_BANK = [
   { q: 'ما عاصمة مصر؟', opts: ['القاهرة', 'الإسكندرية', 'أسوان'], a: 0 },
   { q: 'أكبر كوكب في المجموعة الشمسية؟', opts: ['الأرض', 'المشتري', 'زحل'], a: 1 },
   { q: 'كم قارة في العالم؟', opts: ['5', '6', '7'], a: 2 },
@@ -827,53 +1212,82 @@ const quizQuestions = [
   { q: 'أطول نهر في العالم؟', opts: ['الأمازون', 'النيل', 'الفرات'], a: 1 },
   { q: 'أكبر محيط في العالم؟', opts: ['الأطلسي', 'الهادي', 'الهندي'], a: 1 },
   { q: 'أعلى جبل في العالم؟', opts: ['إفرست', 'كليمنجارو', 'الألب'], a: 0 },
-  { q: 'أول رائد فضاء وصل للقمر؟', opts: ['جاجارين', 'أرمسترونج', 'ألدرين'], a: 1 }
+  { q: 'أول رائد فضاء وصل للقمر؟', opts: ['جاجارين', 'أرمسترونج', 'ألدرين'], a: 1 },
+  { q: 'ما أكبر قارة في العالم؟', opts: ['أفريقيا', 'آسيا', 'أوروبا'], a: 1 },
+  { q: 'كم عدد أيام السنة الكبيسة؟', opts: ['364', '365', '366'], a: 2 },
+  { q: 'ما الغاز الذي نتنفسه؟', opts: ['الأكسجين', 'النيتروجين', 'الهيدروجين'], a: 0 },
+  { q: 'ما عاصمة السعودية؟', opts: ['جدة', 'الرياض', 'مكة'], a: 1 },
+  { q: 'ما عاصمة اليابان؟', opts: ['طوكيو', 'أوساكا', 'كيوتو'], a: 0 },
+  { q: 'كم عدد ألوان قوس قزح؟', opts: ['5', '6', '7'], a: 2 },
+  { q: 'ما أسرع طائر في العالم؟', opts: ['النسر', 'الصقر', 'السنونو'], a: 1 },
+  { q: 'ما أكبر دولة عربية من حيث المساحة؟', opts: ['مصر', 'الجزائر', 'السعودية'], a: 1 },
+  { q: 'كم عدد الحواس الأساسية؟', opts: ['4', '5', '6'], a: 1 },
+  { q: 'ما الكوكب الأحمر؟', opts: ['الزهرة', 'المريخ', 'عطارد'], a: 1 },
+  { q: 'ما عاصمة فرنسا؟', opts: ['روما', 'باريس', 'مدريد'], a: 1 },
+  { q: 'في أي قارة تقع مصر؟', opts: ['آسيا', 'أفريقيا', 'أوروبا'], a: 1 },
+  { q: 'ما أطول حيوان في العالم؟', opts: ['الفيل', 'الزرافة', 'الجمل'], a: 1 },
+  { q: 'ما عدد أسنان الإنسان البالغ؟', opts: ['28', '30', '32'], a: 2 },
+  { q: 'ما العضو الذي يضخ الدم؟', opts: ['الرئة', 'القلب', 'الكبد'], a: 1 },
+  { q: 'كم عدد ساعات اليوم؟', opts: ['12', '24', '48'], a: 1 },
+  { q: 'ما أكبر حيوان في العالم؟', opts: ['الفيل', 'الحوت الأزرق', 'القرش'], a: 1 },
+  { q: 'ما البحر الذي يفصل مصر عن السعودية؟', opts: ['المتوسط', 'الأحمر', 'العرب'], a: 1 },
+  { q: 'من رسم الموناليزا؟', opts: ['بيكاسو', 'دافنشي', 'فان جوخ'], a: 1 },
+  { q: 'ما الكوكب الأقرب للشمس؟', opts: ['الزهرة', 'عطارد', 'الأرض'], a: 1 },
+  { q: 'ما أكبر صحراء في العالم؟', opts: ['الكبرى', 'الصحراء الشرقية', 'صحراء النقب'], a: 0 },
+  { q: 'كم عدد لاعبي فريق كرة القدم؟', opts: ['9', '10', '11'], a: 2 },
+  { q: 'ما عاصمة إيطاليا؟', opts: ['ميلانو', 'روما', 'نابولي'], a: 1 },
+  { q: 'ما الحيوان الملقب بسفينة الصحراء؟', opts: ['الحصان', 'الجمل', 'الفيل'], a: 1 },
+  { q: 'كم عدد أضلاع المثلث؟', opts: ['2', '3', '4'], a: 1 },
+  { q: 'ما أكبر مدينة في مصر؟', opts: ['الإسكندرية', 'القاهرة', 'الجيزة'], a: 1 },
+  { q: 'ما السورة الأولى في القرآن؟', opts: ['البقرة', 'الفاتحة', 'الناس'], a: 1 }
 ];
 
-const uclQuestions = [
-  { q: 'الأكتر تتويجًا بدوري أبطال أوروبا؟', opts: ['ميلان', 'ريال مدريد', 'بايرن'], a: 1 },
-  { q: 'ملعب "أنفيلد" ملعب أي فريق؟', opts: ['إيفرتون', 'ليفربول', 'مان يونايتد'], a: 1 },
-  { q: 'ملعب "سانتياجو برنابيو"؟', opts: ['برشلونة', 'أتلتيكو', 'ريال مدريد'], a: 2 },
-  { q: 'أكتر لاعب أهداف في دوري الأبطال؟', opts: ['ميسي', 'ليفاندوفسكي', 'رونالدو'], a: 2 },
-  { q: 'يوفنتوس من أي مدينة؟', opts: ['ميلانو', 'روما', 'تورينو'], a: 2 },
-  { q: 'أول نسخة من دوري الأبطال كانت في؟', opts: ['الأربعينات', 'الخمسينات', 'الستينات'], a: 1 }
-];
+function initQuiz(area, difficulty, best) {
+  // عدد الأسئلة حسب الصعوبة
+  const questionCount = { easy: 5, medium: 8, hard: 12, legendary: 15 };
+  const totalQ = questionCount[difficulty] || 8;
 
-const eplQuestions = [
-  { q: 'الأكتر تتويجًا بالدوري الإنجليزي؟', opts: ['مان سيتي', 'مان يونايتد', 'ليفربول'], a: 1 },
-  { q: 'ملعب "أولد ترافورد"؟', opts: ['مان سيتي', 'مان يونايتد', 'ليدز'], a: 1 },
-  { q: 'ملعب "الإمارات"؟', opts: ['تشيلسي', 'توتنهام', 'أرسنال'], a: 2 },
-  { q: 'نادي أرسنال بيتلقب بـ؟', opts: ['المدفعجية', 'الشياطين', 'السباع'], a: 0 },
-  { q: 'نادي تشيلسي بيتلقب بـ؟', opts: ['البلوز', 'الريدز', 'الجانرز'], a: 0 },
-  { q: 'الدوري الإنجليزي بشكله الحالي بدأ سنة؟', opts: ['1988', '1992', '1998'], a: 1 }
-];
+  // نختار أسئلة عشوائية
+  const shuffled = shuffle(QUIZ_BANK.slice()).slice(0, totalQ);
 
-const playerQuestions = [
-  { q: 'محمد صلاح بيلعب في أي مركز؟', opts: ['حارس', 'جناح/مهاجم', 'مدافع'], a: 1 },
-  { q: 'محمد صلاح من مواليد أي محافظة؟', opts: ['الغربية', 'الإسكندرية', 'الجيزة'], a: 0 },
-  { q: 'محمد صلاح بيلعب حاليًا لأي نادي؟', opts: ['تشيلسي', 'ليفربول', 'مان سيتي'], a: 1 },
-  { q: 'محمد صلاح لعب في إيطاليا لنادي؟', opts: ['يوفنتوس', 'روما', 'إنتر'], a: 1 },
-  { q: 'رقم قميص محمد صلاح؟', opts: ['7', '9', '11'], a: 2 }
-];
-
-const wcQuestions = [
-  { q: 'الأكتر تتويجًا بكأس العالم؟', opts: ['ألمانيا', 'البرازيل', 'الأرجنتين'], a: 1 },
-  { q: 'كأس العالم بيتقام كل؟', opts: ['سنتين', '3 سنين', '4 سنين'], a: 2 },
-  { q: 'أول دولة استضافت كأس العالم؟', opts: ['البرازيل', 'الأوروغواي', 'إيطاليا'], a: 1 },
-  { q: 'كأس العالم 2022 في أي دولة؟', opts: ['قطر', 'الإمارات', 'السعودية'], a: 0 },
-  { q: 'كأس العالم 2026 هيشارك فيه كام منتخب؟', opts: ['32', '40', '48'], a: 2 }
-];
-
-function initQuiz(area, questions, gameId) {
   let idx = 0, score = 0;
-  const totalQ = Math.min(8, questions.length);
-  const shuffled = shuffle(questions.slice()).slice(0, totalQ);
 
   area.innerHTML = `
+    <p class="best">🏆 أفضل: ${best}</p>
     <p class="status" id="quizScore"></p>
-    <p class="best" id="quizBest">أفضل: ${state.scores[gameId] || 0}</p>
     <p class="quiz-q" id="quizQ"></p>
     <div class="quiz-opts" id="quizOpts"></div>
+    <style>
+      .quiz-q { font-size: 18px; font-weight: 800; margin: 16px 0; line-height: 1.6; }
+      .quiz-opts { display: grid; gap: 10px; margin-top: 16px; }
+      .quiz-opts button {
+        background: var(--bg-2);
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        font: 700 15px inherit;
+        cursor: pointer;
+        color: var(--ink);
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .quiz-opts button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        background: var(--card-hover);
+        border-color: var(--accent);
+      }
+      .quiz-opts button.correct {
+        background: var(--success);
+        color: var(--bg-1);
+        border-color: var(--success);
+        box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+      }
+      .quiz-opts button.wrong {
+        background: var(--danger);
+        color: #fff;
+        border-color: var(--danger);
+      }
+    </style>
   `;
 
   const qEl = document.getElementById('quizQ');
@@ -882,13 +1296,19 @@ function initQuiz(area, questions, gameId) {
 
   function render() {
     if (idx >= totalQ) {
-      endGame(gameId, score * 20);
+      // خلص الأسئلة
+      const baseScores = { easy: 60, medium: 120, hard: 250, legendary: 500 };
+      const perfectBonus = score === totalQ ? 50 : 0;
+      const finalScore = Math.floor(((baseScores[difficulty] || 120) * score / totalQ)) + perfectBonus;
+      endGame('quiz', difficulty, finalScore);
       return;
     }
+
     const q = shuffled[idx];
     scoreEl.textContent = 'سؤال ' + (idx + 1) + ' من ' + totalQ;
     qEl.textContent = q.q;
     optsEl.innerHTML = '';
+
     q.opts.forEach((opt, i) => {
       const b = document.createElement('button');
       b.textContent = opt;
@@ -909,11 +1329,15 @@ function initQuiz(area, questions, gameId) {
   render();
 }
 
-/* ====== 22. سيمون ====== */
-function initSimon(area) {
+/* ===== 27. سيمون ===== */
+function initSimon(area, difficulty, best) {
+  // سرعة الأنيميشن
+  const flashSpeed = { easy: 550, medium: 420, hard: 320, legendary: 220 };
+  const flashTime = flashSpeed[difficulty] || 420;
+
   area.innerHTML = `
+    <p class="best">🏆 أفضل: ${best}</p>
     <p class="status" id="simonStatus">دوس ابدأ وذاكر الترتيب</p>
-    <p class="best" id="simonBest">أفضل: ${state.scores.simon || 0}</p>
     <div id="simonBoard">
       <button class="simon-btn" id="simon0"></button>
       <button class="simon-btn" id="simon1"></button>
@@ -921,30 +1345,59 @@ function initSimon(area) {
       <button class="simon-btn" id="simon3"></button>
     </div>
     <button class="reset" id="simonReset">ابدأ</button>
+    <style>
+      #simonBoard {
+        display: grid;
+        grid-template-columns: repeat(2, 110px);
+        grid-template-rows: repeat(2, 110px);
+        gap: 12px;
+        justify-content: center;
+        margin: 20px auto;
+      }
+      .simon-btn {
+        border: 3px solid var(--border);
+        border-radius: 20px;
+        cursor: pointer;
+        opacity: 0.45;
+        transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+      }
+      .simon-btn.lit {
+        opacity: 1;
+        transform: scale(1.05);
+        box-shadow: 0 0 40px currentColor;
+      }
+      #simon0 { background: #ff006e; color: #ff006e; }
+      #simon1 { background: #00f5ff; color: #00f5ff; }
+      #simon2 { background: #ffb800; color: #ffb800; }
+      #simon3 { background: #b537f2; color: #b537f2; }
+    </style>
   `;
 
   const btns = [0,1,2,3].map(i => document.getElementById('simon' + i));
   const status = document.getElementById('simonStatus');
-  let sequence = [], userStep = 0, playing = false;
+  let sequence = [], userStep = 0, playing = false, roundScore = 0;
 
   function flash(i) {
     return new Promise(res => {
       btns[i].classList.add('lit');
-      setTimeout(() => { btns[i].classList.remove('lit'); res(); }, 420);
+      setTimeout(() => {
+        btns[i].classList.remove('lit');
+        res();
+      }, flashTime * 0.8);
     });
   }
 
   async function playSequence() {
     playing = false;
-    status.textContent = 'بص واذكر...';
-    await new Promise(r => setTimeout(r, 500));
+    status.textContent = 'بص واذكر... (' + sequence.length + ')';
+    await new Promise(r => setTimeout(r, 600));
     for (const i of sequence) {
       await flash(i);
-      await new Promise(r => setTimeout(r, 200));
+      await new Promise(r => setTimeout(r, flashTime * 0.3));
     }
     playing = true;
     userStep = 0;
-    status.textContent = 'دورك! (طول السلسلة: ' + sequence.length + ')';
+    status.textContent = 'دورك! طول السلسلة: ' + sequence.length;
   }
 
   function nextRound() {
@@ -960,13 +1413,14 @@ function initSimon(area) {
         userStep++;
         if (userStep === sequence.length) {
           playing = false;
-          status.textContent = 'صح! هنزود واحدة 🎉';
-          document.getElementById('currentScore').textContent = sequence.length * 10;
-          setTimeout(nextRound, 700);
+          roundScore = sequence.length * 15;
+          document.getElementById('currentScore').textContent = roundScore;
+          status.textContent = 'صح! 🎉';
+          setTimeout(nextRound, 800);
         }
       } else {
         playing = false;
-        endGame('simon', sequence.length * 10);
+        endGame('simon', difficulty, roundScore);
         sequence = [];
       }
     };
@@ -974,169 +1428,1019 @@ function initSimon(area) {
 
   document.getElementById('simonReset').onclick = () => {
     sequence = [];
+    roundScore = 0;
+    document.getElementById('currentScore').textContent = '0';
     nextRound();
   };
 }
+/* ===== 28. تخمين الأفلام والمسلسلات ===== */
 
-/* ====== 23. سباق الحساب ====== */
-function initMath(area) {
-  let score = 0, timeLeft = 30, answer = 0, running = false;
+// بنك الأفلام والمسلسلات - مرتب حسب الصعوبة
+const MOVIES_BANK = {
+  easy: [
+    // أفلام ومسلسلات عربية سهلة
+    { hint: '🎥 فيلم مصري قديم', answer: 'الرسالة', options: ['الرسالة', 'العار', 'الأرض'] },
+    { hint: '🎬 مسلسل كوميدي مصري شهير', answer: 'الكبير أوي', options: ['الكبير أوي', 'راجل وست ستات', 'تامر وشوقية'] },
+    { hint: '🎥 فيلم مصري عن الثأر', answer: 'العار', options: ['العار', 'الرسالة', 'الأرض'] },
+    { hint: '🎬 مسلسل رمضاني شهير', answer: 'باب الحارة', options: ['باب الحارة', 'ليث بن كنعان', 'الفاروق'] },
+    { hint: '🎥 فيلم كرتون شهير', answer: 'الأسد الملك', options: ['الأسد الملك', 'علاء الدين', 'البحث عن نيمو'] },
+    { hint: '🎬 فيلم ديزني عن أميرة', answer: 'سندريلا', options: ['سندريلا', 'بياض الثلج', 'رابونزيل'] },
+    { hint: '🎥 فيلم كرتون عن لعبة', answer: 'حكاية لعبة', options: ['حكاية لعبة', 'سيارات', 'شركة المرعبين'] },
+    { hint: '🎬 مسلسل مصري كوميدي', answer: 'راجل وست ستات', options: ['راجل وست ستات', 'الكبير أوي', 'تامر وشوقية'] },
+    { hint: '🎥 فيلم أكشن أمريكي شهير', answer: 'السرعة والغضب', options: ['السرعة والغضب', 'مهمة مستحيلة', 'جون ويك'] },
+    { hint: '🎬 فيلم مصري كوميدي شهير', answer: 'الحفيد', options: ['الحفيد', 'العيال كبرت', 'البيه البواب'] }
+  ],
+  medium: [
+    { hint: '🎥 فيلم مصري عن الفقر والعمل', answer: 'الأرض', options: ['الأرض', 'الرسالة', 'بداية ونهاية'] },
+    { hint: '🎬 مسلسل تركي شهير جدًا', answer: 'حريم السلطان', options: ['حريم السلطان', 'قيامة أرطغرل', 'العشق الممنوع'] },
+    { hint: '🎥 فيلم هوليوود عن الفضاء', answer: 'بين النجوم', options: ['بين النجوم', 'جرافيتي', 'المريخي'] },
+    { hint: '🎬 مسلسل أمريكي عن العرش', answer: 'صراع العروش', options: ['صراع العروش', 'فايكنج', 'التاج'] },
+    { hint: '🎥 فيلم عن ساحر صغير', answer: 'هاري بوتر', options: ['هاري بوتر', 'سيد الخواتم', 'نارنيا'] },
+    { hint: '🎬 ثلاثية شهيرة عن الخواتم', answer: 'سيد الخواتم', options: ['سيد الخواتم', 'هاري بوتر', 'الهوبيت'] },
+    { hint: '🎥 فيلم رعب عن قرش', answer: 'الفك المفترس', options: ['الفك المفترس', 'أنكوندا', 'بيرانا'] },
+    { hint: '🎬 مسلسل مصري بوليسي', answer: 'الاختيار', options: ['الاختيار', 'هجمة مرتدة', 'المداح'] },
+    { hint: '🎥 فيلم أجنبي عن حلم', answer: 'إنسبشن', options: ['إنسبشن', 'ماتريكس', 'تينيت'] },
+    { hint: '🎬 مسلسل مصري في رمضان', answer: 'المداح', options: ['المداح', 'الاختيار', 'جزيرة غمام'] },
+    { hint: '🎥 فيلم ديزني عن ملكة ثلج', answer: 'فروزن', options: ['فروزن', 'موانا', 'موانا'] },
+    { hint: '🎬 مسلسل أمريكي عن أطباء', answer: 'جراي أناتومي', options: ['جراي أناتومي', 'دكتور هاوس', 'إي آر'] },
+    { hint: '🎥 فيلم رعب عن قاتل', answer: 'هالوين', options: ['هالوين', 'يوم الجمعة 13', 'صراخ'] }
+  ],
+  hard: [
+    { hint: '🎥 فيلم مصري عن ثورة', answer: 'باب الحديد', options: ['باب الحديد', 'الأرض', 'العزيمة'] },
+    { hint: '🎬 مسلسل تركي تاريخي', answer: 'قيامة أرطغرل', options: ['قيامة أرطغرل', 'حريم السلطان', 'المؤسس عثمان'] },
+    { hint: '🎥 فيلم أجنبي عن ذكاء اصطناعي', answer: 'ماتريكس', options: ['ماتريكس', 'تيرمينيتور', 'أنا روبوت'] },
+    { hint: '🎬 مسلسل كوري شهير', answer: 'لعبة الحبار', options: ['لعبة الحبار', 'الغريب', 'الرجل من كوكب آخر'] },
+    { hint: '🎥 فيلم نولان عن سحر', answer: 'الهيبة', options: ['الهيبة', 'إنسبشن', 'بين النجوم'] },
+    { hint: '🎬 أنمي ياباني شهير', answer: 'ناروتو', options: ['ناروتو', 'ون بيس', 'بليتش'] },
+    { hint: '🎥 فيلم عن مافيا إيطالية', answer: 'الأب الروحي', options: ['الأب الروحي', 'الوجه ذو الندبة', 'الكابو'] },
+    { hint: '🎬 مسلسل مصري عن إرهاب', answer: 'هجمة مرتدة', options: ['هجمة مرتدة', 'الاختيار', 'القاهرة كابول'] },
+    { hint: '🎥 فيلم أجنبي عن قتال', answer: 'فايت كلوب', options: ['فايت كلوب', 'جون ويك', 'المصفوفة'] },
+    { hint: '🎬 أنمي عن قراصنة', answer: 'ون بيس', options: ['ون بيس', 'ناروتو', 'بليتش'] },
+    { hint: '🎥 فيلم رعب نفسي', answer: 'الفتاة المفقودة', options: ['الفتاة المفقودة', 'الصمت', 'هروب'] }
+  ],
+  legendary: [
+    { hint: '🎥 فيلم إيراني فاز بأوسكار', answer: 'انفصال نادر', options: ['انفصال نادر', 'أطفال السماء', 'طعم الكرز'] },
+    { hint: '🎬 مسلسل أجنبي عن كيمياء', answer: 'بريكنج باد', options: ['بريكنج باد', 'أفضل نداء سول', 'أوزارك'] },
+    { hint: '🎥 فيلم ياباني عن أنيمي', answer: 'المخطوفة', options: ['المخطوفة', 'الأميرة مونونوكي', 'جاري توتورو'] },
+    { hint: '🎬 مسلسل أجنبي عن فيكينج', answer: 'فايكنج', options: ['فايكنج', 'لست مملكة', 'التاج'] },
+    { hint: '🎥 فيلم عن ثقب أسود', answer: 'إنترستيلار', options: ['إنترستيلار', 'جرافيتي', 'المريخي'] },
+    { hint: '🎬 دراما كورية فازت بأوسكار', answer: 'الطفيلي', options: ['الطفيلي', 'قطار بوسان', 'لعبة الحبار'] },
+    { hint: '🎥 فيلم أجنبي عن رياضيات', answer: 'العقل الجميل', options: ['العقل الجميل', 'غود ويل هانتينج', 'نظرية كل شيء'] },
+    { hint: '🎬 أنمي عن عمالقة', answer: 'هجوم العمالقة', options: ['هجوم العمالقة', 'ديث نوت', 'ناروتو'] },
+    { hint: '🎥 فيلم إسباني عن مختبر', answer: 'متاهة بان', options: ['متاهة بان', 'الأم', 'العظام'] },
+    { hint: '🎬 دراما إنجليزية عن ملكة', answer: 'التاج', options: ['التاج', 'داوتن آبي', 'فيكتوريا'] }
+  ]
+};
+
+function initMovies(area, difficulty, best) {
+  // عدد الأسئلة حسب الصعوبة
+  const questionCount = { easy: 5, medium: 8, hard: 10, legendary: 12 };
+  const totalQ = Math.min(questionCount[difficulty] || 8, MOVIES_BANK[difficulty].length);
+
+  // نختار أسئلة عشوائية
+  const shuffled = shuffle(MOVIES_BANK[difficulty].slice()).slice(0, totalQ);
+
+  let idx = 0, score = 0;
 
   area.innerHTML = `
-    <p class="status" id="mathStatus">النقاط: 0 — الوقت: 30</p>
-    <p class="best" id="mathBest">أفضل: ${state.scores.math || 0}</p>
-    <p class="math-eq" id="mathEq"></p>
-    <div class="math-opts" id="mathOpts"></div>
-    <button class="reset" id="mathReset">ابدأ</button>
+    <p class="best">🏆 أفضل: ${best}</p>
+    <div style="text-align:center;margin-bottom:16px">
+      <span style="font-size:14px;color:var(--muted);font-weight:700">🎬 تخمين الأفلام والمسلسلات</span>
+    </div>
+    <p class="status" id="moviesProgress"></p>
+    <div id="moviesHint" style="
+      background: var(--bg-2);
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 24px 16px;
+      margin: 18px 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent);
+      text-align: center;
+      line-height: 1.6;
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.15);
+    "></div>
+    <div class="movies-opts" id="moviesOpts"></div>
+    <style>
+      .movies-opts {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .movies-opts button {
+        background: var(--bg-2);
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 16px;
+        font: 800 16px inherit;
+        cursor: pointer;
+        color: var(--ink);
+        transition: all 0.2s;
+        font-family: inherit;
+        position: relative;
+      }
+      .movies-opts button:hover:not(:disabled) {
+        transform: translateY(-3px) scale(1.02);
+        background: var(--card-hover);
+        border-color: var(--accent);
+        box-shadow: 0 0 25px rgba(0, 245, 255, 0.3);
+      }
+      .movies-opts button.correct {
+        background: var(--success);
+        color: var(--bg-1);
+        border-color: var(--success);
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+      }
+      .movies-opts button.correct::after {
+        content: ' ✓';
+        font-weight: 900;
+      }
+      .movies-opts button.wrong {
+        background: var(--danger);
+        color: #fff;
+        border-color: var(--danger);
+        animation: shake 0.4s;
+      }
+      .movies-opts button.wrong::after {
+        content: ' ✗';
+        font-weight: 900;
+      }
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-8px); }
+        75% { transform: translateX(8px); }
+      }
+    </style>
   `;
 
-  const eqEl = document.getElementById('mathEq');
-  const optsEl = document.getElementById('mathOpts');
-  const status = document.getElementById('mathStatus');
+  const progressEl = document.getElementById('moviesProgress');
+  const hintEl = document.getElementById('moviesHint');
+  const optsEl = document.getElementById('moviesOpts');
 
-  function newEq() {
-    const a = Math.ceil(Math.random() * 20);
-    const b = Math.ceil(Math.random() * 20);
-    const ops = ['+', '-'];
-    const op = ops[Math.floor(Math.random() * 2)];
-    answer = op === '+' ? a + b : a - b;
-    eqEl.textContent = a + ' ' + op + ' ' + b + ' = ؟';
-    const opts = new Set([answer]);
-    while (opts.size < 3) opts.add(answer + Math.floor(Math.random() * 9) - 4);
+  function render() {
+    if (idx >= totalQ) {
+      const baseScores = { easy: 80, medium: 150, hard: 280, legendary: 500 };
+      const perfectBonus = score === totalQ ? 100 : 0;
+      const finalScore = Math.floor((baseScores[difficulty] || 150) * score / totalQ) + perfectBonus;
+      endGame('movies', difficulty, finalScore);
+      return;
+    }
+
+    const q = shuffled[idx];
+    progressEl.textContent = '🎬 ' + (idx + 1) + ' من ' + totalQ;
+    hintEl.textContent = q.hint;
     optsEl.innerHTML = '';
-    shuffle([...opts]).forEach(v => {
-      const b2 = document.createElement('button');
-      b2.textContent = v;
-      b2.onclick = () => {
-        if (!running) return;
-        if (v === answer) {
-          score += 10;
-          status.textContent = 'النقاط: ' + score + ' — الوقت: ' + timeLeft;
-          document.getElementById('currentScore').textContent = score;
+
+    shuffle(q.options.slice()).forEach(opt => {
+      const b = document.createElement('button');
+      b.textContent = opt;
+      b.onclick = () => {
+        [...optsEl.children].forEach(x => x.disabled = true);
+
+        if (opt === q.answer) {
+          b.classList.add('correct');
+          score++;
+          document.getElementById('currentScore').textContent = score * 20;
+        } else {
+          b.classList.add('wrong');
+          // نظهر الإجابة الصح
+          [...optsEl.children].forEach(x => {
+            if (x.textContent === q.answer) x.classList.add('correct');
+          });
         }
-        newEq();
+
+        setTimeout(() => { idx++; render(); }, 1100);
       };
-      optsEl.appendChild(b2);
+      optsEl.appendChild(b);
     });
   }
 
-  document.getElementById('mathReset').onclick = () => {
-    clearInterval(mathTimer);
-    score = 0; timeLeft = 30; running = true;
-    status.textContent = 'النقاط: 0 — الوقت: 30';
-    document.getElementById('currentScore').textContent = '0';
-    newEq();
-    mathTimer = setInterval(() => {
-      timeLeft--;
-      status.textContent = 'النقاط: ' + score + ' — الوقت: ' + timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(mathTimer);
-        running = false;
-        endGame('math', score);
-      }
-    }, 1000);
-  };
+  render();
+}
+/* ===== 29. الإنجازات ===== */
+const ACHIEVEMENTS = [
+  { id: 'first_game',   name: 'البداية', icon: '🎮', desc: 'العب أول لعبة', reward: { coins: 50 }, condition: (s) => Object.values(s.plays).reduce((a,b) => a+b, 0) >= 1 },
+  { id: 'ten_games',    name: 'مدمن ألعاب', icon: '🕹️', desc: 'العب 10 ألعاب', reward: { coins: 150 }, condition: (s) => Object.values(s.plays).reduce((a,b) => a+b, 0) >= 10 },
+  { id: 'fifty_games',  name: 'محترف', icon: '👑', desc: 'العب 50 لعبة', reward: { coins: 500 }, condition: (s) => Object.values(s.plays).reduce((a,b) => a+b, 0) >= 50 },
+  { id: 'hundred_games', name: 'أسطورة', icon: '💫', desc: 'العب 100 لعبة', reward: { coins: 1500 }, condition: (s) => Object.values(s.plays).reduce((a,b) => a+b, 0) >= 100 },
+  
+  { id: 'score_500',   name: 'سكور عالي', icon: '🏆', desc: 'احصل على سكور 500', reward: { coins: 200 }, condition: (s) => Math.max(0, ...Object.values(s.scores)) >= 500 },
+  { id: 'score_1000',  name: 'سكور ضخم', icon: '🥇', desc: 'احصل على سكور 1000', reward: { coins: 500 }, condition: (s) => Math.max(0, ...Object.values(s.scores)) >= 1000 },
+  
+  { id: 'coins_500',   name: 'جامع الكوينز', icon: '💰', desc: 'اجمع 500 كوين', reward: { coins: 100 }, condition: (s) => s.coins >= 500 },
+  { id: 'coins_2000',  name: 'ثري', icon: '💎', desc: 'اجمع 2000 كوين', reward: { coins: 300 }, condition: (s) => s.coins >= 2000 },
+  
+  { id: 'level_5',     name: 'مبتدئ متقدم', icon: '⭐', desc: 'وصل للمستوى 5', reward: { coins: 200 }, condition: (s) => Math.floor(s.xp / 100) + 1 >= 5 },
+  { id: 'level_10',    name: 'خبير', icon: '🌟', desc: 'وصل للمستوى 10', reward: { coins: 500 }, condition: (s) => Math.floor(s.xp / 100) + 1 >= 10 },
+  { id: 'level_20',    name: 'نابغة', icon: '✨', desc: 'وصل للمستوى 20', reward: { coins: 1500 }, condition: (s) => Math.floor(s.xp / 100) + 1 >= 20 },
+  
+  { id: 'streak_3',    name: 'ملتزم', icon: '🔥', desc: 'العب 3 أيام متتالية', reward: { coins: 200 }, condition: (s) => s.streak >= 3 },
+  { id: 'streak_7',    name: 'مافي', icon: '🔥🔥', desc: 'العب 7 أيام متتالية', reward: { coins: 700 }, condition: (s) => s.streak >= 7 },
+  
+  { id: 'theme_2',     name: 'متحمس', icon: '🎨', desc: 'اشتري ثيم جديد', reward: { coins: 100 }, condition: (s) => s.ownedThemes.length >= 2 },
+  { id: 'theme_all',   name: 'جامع الثيمات', icon: '🌈', desc: 'اشتري كل الثيمات', reward: { coins: 2000 }, condition: (s) => s.ownedThemes.length >= 4 },
+  
+  { id: 'all_games',   name: 'المجرب', icon: '🎯', desc: 'العب كل الألعاب', reward: { coins: 800 }, condition: (s) => Object.keys(s.plays).length >= 10 }
+];
 
-  eqEl.textContent = 'دوس ابدأ';
+function checkAchievements() {
+  const unlocked = state.unlockedAchievements || [];
+  const newUnlocks = [];
+
+  ACHIEVEMENTS.forEach(ach => {
+    if (unlocked.includes(ach.id)) return;
+    if (ach.condition(state)) {
+      newUnlocks.push(ach);
+      unlocked.push(ach.id);
+      state.coins += ach.reward.coins || 0;
+      state.xp += ach.reward.xp || 0;
+    }
+  });
+
+  if (newUnlocks.length > 0) {
+    state.unlockedAchievements = unlocked;
+    saveState();
+    // إظهار كل إنجاز بتأخير بسيط
+    newUnlocks.forEach((ach, i) => {
+      setTimeout(() => showAchievementPopup(ach), i * 1500);
+    });
+    renderAll();
+  }
 }
 
-/* ====== 24. سرعة البديهة ====== */
-function initReact(area) {
-  let waitingGo = false, startTime = 0;
+function showAchievementPopup(ach) {
+  const popup = document.getElementById('achievementPopup');
+  document.getElementById('apName').textContent = ach.name;
+  document.getElementById('apReward').textContent = '+' + ach.reward.coins + ' 🪙';
+  popup.classList.add('show');
+  setTimeout(() => popup.classList.remove('show'), 3500);
+}
 
-  area.innerHTML = `
-    <p class="status" id="reactStatus">دوس ابدأ واستنى اللون</p>
-    <p class="best" id="reactBest">أفضل: ${state.scores.react ? state.scores.react + ' مللي' : '—'}</p>
-    <div id="reactBox">استنى...</div>
-    <button class="reset" id="reactReset">ابدأ</button>
+function openAchievements() {
+  document.getElementById('achievementsModal').classList.add('active');
+  renderAchievements();
+}
+
+function closeAchievements() {
+  document.getElementById('achievementsModal').classList.remove('active');
+}
+
+function renderAchievements() {
+  const list = document.getElementById('achievementsList');
+  if (!list) return;
+
+  const unlocked = state.unlockedAchievements || [];
+  document.getElementById('achCount').textContent = unlocked.length;
+  document.getElementById('achTotal').textContent = ACHIEVEMENTS.length;
+
+  list.innerHTML = ACHIEVEMENTS.map(ach => {
+    const isUnlocked = unlocked.includes(ach.id);
+    return `
+      <div class="achievement-item ${isUnlocked ? 'unlocked' : 'locked'}">
+        <div class="ai-icon">${isUnlocked ? ach.icon : '🔒'}</div>
+        <div class="ai-content">
+          <div class="ai-name">${ach.name}</div>
+          <div class="ai-desc">${ach.desc}</div>
+          <div class="ai-reward">💰 ${ach.reward.coins} 🪙</div>
+        </div>
+        <div class="ai-status">${isUnlocked ? '✅' : ''}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ===== 30. المهام اليومية ===== */
+const MISSION_TEMPLATES = [
+  { id: 'play_5',      name: 'العب 5 ألعاب', icon: '🎮', desc: 'العب 5 مرات النهاردة', target: 5,     reward: { coins: 80 } },
+  { id: 'play_10',     name: 'العب 10 ألعاب', icon: '🕹️', desc: 'العب 10 مرات النهاردة', target: 10,    reward: { coins: 200 } },
+  { id: 'win_memory',  name: 'اكسب في الذاكرة', icon: '🧠', desc: 'اكسب جولة ذاكرة',      target: 1,     reward: { coins: 100 } },
+  { id: 'score_300',   name: 'سكور 300', icon: '🏆', desc: 'احصل على 300 سكور في لعبة', target: 300, reward: { coins: 150 } },
+  { id: 'win_snake',   name: 'سكور 100 في الأفعى', icon: '🐍', desc: 'العبي أفعى لحد 100 سكور', target: 100, reward: { coins: 120 } },
+  { id: 'play_different', name: 'نوع الألعاب', icon: '🎯', desc: 'العب 3 ألعاب مختلفة', target: 3,     reward: { coins: 100 } },
+  { id: 'win_xo',      name: 'اكسب في XO', icon: '❌', desc: 'اكسب جولة إكس أوه',    target: 1,     reward: { coins: 80 } },
+  { id: 'quiz_3',      name: 'سؤال وجواب', icon: '❓', desc: 'العب سؤال وجواب',      target: 1,     reward: { coins: 90 } }
+];
+
+function getMissions() {
+  const today = new Date().toDateString();
+  if (state.missionsDay !== today) {
+    // مهام جديدة كل يوم
+    const shuffled = shuffle(MISSION_TEMPLATES.slice()).slice(0, 3);
+    state.missionsDay = today;
+    state.missions = shuffled.map(m => ({ ...m, progress: 0, completed: false }));
+    state.uniqueGamesToday = [];
+    saveState();
+  }
+  return state.missions || [];
+}
+
+function updateMissionProgress(type, value) {
+  const missions = getMissions();
+  let updated = false;
+
+  missions.forEach(m => {
+    if (m.completed) return;
+
+    if (m.id === 'play_5' && type === 'play') {
+      m.progress++;
+      if (m.progress >= m.target) completeMission(m);
+    } else if (m.id === 'play_10' && type === 'play') {
+      m.progress++;
+      if (m.progress >= m.target) completeMission(m);
+    } else if (m.id === 'win_memory' && type === 'win' && value === 'memory') {
+      m.progress = 1;
+      completeMission(m);
+    } else if (m.id === 'win_xo' && type === 'win' && value === 'xo') {
+      m.progress = 1;
+      completeMission(m);
+    } else if (m.id === 'quiz_3' && type === 'play' && value === 'quiz') {
+      m.progress = 1;
+      completeMission(m);
+    } else if (m.id === 'score_300' && type === 'score' && value >= 300) {
+      m.progress = value;
+      completeMission(m);
+    } else if (m.id === 'win_snake' && type === 'score' && value >= 100) {
+      // هذا تقريبي بس ينفع
+      m.progress = value;
+      completeMission(m);
+    } else if (m.id === 'play_different' && type === 'play') {
+      if (!state.uniqueGamesToday) state.uniqueGamesToday = [];
+      if (!state.uniqueGamesToday.includes(value)) {
+        state.uniqueGamesToday.push(value);
+        m.progress = state.uniqueGamesToday.length;
+        if (m.progress >= m.target) completeMission(m);
+      }
+    }
+    updated = true;
+  });
+
+  if (updated) {
+    state.missions = missions;
+    saveState();
+  }
+}
+
+function completeMission(m) {
+  if (m.completed) return;
+  m.completed = true;
+  state.coins += m.reward.coins;
+  showToast('🎯 خلصت مهمة: ' + m.name + ' (+' + m.reward.coins + ' 🪙)');
+}
+
+function openMissions() {
+  document.getElementById('missionsModal').classList.add('active');
+  renderMissions();
+}
+
+function closeMissions() {
+  document.getElementById('missionsModal').classList.remove('active');
+}
+
+function renderMissions() {
+  const list = document.getElementById('missionsList');
+  if (!list) return;
+
+  const missions = getMissions();
+  const completed = missions.filter(m => m.completed).length;
+  document.getElementById('missionCount').textContent = completed;
+
+  list.innerHTML = missions.map(m => {
+    const pct = Math.min(100, Math.floor((m.progress || 0) / m.target * 100));
+    return `
+      <div class="mission-item ${m.completed ? 'completed' : ''}">
+        <div class="mi-head">
+          <div class="mi-icon">${m.icon}</div>
+          <div class="mi-info">
+            <div class="mi-name">${m.name}</div>
+            <div class="mi-desc">${m.desc}</div>
+          </div>
+          <div class="mi-reward">+${m.reward.coins} 🪙</div>
+        </div>
+        <div class="mission-progress">
+          <div class="mission-progress-bar" style="width: ${pct}%"></div>
+        </div>
+        <div class="mission-text">
+          ${m.completed ? '✅ خلصت!' : (m.progress || 0) + ' / ' + m.target}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ===== 31. تعديل recordScore لتفعيل المهام والإنجازات ===== */
+const _originalRecordScore = recordScore;
+recordScore = function(gameId, difficulty, score) {
+  const result = _originalRecordScore(gameId, difficulty, score);
+  
+  // تحديث المهام
+  updateMissionProgress('play', gameId);
+  if (score > 0) updateMissionProgress('score', score);
+  if (result.isNewBest && score >= 50) updateMissionProgress('win', gameId);
+  
+  // فحص الإنجازات
+  setTimeout(checkAchievements, 300);
+  
+  return result;
+};
+
+/* ===== 32. ربط الإنجازات والمهام بالتشغيل ===== */
+window.addEventListener('DOMContentLoaded', () => {
+  // فحص الإنجازات بعد التحميل
+  setTimeout(() => {
+    checkAchievements();
+    getMissions();
+  }, 1500);
+});
+/* ===== 33. شاشة الإحصائيات ===== */
+function openStats() {
+  document.getElementById('statsModal').classList.add('active');
+  renderStats();
+}
+
+function closeStats() {
+  document.getElementById('statsModal').classList.remove('active');
+}
+
+function renderStats() {
+  const content = document.getElementById('statsContent');
+  if (!content) return;
+
+  // ===== نظرة عامة =====
+  const totalPlays = Object.values(state.plays).reduce((a, b) => a + b, 0);
+  const totalCoins = state.coins;
+  const totalXP = state.xp;
+  const level = getLevel();
+  const unlockedAch = (state.unlockedAchievements || []).length;
+  const missionsDone = (state.missions || []).filter(m => m.completed).length;
+
+  let html = `
+    <div class="stats-overview">
+      <div class="stats-overview-card">
+        <div class="soc-icon">🎮</div>
+        <div class="soc-num">${totalPlays}</div>
+        <div class="soc-label">إجمالي الألعاب</div>
+      </div>
+      <div class="stats-overview-card">
+        <div class="soc-icon">⭐</div>
+        <div class="soc-num">${totalXP}</div>
+        <div class="soc-label">إجمالي XP</div>
+      </div>
+      <div class="stats-overview-card">
+        <div class="soc-icon">🪙</div>
+        <div class="soc-num">${totalCoins}</div>
+        <div class="soc-label">الكوينز</div>
+      </div>
+      <div class="stats-overview-card">
+        <div class="soc-icon">🏅</div>
+        <div class="soc-num">${level}</div>
+        <div class="soc-label">المستوى</div>
+      </div>
+      <div class="stats-overview-card">
+        <div class="soc-icon">🏆</div>
+        <div class="soc-num">${unlockedAch}/${ACHIEVEMENTS.length}</div>
+        <div class="soc-label">إنجازات</div>
+      </div>
+      <div class="stats-overview-card">
+        <div class="soc-icon">🎯</div>
+        <div class="soc-num">${missionsDone}/3</div>
+        <div class="soc-label">مهام اليوم</div>
+      </div>
+    </div>
   `;
 
-  const box = document.getElementById('reactBox');
-  const status = document.getElementById('reactStatus');
+  // ===== إحصائيات كل لعبة =====
+  html += '<div class="stats-section-title">🎯 تفاصيل الألعاب</div>';
 
-  document.getElementById('reactReset').onclick = () => {
-    clearTimeout(reactTimeout);
-    box.classList.remove('go');
-    box.textContent = 'استنى...';
-    waitingGo = false;
-    status.textContent = 'استنى اللون يتغير...';
-    reactTimeout = setTimeout(() => {
-      box.classList.add('go');
-      box.textContent = 'دوس دلوقتي!';
-      waitingGo = true;
-      startTime = Date.now();
-    }, 800 + Math.random() * 2000);
-  };
+  const allGames = Object.values(GAMES);
+  const gamesWithPlay = allGames.filter(g => (state.plays[g.id] || 0) > 0);
+  const gamesWithout = allGames.filter(g => (state.plays[g.id] || 0) === 0);
 
-  box.onclick = () => {
-    if (waitingGo) {
-      const ms = Date.now() - startTime;
-      const score = Math.max(10, 1000 - ms);
-      document.getElementById('currentScore').textContent = ms + 'ms';
-      recordScore('react', score);
-      status.textContent = 'وقتك: ' + ms + ' مللي ثانية ⚡';
-      waitingGo = false;
-      box.classList.remove('go');
-      box.textContent = 'دوس ابدأ تاني';
-    } else if (box.textContent === 'استنى...') {
-      status.textContent = 'بدري! استنى اللون يتغير';
-    }
-  };
+  if (gamesWithPlay.length === 0) {
+    html += '<div class="stats-empty">🎮 لسه مالعبتش أي لعبة!<br>ابدأ العب عشان تشوف إحصائياتك هنا</div>';
+  } else {
+    gamesWithPlay.forEach(g => {
+      const plays = state.plays[g.id] || 0;
+      html += `
+        <div class="stats-game-item">
+          <div class="stats-game-head">
+            <span class="sgh-icon">${g.icon}</span>
+            <span class="sgh-name">${g.name}</span>
+            <span class="sgh-plays">${plays} مرة</span>
+          </div>
+          <div class="stats-diff-grid">
+            ${DIFFICULTIES.map(d => {
+              const key = g.id + '_' + d.id;
+              const score = state.scores[key] || 0;
+              return `
+                <div class="stats-diff ${score > 0 ? 'has-score' : ''}">
+                  <span class="sd-icon">${d.icon}</span>
+                  <span class="sd-score ${score > 0 ? '' : 'empty'}">${score > 0 ? score : '—'}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  // ===== الألعاب اللي لسه مالعبتهاش =====
+  if (gamesWithout.length > 0) {
+    html += '<div class="stats-section-title">🔒 ألعاب لسه مالعبتش</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">';
+    gamesWithout.forEach(g => {
+      html += `<span style="background:var(--bg-2);padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700">${g.icon} ${g.name}</span>`;
+    });
+    html += '</div>';
+  }
+
+  content.innerHTML = html;
+}
+/* ===== 34. الصندوق اليومي ===== */
+function checkChestStatus() {
+  const today = new Date().toDateString();
+  const chest = document.getElementById('dailyChest');
+  const icon = document.getElementById('chestIcon');
+  const title = document.getElementById('chestTitle');
+  const desc = document.getElementById('chestDesc');
+  const badge = document.getElementById('chestBadge');
+
+  if (!chest) return;
+
+  if (state.lastChest === today) {
+    // خلاص فتحه النهاردة
+    chest.classList.add('claimed');
+    icon.textContent = '📭';
+    title.textContent = 'شكراً لزيارتك!';
+    desc.textContent = 'ارجع بكرة عشان تفتح صندوق جديد 🎁';
+    badge.style.display = 'none';
+  } else {
+    chest.classList.remove('claimed');
+    icon.textContent = '🎁';
+    title.textContent = 'الصندوق اليومي';
+    desc.textContent = 'اضغط لفتح الصندوق!';
+    badge.style.display = 'block';
+  }
 }
 
-/* ====== 25. التشغيل ====== */
+function openChest() {
+  const today = new Date().toDateString();
+  if (state.lastChest === today) {
+    showToast('📭 فتحت الصندوق النهاردة — ارجع بكرة!');
+    return;
+  }
+
+  // جايزة عشوائية
+  const roll = Math.random();
+
+  let coinsReward = 0;
+  let xpReward = 0;
+  let icon = '🪙';
+  let title = 'مبروك!';
+  let text = '';
+
+  if (roll < 0.05) {
+    // 5% جايزة نادرة جداً - الجاكبوت
+    coinsReward = 500;
+    xpReward = 100;
+    icon = '💎';
+    title = '🎉 جاكبوت! 🎉';
+    text = `+${coinsReward} 🪙 و +${xpReward} ⭐`;
+  } else if (roll < 0.20) {
+    // 15% جايزة كبيرة
+    coinsReward = 200;
+    xpReward = 50;
+    icon = '🏆';
+    text = `+${coinsReward} 🪙 و +${xpReward} ⭐`;
+  } else if (roll < 0.50) {
+    // 30% جايزة متوسطة
+    coinsReward = 100;
+    xpReward = 25;
+    icon = '💰';
+    text = `+${coinsReward} 🪙 و +${xpReward} ⭐`;
+  } else {
+    // 50% جايزة صغيرة
+    coinsReward = 50;
+    xpReward = 10;
+    icon = '🪙';
+    text = `+${coinsReward} 🪙 و +${xpReward} ⭐`;
+  }
+
+  // إضافة الجايزة
+  state.coins += coinsReward;
+  state.xp += xpReward;
+  state.lastChest = today;
+  saveState();
+  renderAll();
+  checkChestStatus();
+
+  // عرض النافذة
+  document.getElementById('chestRewardIcon').textContent = icon;
+  document.getElementById('chestRewardTitle').textContent = title;
+  document.getElementById('chestRewardText').textContent = text;
+  document.getElementById('chestModal').classList.add('active');
+
+  // فحص الإنجازات
+  setTimeout(checkAchievements, 300);
+}
+
+function closeChest() {
+  document.getElementById('chestModal').classList.remove('active');
+}
+
+/* ===== ربط الصندوق بالتشغيل ===== */
 window.addEventListener('DOMContentLoaded', () => {
-  loadState();
-  checkStreak();
-  applyTheme(state.currentTheme);
-
-  // إخفاء شاشة البداية بعد ثانيتين
-  setTimeout(() => {
-    document.getElementById('splash').classList.add('hide');
-    setTimeout(() => {
-      if (!state.playerName) {
-        document.getElementById('nameScreen').classList.add('active');
-      } else {
-        document.getElementById('app').classList.add('active');
-        renderAll();
-      }
-    }, 400);
-  }, 2000);
-
-  // حفظ الاسم
-  const nameBtn = document.getElementById('saveNameBtn');
-  const nameInput = document.getElementById('playerNameInput');
-
-  nameBtn.onclick = () => {
-    const name = nameInput.value.trim();
-    if (!name) {
-      showToast('⚠️ اكتب اسمك الأول');
-      return;
-    }
-    state.playerName = name;
-    saveState();
-    document.getElementById('nameScreen').classList.remove('active');
-    document.getElementById('app').classList.add('active');
-    renderAll();
-    showToast('أهلاً بيك يا ' + name + ' 🎉');
-  };
-
-  nameInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') nameBtn.click();
-  });
-
-  // إغلاق المودالات بالضغط برا
-  document.getElementById('shopModal').addEventListener('click', (e) => {
-    if (e.target.id === 'shopModal') closeShop();
-  });
-  document.getElementById('rewardModal').addEventListener('click', (e) => {
-    if (e.target.id === 'rewardModal') closeReward();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeShop();
-      closeReward();
-    }
-  });
+  setTimeout(checkChestStatus, 500);
 });
+/* ===== 35. مغامرة DULA ===== */
+let advState = {
+  stage: 0,
+  lives: 3,
+  score: 0,
+  locked: false,
+  timer: null,
+  memoryFlipped: [],
+  memoryMatched: 0,
+  memoryLock: false
+};
+
+const ADV_TOTAL_STAGES = 12;
+
+// بنك أسئلة المغامرة
+const ADV_QUESTIONS = [
+  { q: 'ما هو الكوكب الأحمر؟', opts: ['المريخ', 'الزهرة', 'عطارد'], a: 0 },
+  { q: 'كم يوم في الأسبوع؟', opts: ['5', '7', '9'], a: 1 },
+  { q: 'ما أكبر كوكب؟', opts: ['الأرض', 'المشتري', 'المريخ'], a: 1 },
+  { q: 'ما عاصمة مصر؟', opts: ['القاهرة', 'الجيزة', 'أسوان'], a: 0 },
+  { q: 'كم ضلع للمثلث؟', opts: ['2', '3', '4'], a: 1 },
+  { q: 'ما سفينة الصحراء؟', opts: ['الجمل', 'الحصان', 'الفيل'], a: 0 },
+  { q: 'ما الغاز الذي نتنفسه؟', opts: ['الأكسجين', 'الهيدروجين', 'الهيليوم'], a: 0 },
+  { q: 'كم شهر في السنة؟', opts: ['10', '11', '12'], a: 2 },
+  { q: 'ما أكبر محيط؟', opts: ['الأطلسي', 'الهادي', 'الهندي'], a: 1 },
+  { q: 'ما عاصمة اليابان؟', opts: ['طوكيو', 'أوساكا', 'كيوتو'], a: 0 },
+  { q: 'كم قارة في العالم؟', opts: ['5', '6', '7'], a: 2 },
+  { q: 'ما أطول نهر؟', opts: ['الأمازون', 'النيل', 'الفرات'], a: 1 }
+];
+
+function startAdventure() {
+  advState = {
+    stage: 0, lives: 3, score: 0, locked: false, timer: null,
+    memoryFlipped: [], memoryMatched: 0, memoryLock: false
+  };
+  clearTimers();
+
+  document.getElementById('homeScreen').classList.remove('active');
+  document.getElementById('gameScreen').classList.remove('active');
+  document.getElementById('adventureScreen').classList.add('active');
+
+  renderAdvStage();
+}
+
+function exitAdventure() {
+  if (advState.timer) clearTimeout(advState.timer);
+  advState.locked = true;
+  document.getElementById('adventureScreen').classList.remove('active');
+  document.getElementById('homeScreen').classList.add('active');
+  renderAll();
+}
+
+function updateAdvProgress() {
+  document.getElementById('advStageLabel').textContent =
+    'المرحلة ' + (advState.stage + 1) + ' من ' + ADV_TOTAL_STAGES;
+  document.getElementById('advScoreLabel').textContent = 'النقاط: ' + advState.score;
+  document.getElementById('advProgressFill').style.width =
+    ((advState.stage + 1) / ADV_TOTAL_STAGES * 100) + '%';
+
+  const livesText = '❤️'.repeat(advState.lives) + '🖤'.repeat(3 - advState.lives);
+  document.getElementById('advLives').textContent = livesText;
+}
+
+function renderAdvStage() {
+  if (advState.stage >= ADV_TOTAL_STAGES) {
+    advWin();
+    return;
+  }
+
+  advState.locked = false;
+  updateAdvProgress();
+
+  const area = document.getElementById('advGameArea');
+  const type = advState.stage % 6;
+
+  if (type === 0) advMath(area);
+  else if (type === 1) advQuiz(area);
+  else if (type === 2) advGuess(area);
+  else if (type === 3) advMemory(area);
+  else if (type === 4) advReaction(area);
+  else advRPS(area);
+}
+
+function advWin() {
+  advState.locked = true;
+  const area = document.getElementById('advGameArea');
+
+  const rewardCoins = 500 + advState.score;
+  const rewardXP = 200;
+
+  state.coins += rewardCoins;
+  state.xp += rewardXP;
+  saveState();
+  renderAll();
+  setTimeout(checkAchievements, 500);
+
+  area.innerHTML = `
+    <div class="adv-end-screen">
+      <div class="adv-end-icon">🏆</div>
+      <div class="adv-end-title">مبروك! خلصت المغامرة!</div>
+      <div class="adv-end-score">النقاط: ${advState.score}</div>
+      <div class="adv-end-reward">+${rewardCoins} 🪙 و +${rewardXP} ⭐</div>
+      <button class="reset" onclick="startAdventure()">🔄 العب تاني</button>
+      <button class="reset" onclick="exitAdventure()" style="background:var(--gradient-2)">🏠 الرئيسية</button>
+    </div>
+  `;
+
+  showToast('🎉 خلصت مغامرة DULA!');
+}
+
+function advLose() {
+  advState.locked = true;
+  const area = document.getElementById('advGameArea');
+
+  const rewardCoins = Math.floor(advState.score / 2);
+
+  if (rewardCoins > 0) {
+    state.coins += rewardCoins;
+    saveState();
+    renderAll();
+  }
+
+  area.innerHTML = `
+    <div class="adv-end-screen">
+      <div class="adv-end-icon">💔</div>
+      <div class="adv-end-title">خلصت القلوب!</div>
+      <div class="adv-end-score">وصلت للمرحلة ${advState.stage + 1} من ${ADV_TOTAL_STAGES}</div>
+      <div class="adv-end-score">النقاط: ${advState.score}</div>
+      ${rewardCoins > 0 ? `<div class="adv-end-reward">+${rewardCoins} 🪙</div>` : ''}
+      <button class="reset" onclick="startAdventure()">🔄 حاول تاني</button>
+      <button class="reset" onclick="exitAdventure()" style="background:var(--gradient-2)">🏠 الرئيسية</button>
+    </div>
+  `;
+}
+
+function advCorrect(points) {
+  if (advState.locked) return;
+  advState.locked = true;
+  advState.score += points;
+  updateAdvProgress();
+
+  // علامة صح كبيرة
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;';
+  overlay.innerHTML = '<div style="font-size:140px;color:#00ff88;text-shadow:0 0 50px #00ff88;animation:rewardPop 0.5s ease">✅</div>';
+  document.body.appendChild(overlay);
+
+  advState.timer = setTimeout(() => {
+    overlay.remove();
+    advState.stage++;
+    renderAdvStage();
+  }, 1000);
+}
+
+function advWrong(msg) {
+  if (advState.locked) return;
+  advState.locked = true;
+  advState.lives--;
+  updateAdvProgress();
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;z-index:9999;pointer-events:none;';
+  overlay.innerHTML = `
+    <div style="font-size:140px;color:#ff2e63;text-shadow:0 0 50px #ff2e63;animation:rewardPop 0.5s ease">❌</div>
+    <div style="color:#fff;font-size:18px;font-weight:800;background:rgba(255,46,99,0.9);padding:12px 24px;border-radius:16px">${msg || 'إجابة غلط!'}</div>
+  `;
+  document.body.appendChild(overlay);
+
+  advState.timer = setTimeout(() => {
+    overlay.remove();
+    if (advState.lives <= 0) {
+      advLose();
+    } else {
+      advState.stage++;
+      renderAdvStage();
+    }
+  }, 1200);
+}
+
+/* ===== المرحلة: رياضيات ===== */
+function advMath(area) {
+  const a = 5 + Math.floor(Math.random() * 20);
+  const b = 2 + Math.floor(Math.random() * 15);
+  const op = Math.random() < 0.5 ? '+' : '-';
+  const answer = op === '+' ? a + b : a - b;
+
+  area.innerHTML = `
+    <div class="adv-stage-badge">🧮 المرحلة ${advState.stage + 1}</div>
+    <div class="adv-question">حل العملية السريعة</div>
+    <div style="font-size:48px;font-weight:900;margin:24px 0;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${a} ${op} ${b} = ؟</div>
+    <div class="adv-options">
+      ${[answer, answer + 3, answer - 4, answer + 7].sort(() => Math.random() - 0.5).map(v =>
+        `<button onclick="advMathAnswer(${v}, ${answer})">${v}</button>`
+      ).join('')}
+    </div>
+  `;
+}
+
+function advMathAnswer(picked, correct) {
+  if (picked === correct) advCorrect(50);
+  else advWrong('الإجابة الصح: ' + correct);
+}
+
+/* ===== المرحلة: سؤال ===== */
+function advQuiz(area) {
+  const q = ADV_QUESTIONS[Math.floor(Math.random() * ADV_QUESTIONS.length)];
+
+  area.innerHTML = `
+    <div class="adv-stage-badge">❓ المرحلة ${advState.stage + 1}</div>
+    <div class="adv-question">${q.q}</div>
+    <div class="adv-options">
+      ${q.opts.map((opt, i) =>
+        `<button onclick="advQuizAnswer(${i}, ${q.a})">${opt}</button>`
+      ).join('')}
+    </div>
+  `;
+}
+
+function advQuizAnswer(picked, correct) {
+  if (picked === correct) advCorrect(60);
+  else advWrong('الإجابة الصح: ' + ADV_QUESTIONS[Math.floor(Math.random() * ADV_QUESTIONS.length)].opts[correct]);
+}
+
+/* ===== المرحلة: تخمين ===== */
+let advGuessTarget = 0;
+let advGuessTries = 0;
+
+function advGuess(area) {
+  advGuessTarget = 1 + Math.floor(Math.random() * 50);
+  advGuessTries = 0;
+
+  area.innerHTML = `
+    <div class="adv-stage-badge">🔢 المرحلة ${advState.stage + 1}</div>
+    <div class="adv-question">خمن الرقم من 1 إلى 50</div>
+    <div class="adv-input-wrap">
+      <input type="number" id="advGuessInput" min="1" max="50" placeholder="؟">
+      <button onclick="advGuessSubmit()">جرّب</button>
+    </div>
+    <p class="status" id="advGuessStatus"></p>
+  `;
+
+  setTimeout(() => {
+    const el = document.getElementById('advGuessInput');
+    if (el) el.focus();
+  }, 100);
+}
+
+function advGuessSubmit() {
+  const input = document.getElementById('advGuessInput');
+  const status = document.getElementById('advGuessStatus');
+  if (!input || !status) return;
+
+  const v = Number(input.value);
+  if (!v || v < 1 || v > 50) return;
+
+  advGuessTries++;
+
+  if (v === advGuessTarget) {
+    advCorrect(80);
+    return;
+  }
+
+  if (advGuessTries >= 4) {
+    advWrong('الرقم كان: ' + advGuessTarget);
+    return;
+  }
+
+  status.textContent = (v < advGuessTarget ? 'أكبر من كده ⬆️' : 'أصغر من كده ⬇️') +
+    ' (باقي ' + (4 - advGuessTries) + ')';
+  input.value = '';
+  input.focus();
+}
+
+/* ===== المرحلة: ذاكرة ===== */
+function advMemory(area) {
+  const icons = ['🍎', '🚗', '⭐', '🐶', '⚽', '🚀'];
+  const pairs = 3;
+  const vals = [...icons.slice(0, pairs), ...icons.slice(0, pairs)].sort(() => Math.random() - 0.5);
+
+  advState.memoryFlipped = [];
+  advState.memoryMatched = 0;
+  advState.memoryLock = false;
+
+  area.innerHTML = `
+    <div class="adv-stage-badge">🧠 المرحلة ${advState.stage + 1}</div>
+    <div class="adv-question">افتح كل الأزواج</div>
+    <div class="adv-memory-grid" id="advMemoryGrid">
+      ${vals.map((v, i) => `<button data-i="${i}" data-val="${v}" onclick="advMemoryFlip(${i})"></button>`).join('')}
+    </div>
+  `;
+}
+
+function advMemoryFlip(i) {
+  if (advState.memoryLock) return;
+  const grid = document.getElementById('advMemoryGrid');
+  if (!grid) return;
+
+  const btn = grid.querySelector('[data-i="' + i + '"]');
+  if (!btn || btn.classList.contains('flipped') || btn.classList.contains('matched')) return;
+
+  btn.textContent = btn.dataset.val;
+  btn.classList.add('flipped');
+  advState.memoryFlipped.push(btn);
+
+  if (advState.memoryFlipped.length === 2) {
+    advState.memoryLock = true;
+    const [a, b] = advState.memoryFlipped;
+
+    if (a.dataset.val === b.dataset.val) {
+      a.classList.add('matched');
+      b.classList.add('matched');
+      advState.memoryMatched++;
+      advState.memoryFlipped = [];
+      advState.memoryLock = false;
+
+      if (advState.memoryMatched === 3) advCorrect(70);
+    } else {
+      setTimeout(() => {
+        a.textContent = '';
+        b.textContent = '';
+        a.classList.remove('flipped');
+        b.classList.remove('flipped');
+        advState.memoryFlipped = [];
+        advState.memoryLock = false;
+      }, 700);
+    }
+  }
+}
+
+/* ===== المرحلة: رد فعل ===== */
+function advReaction(area) {
+  area.innerHTML = `
+    <div class="adv-stage-badge">⚡ المرحلة ${advState.stage + 1}</div>
+    <div class="adv-question">اضغط بس لما اللون يتغير!</div>
+    <div class="adv-reaction-box" id="advReactionBox" onclick="advReactionClick()">استنى...</div>
+  `;
+
+  const box = document.getElementById('advReactionBox');
+  const delay = 800 + Math.random() * 2000;
+
+  advState.timer = setTimeout(() => {
+    if (!box) return;
+    box.classList.add('go');
+    box.textContent = 'اضغط الآن!';
+    box.dataset.go = '1';
+    box.dataset.start = Date.now();
+  }, delay);
+}
+
+function advReactionClick() {
+  const box = document.getElementById('advReactionBox');
+  if (!box) return;
+
+  if (box.dataset.go === '1') {
+    const ms = Date.now() - Number(box.dataset.start);
+    advCorrect(Math.max(30, 100 - Math.floor(ms / 20)));
+  } else {
+    clearTimeout(advState.timer);
+    advWrong('ضغطت بدري!');
+  }
+}
+
+/* ===== المرحلة: حجر ورقة مقص ===== */
+function advRPS(area) {
+  area.innerHTML = `
+    <div class="adv-stage-badge">✊ المرحلة ${advState.stage + 1}</div>
+    <div class="adv-question">اكسب الجولة أمام الكمبيوتر!</div>
+    <div class="adv-rps-choices">
+      <button onclick="advRPSPlay('✊')">✊</button>
+      <button onclick="advRPSPlay('✋')">✋</button>
+      <button onclick="advRPSPlay('✌️')">✌️</button>
+    </div>
+  `;
+}
+
+function advRPSPlay(me) {
+  const choices = ['✊', '✋', '✌️'];
+  const beats = { '✊': '✌️', '✋': '✊', '✌️': '✋' };
+  const cpu = choices[Math.floor(Math.random() * 3)];
+
+  if (me === cpu) {
+    showToast('تعادل — حاول مرة تانية');
+    return;
+  }
+
+  if (beats[me] === cpu) {
+    advCorrect(50);
+  } else {
+    advWrong(me + ' ضد ' + cpu + ' — خسرت');
+  }
+}

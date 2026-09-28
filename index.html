@@ -3,119 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a0e27">
+<meta name="theme-color" content="#0a0a1a">
 <title>DULA Pro - عالم الألعاب</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- ============ شاشة البداية ============ -->
+<!-- ===== Splash Screen ===== -->
 <div id="splash" class="splash">
-  <div class="splash-content">
+  <div class="splash-inner">
+    <div class="splash-glow"></div>
     <div class="splash-logo">🎮</div>
-    <h1 class="splash-title">DULA<span>Pro</span></h1>
-    <p class="splash-sub">عالم الألعاب الاحترافي</p>
-    <div class="splash-loader"><i></i></div>
+    <h1 class="splash-title">DULA<span>PRO</span></h1>
+    <p class="splash-tagline">عالم الألعاب الاحترافي</p>
+    <div class="splash-loader">
+      <div class="loader-bar"></div>
+    </div>
   </div>
 </div>
 
-<!-- ============ شاشة تسجيل الاسم ============ -->
+<!-- ===== شاشة الاسم ===== -->
 <div id="nameScreen" class="name-screen">
   <div class="name-card">
     <div class="name-icon">👋</div>
     <h2>أهلاً بيك في DULA Pro</h2>
-    <p>قولنا اسمك عشان نعرف مين بيلعب</p>
-    <input id="playerNameInput" type="text" maxlength="15" placeholder="اكتب اسمك هنا..." autocomplete="off">
-    <button id="saveNameBtn" class="btn-main">يلا نبدأ 🚀</button>
-    <p class="name-hint">💡 الاسم ده اللي هيظهر في لوحة المتصدرين</p>
+    <p class="name-sub">اكتب اسمك عشان نبدأ الرحلة</p>
+    <input id="playerNameInput" type="text" maxlength="15" placeholder="اسمك هنا..." autocomplete="off">
+    <button id="saveNameBtn" class="btn-primary-full">يلا نبدأ 🚀</button>
+    <p class="name-note">💡 الاسم ده هيتحفظ على جهازك</p>
   </div>
 </div>
 
-<!-- ============ التطبيق الرئيسي ============ -->
+<!-- ===== التطبيق ===== -->
 <div id="app" class="app">
 
   <!-- الشريط العلوي -->
   <header class="topbar">
-    <div class="user-box">
-      <div class="user-avatar" id="userAvatar">🎮</div>
-      <div class="user-info">
-        <div class="user-name" id="userName">لاعب</div>
-        <div class="user-level" id="userLevel">المستوى 1</div>
+    <div class="profile-chip">
+      <div class="avatar" id="userAvatar">🎮</div>
+      <div class="profile-info">
+        <div class="profile-name" id="userName">لاعب</div>
+        <div class="profile-level" id="userLevel">المستوى 1</div>
       </div>
     </div>
-    <div class="stats-box">
-      <div class="stat-chip">
-        <span class="stat-icon">🪙</span>
-        <span id="topCoins">0</span>
+    <div class="top-stats">
+      <div class="stat-pill">
+        <span>🪙</span><span id="topCoins">0</span>
       </div>
-      <div class="stat-chip">
-        <span class="stat-icon">🔥</span>
-        <span id="topStreak">0</span>
+      <div class="stat-pill streak">
+        <span>🔥</span><span id="topStreak">0</span>
       </div>
     </div>
   </header>
 
   <!-- شريط الخبرة -->
-  <div class="xp-bar-wrap">
-    <div class="xp-info">
+  <div class="xp-wrapper">
+    <div class="xp-labels">
       <span>⭐ الخبرة</span>
       <span id="xpText">0 / 100 XP</span>
     </div>
-    <div class="xp-bar"><i id="xpFill"></i></div>
+    <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
   </div>
 
-  <!-- شاشة الرئيسية -->
+  <!-- ===== الرئيسية ===== -->
   <main id="homeScreen" class="screen active">
 
-    <!-- الهيرو -->
     <section class="hero">
-      <div class="hero-glow"></div>
-      <h2>🎯 جاهز للتحدي؟</h2>
-      <p>العب، اجمع الكوينز، وافتح الثيمات الفخمة!</p>
-      <div class="hero-buttons">
-        <button class="btn-hero primary" onclick="openShop()">🛒 المتجر</button>
-        <button class="btn-hero" onclick="claimDaily()">🎁 هدية يومية</button>
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <h2>🎯 جاهز للتحدي؟</h2>
+        <p>اختر لعبة، اجمع الكوينز، وافتح الثيمات الفخمة</p>
+      <div class="hero-actions">
+  <button class="btn-hero primary" onclick="openShop()">🛒 المتجر</button>
+  <button class="btn-hero ghost" onclick="claimDaily()">🎁 هدية يومية</button>
+  <button class="btn-hero ghost" onclick="openAchievements()">🏆 الإنجازات</button>
+  <button class="btn-hero ghost" onclick="openMissions()">🎯 المهام</button>
+  <button class="btn-hero ghost" onclick="openStats()">📊 إحصائيات</button>
+</div>
       </div>
     </section>
-
-    <!-- الإحصائيات السريعة -->
+    <!-- ===== مغامرة DULA ===== -->
+<section class="adventure-section">
+  <div class="adventure-card-home" onclick="startAdventure()">
+    <div class="adv-home-bg"></div>
+    <div class="adv-home-icon">🗺️</div>
+    <div class="adv-home-info">
+      <div class="adv-home-title">مغامرة DULA</div>
+      <div class="adv-home-desc">12 مرحلة • 3 قلوب • جايزة كبيرة!</div>
+    </div>
+    <div class="adv-home-arrow">◀</div>
+  </div>
+</section>
+<!-- ===== الصندوق اليومي ===== -->
+<section class="daily-chest-section">
+  <div class="daily-chest" id="dailyChest" onclick="openChest()">
+    <div class="chest-glow"></div>
+    <div class="chest-icon" id="chestIcon">🎁</div>
+    <div class="chest-info">
+      <div class="chest-title" id="chestTitle">الصندوق اليومي</div>
+      <div class="chest-desc" id="chestDesc">اضغط لفتح الصندوق!</div>
+    </div>
+    <div class="chest-badge" id="chestBadge">🎉 جديد</div>
+  </div>
+</section>
     <section class="quick-stats">
-      <div class="qs-item">
-        <div class="qs-num" id="qsGamesPlayed">0</div>
-        <div class="qs-label">🎮 ألعاب لعبتها</div>
+      <div class="qs-card">
+        <div class="qs-icon">🎮</div>
+        <div class="qs-num" id="qsPlays">0</div>
+        <div class="qs-label">ألعاب لعبتها</div>
       </div>
-      <div class="qs-item">
-        <div class="qs-num" id="qsBestScore">0</div>
-        <div class="qs-label">🏆 أعلى سكور</div>
+      <div class="qs-card">
+        <div class="qs-icon">🏆</div>
+        <div class="qs-num" id="qsBest">0</div>
+        <div class="qs-label">أعلى سكور</div>
       </div>
-      <div class="qs-item">
+      <div class="qs-card">
+        <div class="qs-icon">🎨</div>
         <div class="qs-num" id="qsThemes">1</div>
-        <div class="qs-label">🎨 ثيمات مفتوحة</div>
+        <div class="qs-label">ثيمات مفتوحة</div>
       </div>
     </section>
 
-    <!-- لوحة المتصدرين -->
-    <section class="leaderboard">
-      <h3>🏆 أفضل 5 لاعبين</h3>
-      <ol id="leaderboardList"></ol>
+    <section class="leaderboard-box">
+      <div class="section-head">
+        <h3>🏆 أفضل 5 لاعبين</h3>
+      </div>
+      <ol id="leaderboardList" class="leaderboard-list"></ol>
     </section>
 
-    <!-- البحث -->
-    <div class="search-wrap">
+    <div class="search-wrapper">
       <input id="gameSearch" type="search" placeholder="🔎 ابحث عن لعبة..." oninput="filterGames(this.value)">
     </div>
 
-    <!-- الألعاب -->
-    <h3 class="section-title">🎮 الألعاب</h3>
+    <div class="section-head">
+      <h3>🎮 الألعاب</h3>
+      <span class="section-hint">اختر لعبة وابدأ</span>
+    </div>
+
     <section class="games-grid" id="gamesGrid"></section>
 
   </main>
 
-  <!-- شاشة اللعبة -->
+  <!-- ===== شاشة اللعبة ===== -->
   <main id="gameScreen" class="screen">
-    <div class="game-header">
-      <button class="btn-back" onclick="backHome()">⬅ رجوع</button>
+    <div class="game-topbar">
+      <button class="btn-back" onclick="backHome()">← رجوع</button>
       <h3 id="gameTitle"></h3>
       <div class="score-pill">💯 <span id="currentScore">0</span></div>
     </div>
@@ -124,10 +159,10 @@
 
 </div>
 
-<!-- ============ المتجر ============ -->
+<!-- ===== المتجر ===== -->
 <div id="shopModal" class="modal">
-  <div class="modal-content shop-modal">
-    <div class="modal-head">
+  <div class="modal-box">
+    <div class="modal-header">
       <h2>🛒 المتجر</h2>
       <button class="btn-close" onclick="closeShop()">✕</button>
     </div>
@@ -136,25 +171,114 @@
       <strong><span id="shopCoins">0</span> 🪙</strong>
     </div>
 
-    <h3 class="shop-section-title">🎨 الثيمات</h3>
+    <h3 class="shop-section">🎨 الثيمات</h3>
     <div class="shop-grid" id="themesGrid"></div>
 
-    <h3 class="shop-section-title">👤 الأفاتارات</h3>
+    <h3 class="shop-section">👤 الأفاتارات</h3>
     <div class="shop-grid" id="avatarsGrid"></div>
   </div>
 </div>
 
-<!-- ============ النوافذ المنبثقة ============ -->
-<div id="toast" class="toast"></div>
-
-<div id="rewardModal" class="modal">
-  <div class="modal-content reward-content">
-    <div class="reward-icon">🎁</div>
+<!-- ===== هدية يومية ===== -->
+<div id="dailyModal" class="modal">
+  <div class="modal-box daily-box">
+    <div class="daily-icon">🎁</div>
     <h2>هدية اليوم!</h2>
-    <p id="rewardText">+50 🪙 و +20 XP</p>
-    <button class="btn-main" onclick="closeReward()">تمام 🎉</button>
+    <p id="dailyText">+50 🪙</p>
+    <button class="btn-primary-full" onclick="closeDaily()">تمام 🎉</button>
   </div>
 </div>
+
+<!-- ===== اختيار المرحلة ===== -->
+<div id="difficultyModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 id="diffTitle">اختر الصعوبة</h2>
+      <button class="btn-close" onclick="closeDifficulty()">✕</button>
+    </div>
+    <div class="difficulty-grid" id="difficultyGrid"></div>
+  </div>
+</div>
+  <!-- ===== شاشة مغامرة DULA ===== -->
+<main id="adventureScreen" class="screen">
+  <div class="adv-topbar">
+    <button class="btn-back" onclick="exitAdventure()">← رجوع</button>
+    <h3 id="advTitle">🗺️ مغامرة DULA</h3>
+    <div class="adv-lives" id="advLives">❤️❤️❤️</div>
+  </div>
+  <div class="adv-progress-wrapper">
+    <div class="adv-progress-labels">
+      <span id="advStageLabel">المرحلة 1 من 12</span>
+      <span id="advScoreLabel">النقاط: 0</span>
+    </div>
+    <div class="adv-progress-bar">
+      <div class="adv-progress-fill" id="advProgressFill"></div>
+    </div>
+  </div>
+  <div id="advGameArea" class="adv-game-area"></div>
+</main>
+  <!-- ===== نافذة فتح الصندوق ===== -->
+<div id="chestModal" class="modal">
+  <div class="modal-box chest-modal-box">
+    <div class="chest-opening">
+      <div class="chest-reward-icon" id="chestRewardIcon">🎁</div>
+      <h2 id="chestRewardTitle">مبروك!</h2>
+      <p id="chestRewardText">+100 🪙</p>
+      <button class="btn-primary-full" onclick="closeChest()">تمام 🎉</button>
+    </div>
+  </div>
+</div>
+<!-- ===== الإحصائيات ===== -->
+<div id="statsModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>📊 إحصائياتك</h2>
+      <button class="btn-close" onclick="closeStats()">✕</button>
+    </div>
+    <div id="statsContent"></div>
+  </div>
+</div>
+<!-- ===== Toast ===== -->
+<!-- ===== الإنجازات ===== -->
+<div id="achievementsModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>🏆 الإنجازات</h2>
+      <button class="btn-close" onclick="closeAchievements()">✕</button>
+    </div>
+    <p class="shop-balance">
+      <span>فتحت:</span>
+      <strong><span id="achCount">0</span> / <span id="achTotal">0</span></strong>
+    </p>
+    <div id="achievementsList"></div>
+  </div>
+</div>
+
+<!-- ===== المهام اليومية ===== -->
+<div id="missionsModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>🎯 المهام اليومية</h2>
+      <button class="btn-close" onclick="closeMissions()">✕</button>
+    </div>
+    <p class="shop-balance">
+      <span>خلصت:</span>
+      <strong><span id="missionCount">0</span> / 3</strong>
+    </p>
+    <div id="missionsList"></div>
+  </div>
+</div>
+
+<!-- ===== إشعار إنجاز ===== -->
+<div id="achievementPopup" class="achievement-popup">
+  <div class="ap-icon">🏆</div>
+  <div class="ap-content">
+    <div class="ap-title">إنجاز جديد!</div>
+    <div class="ap-name" id="apName"></div>
+    <div class="ap-reward" id="apReward"></div>
+  </div>
+</div>
+  <div id="toast" class="toast"></div>
 
 <script src="script.js"></script>
 </body>
